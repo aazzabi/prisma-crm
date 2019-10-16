@@ -2,12 +2,16 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -28,8 +32,19 @@ public class User implements Serializable {
 	private Date lastAuthentificated;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date passwordLastChanged;
+	@OneToMany(mappedBy="ClientOrder",cascade=CascadeType.ALL)
+	private Set<ClientOrder> clientOrders;
+	
 
 	
+	public Set<ClientOrder> getClientOrders() {
+		return clientOrders;
+	}
+
+	public void setClientOrders(Set<ClientOrder> clientOrders) {
+		this.clientOrders = clientOrders;
+	}
+
 	public int getId() {
 		return id;
 	}
