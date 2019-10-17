@@ -38,14 +38,6 @@ public class User implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date passwordLastChanged;
 	private boolean isActive;
-	public Address getAddress() {
-		return address;
-	}
-
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
 	@ManyToOne
 	private Address address;
 
