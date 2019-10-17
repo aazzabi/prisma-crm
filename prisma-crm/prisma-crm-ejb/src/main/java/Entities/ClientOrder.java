@@ -24,13 +24,13 @@ private float reductionRatio;
 private String orderNature;
 private float totale;
 @ManyToOne
-private User client;
+private Client client;
 
 
-public User getClient() {
+public Client getClient() {
 	return client;
 }
-public void setClient(User client) {
+public void setClient(Client client) {
 	this.client = client;
 }
 public Date getCreatedAt() {

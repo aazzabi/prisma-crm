@@ -5,18 +5,25 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import Enums.Role;
-
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="userType")
+@Table(name="user")
 @Entity
 public class User implements Serializable {
 	@Id
@@ -24,33 +31,46 @@ public class User implements Serializable {
 	private int id;
 	private String email;
 	private String password;
-	private String address;
+	private java.sql.Date createdAt;
 	private String phoneNumber;
-	@Enumerated(EnumType.STRING)
-	private  Role role ;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastAuthentificated;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date passwordLastChanged;
-	@OneToMany(mappedBy="ClientOrder",cascade=CascadeType.ALL)
-	private Set<ClientOrder> clientOrders;
-	
-
-	
-	public Set<ClientOrder> getClientOrders() {
-		return clientOrders;
+	private boolean isActive;
+	public Address getAddress() {
+		return address;
 	}
 
-	public void setClientOrders(Set<ClientOrder> clientOrders) {
-		this.clientOrders = clientOrders;
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	@ManyToOne
+	private Address address;
+
+	
+
+
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public java.sql.Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(java.sql.Date createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public int getId() {
 		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getEmail() {
@@ -69,13 +89,7 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public String getAddress() {
-		return address;
-	}
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
 
 	public String getPhoneNumber() {
 		return phoneNumber;
@@ -101,26 +115,17 @@ public class User implements Serializable {
 		this.passwordLastChanged = passwordLastChanged;
 	}
 
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((address == null) ? 0 : address.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((lastAuthentificated == null) ? 0 : lastAuthentificated.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((passwordLastChanged == null) ? 0 : passwordLastChanged.hashCode());
 		result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
 		return result;
 	}
 
@@ -133,11 +138,6 @@ public class User implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		if (address == null) {
-			if (other.address != null)
-				return false;
-		} else if (!address.equals(other.address))
-			return false;
 		if (email == null) {
 			if (other.email != null)
 				return false;
@@ -164,8 +164,6 @@ public class User implements Serializable {
 			if (other.phoneNumber != null)
 				return false;
 		} else if (!phoneNumber.equals(other.phoneNumber))
-			return false;
-		if (role != other.role)
 			return false;
 		return true;
 	}
