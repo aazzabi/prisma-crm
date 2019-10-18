@@ -1,6 +1,6 @@
 package Enums;
 
 public enum Role {
-	Admin,Agent,Client,Driver,RespEntreprise
+	Admin,Driver,technical,financial,relational
 
 }
