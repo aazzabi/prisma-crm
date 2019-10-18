@@ -29,7 +29,7 @@ public class NoteClaim implements Serializable {
 	@Column
 	private String description;
 
-	@OneToMany
+	@ManyToOne
 	private User createdBy;
 	
 	@Temporal(TemporalType.TIMESTAMP)

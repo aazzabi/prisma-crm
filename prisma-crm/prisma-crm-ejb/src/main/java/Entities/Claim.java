@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,7 +12,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -27,6 +31,8 @@ public class Claim implements Serializable {
 	private int id;
 	@Column
 	private String title;
+	@Column
+	private String code;
 	
 	@Column
 	private String description;
@@ -49,13 +55,15 @@ public class Claim implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date resolvedAt;
 	
-	@OneToMany
+	@ManyToOne
 	private Client createdBy;
 	
-	@OneToMany
+	@OneToOne
 	private Agent resolvedBy;
 	
-	@OneToMany
+	//Pluiseurs Réclamations peuvents étre traités par un seul agent
+	// de l'autre coté , un agent peut gerrer +eurs Réclamations
+	@ManyToOne
 	private Agent responsable;
 	
 	@OneToMany(mappedBy="claim")
@@ -146,5 +154,12 @@ public class Claim implements Serializable {
 	}
 	public void setResponsable(Agent responsable) {
 		this.responsable = responsable;
-	}		
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}	
+	
 }
