@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -24,7 +25,12 @@ public class Agent extends User implements Serializable {
 	private Date startDate;
 	private Date endDate;
 	private double salary;
-
+	
+	@Column
+	private int nbrClaims;
+	@Column 
+	private String dispoClaim;
+	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "responsable")
 	private List<Claim> managingClaims;
 
@@ -66,6 +72,24 @@ public class Agent extends User implements Serializable {
 
 	public void setSalary(double salary) {
 		this.salary = salary;
+	}
+
+	
+	public int getNbrClaims() {
+		return nbrClaims;
+	}
+
+	public void setNbrClaims(int nbrClaims) {
+		this.nbrClaims = nbrClaims;
+	}
+
+	
+	public String getDispoClaim() {
+		return dispoClaim;
+	}
+
+	public void setDispoClaim(String dispoClaim) {
+		this.dispoClaim = dispoClaim;
 	}
 
 	@Override
