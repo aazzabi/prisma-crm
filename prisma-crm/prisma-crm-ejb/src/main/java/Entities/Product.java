@@ -1,23 +1,30 @@
 package Entities;
 
 import java.io.Serializable;
-
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
-
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import Enums.ProductType;
 
 @Entity
 @Table(name = "Product")
-public class Product implements Serializable{
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Product implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -25,43 +32,63 @@ public class Product implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
-	
+
 	@Column(name = "reference")
 	private String reference;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column(name = "description")
 	private String description;
-	
+
+	@Column(name = "type")
+	@Enumerated(EnumType.STRING)
+	private ProductType type;
+
+	@Column(name = "guarantee")
+	private int guarantee;
+
+	@Column(name = "price")
+	private double price;
+
 	@ManyToOne(cascade = CascadeType.ALL)
-	ProductCategory productCategory;
-	
+	Agent agent;
+
+	@OneToMany(mappedBy = "product")
+	private List<Stock> stockList = new ArrayList<>();
+
+	@OneToMany(mappedBy = "tariff")
+	private List<TarifProduct> tafifProductList = new ArrayList<>();
+
 	public Product() {
 		super();
 	}
 
-	public Product(int id, String reference, String name, String description, ProductCategory productCategory) {
+	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
+			double price, Agent agent) {
 		super();
 		this.id = id;
 		this.reference = reference;
 		this.name = name;
 		this.description = description;
-		this.productCategory = productCategory;
+		this.type = type;
+		this.guarantee = guarantee;
+		this.price = price;
+		this.agent = agent;
 	}
-	
-	
 
-	public Product(String reference, String name, String description, ProductCategory productCategory) {
+	public Product(String reference, String name, String description, ProductType type, int guarantee, double price,
+			Agent agent) {
 		super();
 		this.reference = reference;
 		this.name = name;
 		this.description = description;
-		this.productCategory = productCategory;
+		this.type = type;
+		this.guarantee = guarantee;
+		this.price = price;
+		this.agent = agent;
 	}
-
-
 
 	public int getId() {
 		return id;
@@ -95,19 +122,67 @@ public class Product implements Serializable{
 		this.description = description;
 	}
 
-	public ProductCategory getProductCategory() {
-		return productCategory;
+	public ProductType getType() {
+		return type;
 	}
 
-	public void setProductCategory(ProductCategory productCategory) {
-		this.productCategory = productCategory;
+	public void setType(ProductType type) {
+		this.type = type;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public int getGuarantee() {
+		return guarantee;
 	}
 
+	public void setGuarantee(int guarantee) {
+		this.guarantee = guarantee;
+	}
 
+	public double getPrice() {
+		return price;
+	}
 
-	
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public List<TarifProduct> getTarifProductList() {
+		return tafifProductList;
+	}
+
+	public void setTarifProductList(List<TarifProduct> tafifProductList) {
+		this.tafifProductList = tafifProductList;
+	}
+
+	public List<Stock> getStockList() {
+		return stockList;
+	}
+
+	public void setStockList(List<Stock> stockList) {
+		this.stockList = stockList;
+	}
+
+	public List<TarifProduct> getTafifProductList() {
+		return tafifProductList;
+	}
+
+	public void setTafifProductList(List<TarifProduct> tafifProductList) {
+		this.tafifProductList = tafifProductList;
+	}
+
+	public Agent getAgent() {
+		return agent;
+	}
+
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", reference=" + reference + ", name=" + name + ", description=" + description
+				+ ", type=" + type + ", guarantee=" + guarantee + ", price=" + price + ", stockList=" + stockList
+				+ ", tafifProductList=" + tafifProductList + "]";
+	}
+
 }

@@ -1,12 +1,17 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -23,29 +28,56 @@ public class Store implements Serializable{
 	@Column(name = "name")
 	private String name;
 	
-	@Column(name = "address")
-	private String address;
+	@Column(name = "addresStr")
+	private String addresStr;
 	
 	@Column(name = "telephone")
 	private String telephone;
+	
+	@ManyToOne
+	private Address address;
+	
+	@OneToMany(mappedBy="store")
+	private List<Stock> stockList = new ArrayList<>();
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy="store")
+	private List<StoreHours> storeHoursList = new ArrayList<>();
+
 
 	public Store() {
 		super();
 	}
 
-	public Store(String name, String address, String telephone) {
+	public Store(String name, String addresStr, String telephone) {
 		super();
 		this.name = name;
-		this.address = address;
+		this.addresStr = addresStr;
 		this.telephone = telephone;
 	}
-
-	public Store(int id, String name, String address, String telephone) {
+	
+	public Store(int id, String name, String addresStr, String telephone) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.address = address;
+		this.addresStr = addresStr;
 		this.telephone = telephone;
+	}
+
+	public Store(int id, String name, String addresStr, String telephone, Address address) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.addresStr = addresStr;
+		this.telephone = telephone;
+		this.address = address;
+	}
+
+	public Store(String name, String addresStr, String telephone, Address address) {
+		super();
+		this.name = name;
+		this.addresStr = addresStr;
+		this.telephone = telephone;
+		this.address = address;
 	}
 
 	public int getId() {
@@ -64,12 +96,12 @@ public class Store implements Serializable{
 		this.name = name;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getAddresStr() {
+		return addresStr;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setAddresStr(String addresStr) {
+		this.addresStr = addresStr;
 	}
 
 	public String getTelephone() {
@@ -80,11 +112,23 @@ public class Store implements Serializable{
 		this.telephone = telephone;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public List<Stock> getStockList() {
+		return stockList;
 	}
-	
-	
+
+	public void setStockList(List<Stock> stockList) {
+		this.stockList = stockList;
+	}
+
+	public List<StoreHours> getStoreHoursList() {
+		return storeHoursList;
+	}
+
+	public void setStoreHoursList(List<StoreHours> storeHoursList) {
+		this.storeHoursList = storeHoursList;
+	}
+
+
 	
 	
 	
