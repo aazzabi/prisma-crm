@@ -34,66 +34,52 @@ public class Claim implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	//@JsonProperty("id")
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
 
 	@Column
-	//@JsonProperty("title")
 	private String title;
 
 	@Column
-	//@JsonProperty("code")
 	private String code;
 
 	@Column
-	//@JsonProperty("description")
 	private String description;
 
 	@Enumerated(EnumType.STRING)
-	//@JsonProperty("priority")
 	private ClaimPriority priority;
 
 	@Enumerated(EnumType.STRING)
-	//@JsonProperty("status")
 	private ClaimStatus status;
 
 	@Enumerated(EnumType.STRING)
-	//@JsonProperty("type")
 	private ClaimType type;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	//@JsonProperty("createdAt")
 	private Date createdAt;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	///@JsonProperty("openedAt")
 	private Date openedAt;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	//@JsonProperty("resolvedAt")
 	private Date resolvedAt;
 
 	@ManyToOne
-	//@JsonProperty("createdBy")
-	//@JsonIgnore
+	@JsonIgnore
 	private Client createdBy;
 
-	//@JsonIgnore
+	@JsonIgnore
 	@OneToOne
-	//@JsonProperty("resolvedBy")
 	private Agent resolvedBy;
 
 	// Pluiseurs Réclamations peuvents étre traités par un seul agent
 	// de l'autre coté , un agent peut gerrer +eurs Réclamations
 	@ManyToOne
-	//@JsonProperty("responsable")
-	//@JsonIgnore
 	private Agent responsable;
 
-	//@JsonIgnore
-	@OneToMany(mappedBy = "claim", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@JsonIgnore
+	@OneToMany(mappedBy = "claim", cascade=CascadeType.REMOVE, fetch=FetchType.EAGER)
 	private List<NoteClaim> notes;
 
 	

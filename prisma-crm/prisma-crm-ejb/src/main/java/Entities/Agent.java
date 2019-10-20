@@ -10,10 +10,11 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import Enums.Role;
+import Enums.*;
 
 @Entity
 @DiscriminatorValue("Agent")
@@ -31,8 +32,8 @@ public class Agent extends User implements Serializable {
 	@Column 
 	private String dispoClaim;
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "responsable")
-	private List<Claim> managingClaims;
+	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "responsable", fetch= FetchType.EAGER)
+	//private List<Claim> managingClaims;
 
 	public Role getRoleAgent() {
 		return roleAgent;
@@ -136,7 +137,7 @@ public class Agent extends User implements Serializable {
 			return false;
 		return true;
 	}
-
+/*
 	public List<Claim> getManagingClaims() {
 		return managingClaims;
 	}
@@ -145,6 +146,6 @@ public class Agent extends User implements Serializable {
 		this.managingClaims = managingClaims;
 	}
 	
-	
+*/	
 
 }
