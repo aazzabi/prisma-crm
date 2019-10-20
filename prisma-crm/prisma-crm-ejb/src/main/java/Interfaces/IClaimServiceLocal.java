@@ -8,6 +8,7 @@ import javax.xml.ws.Response;
 import Entities.Agent;
 import Entities.Claim;
 import Entities.Client;
+import Entities.NoteClaim;
 import Entities.User;
 import Enums.ClaimPriority;
 import Enums.ClaimStatus;
@@ -22,25 +23,30 @@ public interface IClaimServiceLocal {
 	public Claim getById(int id);
 	public Claim getByCode(String code);
 	
-	public void editClaim(Claim c);	
+	public Claim editClaim(Claim c);	
 	public void changeStatus(Claim c, ClaimStatus status);
 	public void changePriority(Claim c, ClaimPriority priority);
 	
 	public void deleteClaim(Claim c);	
-	public void deleteClaimById(int id);	
+	public void deleteNotesByClaimId(int id);	
+	
+	public int deleteClaimById(int id);	
 	public void deleteClaimByClient(Client c);	
 	
 	public List<Claim> getClaimsByClient(Client u);
 	public List<Claim> getClaimsByResponsable(Agent a);
 	public List<Claim> getClaimsResolvedBy(Agent a);
+	public List<NoteClaim> getNotesByClaimId(int id);
 	
 	public List<Claim> getByPrioirty(ClaimPriority priority);
 	public List<Claim> getByStatus(ClaimStatus status);
 	public List<Claim> getByType(ClaimType type);
 	public Agent findAnAgentFreeAndActif() ;
 	public void affectClaimToAgent(Claim c, Agent a);
-	
+
+	/*
 	public String claimToJSON(Claim c);
 	public String getAllClaimJSON(List<Claim> listC);
+	*/
 	
 }
