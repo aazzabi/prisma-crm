@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+
 import Enums.*;
 
 @Entity
@@ -29,7 +30,7 @@ public class NoteClaim implements Serializable {
 	@Column
 	private String description;
 
-	@OneToMany
+	@ManyToOne
 	private User createdBy;
 	
 	@Temporal(TemporalType.TIMESTAMP)
