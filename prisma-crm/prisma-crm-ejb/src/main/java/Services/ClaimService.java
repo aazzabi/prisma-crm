@@ -54,35 +54,17 @@ public class ClaimService implements IClaimServiceLocal, IClaimServiceRemote {
 
 	@Override
 	public Claim getByCode(String code) {
-		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.code=:cd", Claim.class).setParameter("cd", code);
-		Claim c = query.getSingleResult();
+		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.code=:cd ORDER BY c.id", Claim.class)
+				.setParameter("cd", code);
+		Claim c = query.getResultList().get(0);
 		System.out.println(c);
 		return c;
 	}
 
 	@Override
-	public Claim editClaim(Claim c) {
-		Claim newC = em.find(Claim.class, c.getId());
-		newC.setCode(c.getCode());
-		newC.setCreatedAt(c.getCreatedAt());
-		newC.setCreatedBy(c.getCreatedBy());
-		newC.setDescription(c.getDescription());
-		newC.setNotes(c.getNotes());
-		newC.setOpenedAt(c.getOpenedAt());
-		newC.setResolvedAt(c.getResolvedAt());
-		newC.setResolvedBy(c.getResolvedBy());
-		newC.setPriority(c.getPriority());
-		newC.setResponsable(c.getResponsable());
-		newC.setStatus(c.getStatus());
-		newC.setTitle(c.getTitle());
-		newC.setType(c.getType());
-		em.merge(newC);
-		return newC;
-	}
-
-	@Override
 	public void changeStatus(Claim c, ClaimStatus status) {
 		c.setStatus(status);
+		em.merge(c);
 	}
 
 	@Override
@@ -205,19 +187,10 @@ public class ClaimService implements IClaimServiceLocal, IClaimServiceRemote {
 		a.setDispoClaim("indisponible");
 	}
 
-// -----------------------------------------------------------------------------
-// --------------------------Parsing--JSON--------------------------------------
-// -----------------------------------------------------------------------------
-	/*
-	 * @Override public String claimToJSON(Claim c) { String test=""; ObjectMapper
-	 * mapper = new ObjectMapper(); ObjectNode main = mapper.createObjectNode(); try
-	 * { test=mapper.writeValueAsString(c); } catch (JsonProcessingException e) { //
-	 * TODO Auto-generated catch block e.printStackTrace(); } return test; }
-	 * 
-	 * @Override public String getAllClaimJSON(List<Claim> listC) { String test="";
-	 * ObjectMapper mapper = new ObjectMapper(); ObjectNode main =
-	 * mapper.createObjectNode(); try { test=mapper.writeValueAsString(listC); }
-	 * catch (JsonProcessingException e) { e.printStackTrace(); } return test; }
-	 */
 
+	@Override
+	public Object merge(Object o) {
+		 em.merge(o);
+		 return o ;
+	}
 }

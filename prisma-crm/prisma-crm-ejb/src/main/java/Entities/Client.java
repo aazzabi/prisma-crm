@@ -36,14 +36,10 @@ public class Client extends User implements Serializable {
 	private String entrepriseName;
 	@Column(name = "entreprisePosition", nullable = true, length = 255)
 	private String entreprisePosition;
-	
-//	@OneToMany(cascade=CascadeType.ALL, mappedBy="createdBy", fetch=FetchType.EAGER)
-//	private List<Claim> claims;
-	
+
 	
 	public Client() {
 		super();
-//		this.claims = new ArrayList<Claim>();
 		this.clientOrders = new TreeSet<ClientOrder>();
 	}
 
@@ -94,15 +90,7 @@ public class Client extends User implements Serializable {
 	public void setClientType(ClientType clientType) {
 		this.clientType = clientType;
 	}
-/*
-	public List<Claim> getClaims() {
-		return claims;
-	}
 
-	public void setClaims(List<Claim> claims) {
-		this.claims = claims;
-	}
-*/
 	@Override
 	public int hashCode() {
 		final int prime = 31;

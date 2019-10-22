@@ -6,6 +6,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -24,7 +25,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import Entities.Agent;
+import Entities.Client;
 import Entities.Claim;
+import Enums.ClaimStatus;
 import Interfaces.IClaimServiceLocal;
 import Services.ClaimService;
 import Entities.Claim;
@@ -84,17 +88,39 @@ public class ClaimResource {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 		return Response.status(Status.CREATED).entity(claim).build();
+	}	
+	
+	@PUT
+	@Path("/editClaim/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateClaim(@PathParam(value = "id") int id, Claim c) {
+		Claim cl = cs.getById(id);		
+		Claim injecter = c;
+		injecter.setId(cl.getId());		
+		if (injecter.getStatus()==null) {injecter.setStatus(cl.getStatus());}
+		if (injecter.getPriority()==null) {injecter.setPriority(cl.getPriority());}
+		if (injecter.getType()==null) {injecter.setType(cl.getType());}
+		if (injecter.getResponsable()==null) {injecter.setResponsable(cl.getResponsable());}
+		if (injecter.getResolvedAt()==null) {injecter.setResolvedAt(cl.getResolvedAt());}
+		if (injecter.getCode()==null) {injecter.setCode(cl.getCode());}
+		if (injecter.getTitle()==null) {injecter.setTitle(cl.getTitle());}
+		if (injecter.getOpenedAt()==null) {injecter.setOpenedAt(cl.getOpenedAt());}
+		if (injecter.getCreatedBy()==null) {injecter.setCreatedBy(cl.getCreatedBy());}
+		if (injecter.getCreatedAt()==null) {injecter.setCreatedAt(cl.getCreatedAt());}
+		if (injecter.getResolvedBy()==null) {injecter.setResolvedBy(cl.getResolvedBy());}
+		if (injecter.getDescription()==null) {injecter.setDescription(cl.getDescription());}
+		
+		Claim newC = (Claim) cs.merge(injecter);
+		return Response.status(Status.OK).entity(newC).build();
 	}
 	
 	@PUT
-	@Path("/edit/{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateClaim(@PathParam(value = "id") int id) {
-		Claim oldClaim = cs.getById(id);
-		Claim newC = cs.editClaim(oldClaim);
-		newC.toString();
-		return Response.status(Status.OK).entity(newC).build();
+	@Path("/archiverCalim/{id}")
+	public Response archiverCalim(@PathParam(value = "id") int id){
+		Claim newC = cs.getById(id);
+		cs.changeStatus(newC, ClaimStatus.FERME_SANS_SOLUTION);
+		return Response.status(Status.OK).build();
 	}
 
 	@DELETE
@@ -103,5 +129,7 @@ public class ClaimResource {
 	public Response deleteClaim(@PathParam(value = "id") int id) {
 		return Response.status(Status.OK).entity(cs.deleteClaimById(id)).build();
 	}
+	
+	
 
 }

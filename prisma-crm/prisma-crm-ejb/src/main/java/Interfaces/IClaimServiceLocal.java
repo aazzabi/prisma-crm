@@ -23,7 +23,7 @@ public interface IClaimServiceLocal {
 	public Claim getById(int id);
 	public Claim getByCode(String code);
 	
-	public Claim editClaim(Claim c);	
+	public Object merge(Object o);
 	public void changeStatus(Claim c, ClaimStatus status);
 	public void changePriority(Claim c, ClaimPriority priority);
 	
@@ -43,10 +43,5 @@ public interface IClaimServiceLocal {
 	public List<Claim> getByType(ClaimType type);
 	public Agent findAnAgentFreeAndActif() ;
 	public void affectClaimToAgent(Claim c, Agent a);
-
-	/*
-	public String claimToJSON(Claim c);
-	public String getAllClaimJSON(List<Claim> listC);
-	*/
 	
 }
