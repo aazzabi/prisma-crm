@@ -3,10 +3,12 @@ package Entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,48 +39,17 @@ public class Store implements Serializable{
 	@ManyToOne
 	private Address address;
 	
-	@OneToMany(mappedBy="store")
-	private List<Stock> stockList = new ArrayList<>();
+	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
+	private Set<Stock> stockList ;
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy="store")
-	private List<StoreHours> storeHoursList = new ArrayList<>();
+	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
+	private Set<StoreHours> storeHoursList;
 
 
 	public Store() {
 		super();
 	}
 
-	public Store(String name, String addresStr, String telephone) {
-		super();
-		this.name = name;
-		this.addresStr = addresStr;
-		this.telephone = telephone;
-	}
-	
-	public Store(int id, String name, String addresStr, String telephone) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.addresStr = addresStr;
-		this.telephone = telephone;
-	}
-
-	public Store(int id, String name, String addresStr, String telephone, Address address) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.addresStr = addresStr;
-		this.telephone = telephone;
-		this.address = address;
-	}
-
-	public Store(String name, String addresStr, String telephone, Address address) {
-		super();
-		this.name = name;
-		this.addresStr = addresStr;
-		this.telephone = telephone;
-		this.address = address;
-	}
 
 	public int getId() {
 		return id;
@@ -112,28 +83,23 @@ public class Store implements Serializable{
 		this.telephone = telephone;
 	}
 
-	public List<Stock> getStockList() {
+	public Set<Stock> getStockList() {
 		return stockList;
 	}
 
-	public void setStockList(List<Stock> stockList) {
+	public void setStockList(Set<Stock> stockList) {
 		this.stockList = stockList;
 	}
 
-	public List<StoreHours> getStoreHoursList() {
+	public Set<StoreHours> getStoreHoursList() {
 		return storeHoursList;
 	}
 
-	public void setStoreHoursList(List<StoreHours> storeHoursList) {
+	public void setStoreHoursList(Set<StoreHours> storeHoursList) {
 		this.storeHoursList = storeHoursList;
 	}
 
 
-	
-	
-	
-	
-	
 	
 	
 }

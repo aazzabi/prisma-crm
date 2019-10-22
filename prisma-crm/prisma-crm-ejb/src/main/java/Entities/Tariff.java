@@ -3,11 +3,11 @@ package Entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,24 +33,11 @@ public class Tariff  implements Serializable {
 	private double priceT;
 	
 	
-	@OneToMany(mappedBy="tariff")
-	private List<TarifProduct> tafifProductList = new ArrayList<TarifProduct>();
+	@OneToMany(mappedBy="tariff",fetch=FetchType.EAGER)
+	private Set<TarifProduct> tafifProductList ;
 	
 	public Tariff() {
 		super();
-	}
-
-	public Tariff(int cnxSpeed, double priceT) {
-		super();
-		this.cnxSpeed = cnxSpeed;
-		this.priceT = priceT;
-	}
-
-	public Tariff(int id, int cnxSpeed, double priceT) {
-		super();
-		this.id = id;
-		this.cnxSpeed = cnxSpeed;
-		this.priceT = priceT;
 	}
 
 	public int getId() {
@@ -77,15 +64,14 @@ public class Tariff  implements Serializable {
 		this.priceT = priceT;
 	}
 
-	public List<TarifProduct> getTarifProductList() {
+	public Set<TarifProduct> getTarifProductList() {
 		return tafifProductList;
 	}
 
-	public void setTarifProductList(List<TarifProduct> tafifProductList) {
+	public void setTarifProductList(Set<TarifProduct> tafifProductList) {
 		this.tafifProductList = tafifProductList;
 	}
-	
 
-	
+
 
 }

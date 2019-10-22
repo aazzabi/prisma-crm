@@ -23,28 +23,17 @@ public class TarifProduct implements Serializable{
 	private int id;
 	
 	@ManyToOne
-	@JoinColumn(name="product_id", referencedColumnName="id", insertable=false, updatable=false)
+	@JoinColumn(name="product_id", referencedColumnName="id")
 	private Product product;
 
 	
 	@ManyToOne
-	@JoinColumn(name="tarif_id", referencedColumnName="id", insertable=false, updatable=false)
+	@JoinColumn(name="tarif_id", referencedColumnName="id")
 	private Tariff tariff;
 	
 	
 	public TarifProduct() {
 		super();
-	}
-	public TarifProduct(int id, Product product, Tariff tariff) {
-		super();
-		this.id = id;
-		this.product = product;
-		this.tariff = tariff;
-	}
-	public TarifProduct(Product product, Tariff tariff) {
-		super();
-		this.product = product;
-		this.tariff = tariff;
 	}
 
 	public int getId() {

@@ -27,12 +27,12 @@ public class Stock implements Serializable{
 
 
 	@ManyToOne
-	@JoinColumn(name="product_id", referencedColumnName="id", insertable=false, updatable=false)
+	@JoinColumn(name="product_id", referencedColumnName="id")
 	private Product product;
 
 
 	@ManyToOne
-	@JoinColumn(name="store_id", referencedColumnName="id", insertable=false, updatable=false)
+	@JoinColumn(name="store_id", referencedColumnName="id")
 	private Store store;
 
 
@@ -40,20 +40,6 @@ public class Stock implements Serializable{
 		super();
 	}
 
-	public Stock(int id, Product product, Store store, int quantity) {
-		super();
-		this.id = id;
-		this.product = product;
-		this.store = store;
-		this.quantity = quantity;
-	}
-
-	public Stock(Product product, Store store, int quantity) {
-		super();
-		this.product = product;
-		this.store = store;
-		this.quantity = quantity;
-	}
 
 	public int getQuantity() {
 		return quantity;
@@ -61,9 +47,7 @@ public class Stock implements Serializable{
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+
 
 	public int getId() {
 		return id;
@@ -88,8 +72,6 @@ public class Stock implements Serializable{
 	}
 
 
-
-	
 
 
 

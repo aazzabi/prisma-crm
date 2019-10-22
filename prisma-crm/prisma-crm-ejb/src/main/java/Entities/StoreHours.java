@@ -38,20 +38,6 @@ public class StoreHours implements Serializable{
 		super();
 	}
 
-	public StoreHours(String day, Timestamp openAt, Timestamp closeAt) {
-		super();
-		this.day = day;
-		this.openAt = openAt;
-		this.closeAt = closeAt;
-	}
-
-	public StoreHours(int id, String day, Timestamp openAt, Timestamp closeAt) {
-		super();
-		this.id = id;
-		this.day = day;
-		this.openAt = openAt;
-		this.closeAt = closeAt;
-	}
 
 	public int getId() {
 		return id;

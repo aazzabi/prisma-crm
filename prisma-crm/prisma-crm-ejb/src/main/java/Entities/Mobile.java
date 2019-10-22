@@ -43,19 +43,6 @@ public class Mobile extends Product implements Serializable{
 	}
 	
 
-	public Mobile(String brand, String memory, String resolution, String ram, String system,
-			String camera, String imageUrl) {
-		super();
-		this.brand = brand;
-		this.memory = memory;
-		this.resolution = resolution;
-		this.ram = ram;
-		this.system = system;
-		this.camera = camera;
-		this.imageUrl = imageUrl;
-	}
-
-
 	public String getBrand() {
 		return brand;
 	}
@@ -113,20 +100,6 @@ public class Mobile extends Product implements Serializable{
 		this.imageUrl = imageUrl;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	@Override
-	public String toString() {
-		return "Mobile [brand=" + brand  + ", memory=" + memory + ", resolution=" + resolution
-				+ ", RAM=" + ram + ", system=" + system + ", camera=" + camera + ", imageUrl=" + imageUrl + "]";
-	}
-	
-	
-	
-	
-	
 	
 	
 	
