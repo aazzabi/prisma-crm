@@ -66,21 +66,19 @@ public class Claim implements Serializable {
 	private Date resolvedAt;
 
 	@ManyToOne
-	@JsonIgnore
 	private Client createdBy;
 
-	@JsonIgnore
 	@OneToOne
-	private Agent resolvedBy;
+	private Agent resolvedBy;//---Ok---
 
 	// Pluiseurs Réclamations peuvents étre traités par un seul agent
 	// de l'autre coté , un agent peut gerrer +eurs Réclamations
 	@ManyToOne
-	private Agent responsable;
+	private Agent responsable;//---Ok---
 
-	@JsonIgnore
+	//@JsonIgnore
 	@OneToMany(mappedBy = "claim", cascade=CascadeType.REMOVE, fetch=FetchType.EAGER)
-	private List<NoteClaim> notes;
+	private List<NoteClaim> notes;//---Ok---
 
 	
 	
