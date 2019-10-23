@@ -235,6 +235,13 @@ public class User implements Serializable {
 		this.profileImage = profileImage;
 
 	}
+
+	public User(int id, String confirmationToken) {
+		super();
+		this.id = id;
+		this.confirmationToken = confirmationToken;
+	}
+	
 	
 
 

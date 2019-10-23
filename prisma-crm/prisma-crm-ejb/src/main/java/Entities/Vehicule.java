@@ -2,13 +2,14 @@ package Entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import Enums.FuelType;
-
+@Entity
 public class Vehicule implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.TABLE)
@@ -49,11 +50,7 @@ public class Vehicule implements Serializable {
 	public void setLocation(float location) {
 		this.location = location;
 	}
-	@Override
-	public String toString() {
-		return "Vehicule [id=" + id + ", odometer=" + odometer + ", fuelType=" + fuelType + ", driver=" + driver
-				+ ", location=" + location + "]";
-	}
+
 	public Vehicule(int id, float odometer, FuelType fuelType, Agent driver, float location) {
 		super();
 		this.id = id;
@@ -62,8 +59,28 @@ public class Vehicule implements Serializable {
 		this.driver = driver;
 		this.location = location;
 	}
+	
+	public Vehicule(int id, String plate, float odometer, FuelType fuelType, float location) {
+		super();
+		this.id = id;
+		this.plate = plate;
+		this.odometer = odometer;
+		this.fuelType = fuelType;
+		this.location = location;
+	}
+	@Override
+	public String toString() {
+		return "Vehicule [id=" + id + ", plate=" + plate + ", odometer=" + odometer + ", fuelType=" + fuelType
+				+ ", driver=" + driver + ", location=" + location + "]";
+	}
 	public Vehicule() {
 		super();
+	}
+	public String getPlate() {
+		return plate;
+	}
+	public void setPlate(String plate) {
+		this.plate = plate;
 	}
 	
 

@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import Enums.RepairStatus;
@@ -19,9 +20,14 @@ public class RepairRequest implements Serializable {
 	private Date warentyExp; 
 	@ManyToOne
 	private Client client;
+//	@ManyToOne
+//    @JoinColumn(name = "product_id")
+	private String product;
 	private RepairStatus statusRep;
 	private Date createdDate;
 	private String notes;
+	private Date endDate;
+	
 	public int getId() {
 		return id;
 	}
@@ -71,11 +77,25 @@ public class RepairRequest implements Serializable {
 	public RepairRequest() {
 		super();
 	}
+	public String getProduct() {
+		return product;
+	}
+	public void setProduct(String product) {
+		this.product = product;
+	}
+	public Date getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 	@Override
 	public String toString() {
-		return "RepairRequest [id=" + id + ", warentyExp=" + warentyExp + ", client=" + client + ", statusRep="
-				+ statusRep + ", createdDate=" + createdDate + ", notes=" + notes + "]";
+		return "RepairRequest [id=" + id + ", warentyExp=" + warentyExp + ", client=" + client + ", product=" + product
+				+ ", statusRep=" + statusRep + ", createdDate=" + createdDate + ", notes=" + notes + ", endDate="
+				+ endDate + "]";
 	}
+
 
 
 	

@@ -34,13 +34,7 @@ public class UserService implements IUserLocal,IUserRemote {
 			String activationHashedCode = MD5Hash.getMD5Hash(user.getPhoneNumber() + user.getEmail());
 			user.setConfirmationToken(activationHashedCode);
 			user.setCreatedAt(new Date());
-			// Emailer.sendEmail("Eventify Account Activation",
-			// "http://localhost:18080/Eventify-web/rest/users/confirm/"+activationHashedCode,
-			// user.getEmail());
 			entityManager.persist(user);
-			// Emailer.SendEmail(user.getEmail(), "Eventify Account Activation",
-			// EmailTemplate.activiationTemplate("http://localhost:18080/Eventify-web/rest/users/confirm/"+activationHashedCode));
-
 		}
 
 		@Override
@@ -92,7 +86,6 @@ public class UserService implements IUserLocal,IUserRemote {
 
 		@Override
 		public void deleteUser(int id) {
-			// entityManager.remove(findUserById(id));
 			entityManager.remove(entityManager.find(User.class, id));
 
 		}
