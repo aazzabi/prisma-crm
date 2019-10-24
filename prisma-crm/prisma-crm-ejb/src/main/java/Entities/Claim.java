@@ -57,12 +57,15 @@ public class Claim implements Serializable {
 	private ClaimType type;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date createdAt;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date openedAt;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date resolvedAt;
 
 	@ManyToOne
@@ -83,9 +86,8 @@ public class Claim implements Serializable {
 	
 	
 	public Claim() {
-		this.code = "CODE"+this.id;
 		this.status = ClaimStatus.EN_ATTENTE;
-		this.createdAt = new Date();
+		this.createdAt = new Date(System.currentTimeMillis());
 		this.notes = new ArrayList<NoteClaim>();
 	}
 
