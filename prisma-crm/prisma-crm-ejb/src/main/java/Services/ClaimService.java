@@ -155,9 +155,9 @@ public class ClaimService implements IClaimServiceRemote {
 		Agent a;
 		Role type = null;
 		
-		if (t==ClaimType.FINANCIERE) { type = Role.FINANCIERE;}
-		else if (t==ClaimType.TECHNIQUE) { type = Role.TECHNIQUE;}
-		else if (t==ClaimType.RELATIONNELLE) { type = Role.RELATIONNELLE;}
+		if (t==ClaimType.FINANCIERE) { type = Role.financial;}
+		else if (t==ClaimType.TECHNIQUE) { type = Role.technical;}
+		else if (t==ClaimType.RELATIONNELLE) { type = Role.relational;}
 		
 		String qlString = "SELECT a from Agent a where a.roleAgent=:t and a.dispoClaim=:d ORDER BY a.nbrClaims";
 		Query query = em.createQuery(qlString, Agent.class)
