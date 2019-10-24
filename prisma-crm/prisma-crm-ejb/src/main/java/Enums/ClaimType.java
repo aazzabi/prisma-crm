@@ -1,5 +1,7 @@
 package Enums;
 
-public enum ClaimType {
-	TECHNIQUE, FINANCIERE, RELATIONNELLE
+import java.io.Serializable;
+
+public enum ClaimType  implements Serializable {
+	TECHNIQUE, FINANCIERE, RELATIONNELLE;
 }

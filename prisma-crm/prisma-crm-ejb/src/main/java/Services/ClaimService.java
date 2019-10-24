@@ -7,6 +7,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 /*
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,12 +21,12 @@ import Entities.NoteClaim;
 import Enums.ClaimPriority;
 import Enums.ClaimStatus;
 import Enums.ClaimType;
-import Interfaces.IClaimServiceLocal;
+import Enums.Role;
 import Interfaces.IClaimServiceRemote;
 
 @Stateless
 @LocalBean
-public class ClaimService implements IClaimServiceLocal, IClaimServiceRemote {
+public class ClaimService implements IClaimServiceRemote {
 	@PersistenceContext(unitName = "prisma-crm-ejb")
 	EntityManager em;
 
@@ -33,9 +34,11 @@ public class ClaimService implements IClaimServiceLocal, IClaimServiceRemote {
 	public int addClaim(Claim c) {
 		c.toString();
 		c.setCreatedBy(em.find(Client.class, 2));
-		c.setResponsable(this.findAnAgentFreeAndActif());
+		System.out.print(c.getType());
+		c.setResponsable(this.findAnAgentFreeAndActif(c.getType()));
 		c.setResolvedBy(null);
 		em.persist(c);
+		c.setCode("CODE"+c.getId());
 		return c.getId();
 	}
 
@@ -64,6 +67,12 @@ public class ClaimService implements IClaimServiceLocal, IClaimServiceRemote {
 	@Override
 	public void changeStatus(Claim c, ClaimStatus status) {
 		c.setStatus(status);
+		if (status == ClaimStatus.RESOLU) {
+			//c.getResolvedBy();
+			//get agent connecté 
+			//agent.setNbrClaims(a.getNbrClaims() + 1);
+
+		}
 		em.merge(c);
 	}
 
@@ -91,15 +100,6 @@ public class ClaimService implements IClaimServiceLocal, IClaimServiceRemote {
 		em.remove(em.find(Claim.class, c));
 	}
 
-	@Override
-	public void deleteNotesByClaimId(int id) {
-		List<NoteClaim> noteClaims = this.getNotesByClaimId(id);
-		if (noteClaims.size() != 0) {
-			for (NoteClaim nc : noteClaims) {
-				em.remove(nc);
-			}
-		}
-	}
 
 	@Override
 	public List<Claim> getClaimsByClient(Client c) {
@@ -126,16 +126,16 @@ public class ClaimService implements IClaimServiceLocal, IClaimServiceRemote {
 	}
 
 	@Override
-	public List<Claim> getByPrioirty(ClaimPriority p) {
-		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.priority=:a", Claim.class);
+	public List<Claim> getByPrioirty(ClaimPriority priority) {
+		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.priority=:priority", Claim.class).setParameter("priority", priority);
 		List<Claim> cf = query.getResultList();
 		System.out.println(cf);
 		return cf;
 	}
 
 	@Override
-	public List<Claim> getByStatus(ClaimStatus s) {
-		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.status=:s", Claim.class);
+	public List<Claim> getByStatus(ClaimStatus status) {
+		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.status=:s", Claim.class).setParameter("status", status);
 		List<Claim> cf = query.getResultList();
 		System.out.println(cf);
 		return cf;
@@ -143,39 +143,37 @@ public class ClaimService implements IClaimServiceLocal, IClaimServiceRemote {
 
 	@Override
 	public List<Claim> getByType(ClaimType type) {
-		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.type=:type", Claim.class);
+		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.type=:type", Claim.class).setParameter("type", type);
 		List<Claim> cf = query.getResultList();
 		System.out.println(cf);
 		return cf;
 	}
 
-	@Override
-	public List<NoteClaim> getNotesByClaimId(int id) {
-		Claim c = em.find(Claim.class, id);
-		TypedQuery<NoteClaim> query = em.createQuery("SELECT n from NoteClaim n where n.claim=:claim", NoteClaim.class)
-				.setParameter("claim", c);
-		List<NoteClaim> cf = query.getResultList();
-		System.out.println(cf);
-		return cf;
-	}
 
-	// ne9set'ha ayant la meme specialité que le domaine de la reclamation
 	@Override
-	public Agent findAnAgentFreeAndActif() {
+	public Agent findAnAgentFreeAndActif(ClaimType t) {
 		Agent a;
-		TypedQuery<Agent> queryDispo = em
-				.createQuery("SELECT a from Agent a where a.dispoClaim =:d ORDER BY a.nbrClaims", Agent.class)
-				.setParameter("d", "disponible");
-		if (queryDispo.getSingleResult() != null) {
-			a = queryDispo.getSingleResult();
-			a.setNbrClaims(a.getNbrClaims() + 1);
+		Role type = null;
+		
+		if (t==ClaimType.FINANCIERE) { type = Role.FINANCIERE;}
+		else if (t==ClaimType.TECHNIQUE) { type = Role.TECHNIQUE;}
+		else if (t==ClaimType.RELATIONNELLE) { type = Role.RELATIONNELLE;}
+		
+		String qlString = "SELECT a from Agent a where a.roleAgent=:t and a.dispoClaim=:d ORDER BY a.nbrClaims";
+		Query query = em.createQuery(qlString, Agent.class)
+				.setParameter("d","disponible")					
+				.setParameter("t", type);
+		List<Agent> agents = query.getResultList();
+		System.out.println("160 - CLAIM TYPE "+t);
+	
+		if (agents.size() == 1) {
+			a = (Agent)query.getResultList().get(0);
 			a.setDispoClaim("indisponible");
+			System.out.println(a.getRoleAgent());
 		} else { // on prend l'agent ayant le moins de Réclamation traités
-			TypedQuery<Agent> query = em.createQuery("SELECT a.* from Agent a ORDER BY nbrClaims DESC", Agent.class)
-					.setParameter("d", "disponible");
-			a = query.getSingleResult();
-			a.setNbrClaims(a.getNbrClaims() + 1);
-			a.setDispoClaim("indisponible");
+			TypedQuery<Agent> query2 = em.createQuery("SELECT a from Agent a WHERE a.roleAgent=:t ORDER BY nbrClaims DESC", Agent.class)
+					.setParameter("t", type);
+			a = query2.getResultList().get(0);
 		}
 		return a;
 	}
@@ -186,7 +184,6 @@ public class ClaimService implements IClaimServiceLocal, IClaimServiceRemote {
 		a.setNbrClaims(a.getNbrClaims() + 1);
 		a.setDispoClaim("indisponible");
 	}
-
 
 	@Override
 	public Object merge(Object o) {

@@ -27,10 +27,12 @@ import javax.ws.rs.core.Response.Status;
 
 import Entities.Agent;
 import Entities.Client;
+import Entities.NoteClaim;
 import Entities.Claim;
 import Enums.ClaimStatus;
-import Interfaces.IClaimServiceLocal;
+import Enums.ClaimType;
 import Services.ClaimService;
+import Services.NoteClaimService;
 import Entities.Claim;
 import javax.ejb.EJB;
 
@@ -39,20 +41,7 @@ public class ClaimResource {
 
 	@EJB
 	public static ClaimService cs = new ClaimService();
-	/*
-	 * @POST
-	 * 
-	 * @Path("new")
-	 * 
-	 * @Consumes(MediaType.APPLICATION_JSON)
-	 * 
-	 * @Produces(MediaType.APPLICATION_JSON) public Response addClaim(Claim c) {
-	 * return Response.status(Status.CREATED).entity(cs.addClaim(c)).build(); //if
-	 * (cs.addClaim(c) != 0) { // return
-	 * Response.status(Status.CREATED).entity(cs.addClaim(c)).build(); //} else { //
-	 * return Response.status(Status.BAD_REQUEST).build(); //} //return
-	 * Response.status(Status.CREATED).entity(CSL.clienttoJson(c)).build(); }
-	 */
+	public static NoteClaimService noteService = new NoteClaimService();
 
 	@POST
 	@Path("new")
@@ -60,7 +49,7 @@ public class ClaimResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addClaim(Claim c) {
 		c.setId(cs.addClaim(c));
-		return Response.status(Status.CREATED).entity(cs.addClaim(c)).build();
+		return Response.status(Status.CREATED).entity(c).build();
 	}
 
 	@GET
@@ -116,13 +105,13 @@ public class ClaimResource {
 	}
 	
 	@PUT
-	@Path("/archiverCalim/{id}")
+	@Path("/archiverClaim/{id}")
 	public Response archiverCalim(@PathParam(value = "id") int id){
 		Claim newC = cs.getById(id);
 		cs.changeStatus(newC, ClaimStatus.FERME_SANS_SOLUTION);
 		return Response.status(Status.OK).build();
 	}
-
+	
 	@DELETE
 	@Path("/delete/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -130,6 +119,13 @@ public class ClaimResource {
 		return Response.status(Status.OK).entity(cs.deleteClaimById(id)).build();
 	}
 	
-	
+	@GET
+	@Path("/type/{t}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getClaimByType(@PathParam(value = "t") ClaimType t) {
+		List<Claim> l = cs.getByType(t);
+		return Response.status(Status.OK).entity(l).build();
+		
+	}
 
 }
