@@ -31,9 +31,6 @@ public class Agent extends User implements Serializable {
 	private int nbrClaims;
 	@Column 
 	private String dispoClaim;
-	
-	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "responsable", fetch= FetchType.EAGER)
-	//private List<Claim> managingClaims;
 
 	public Role getRoleAgent() {
 		return roleAgent;
