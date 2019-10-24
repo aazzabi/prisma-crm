@@ -3,10 +3,12 @@ package Services;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.servlet.http.HttpSession;
 
 import Entities.User;
 import Enums.AccountState;
@@ -15,7 +17,7 @@ import Interfaces.IUserRemote;
 import Utils.AuthJWT;
 import Utils.MD5Hash;
 
-@Stateless
+@Stateful
 public class UserService implements IUserLocal,IUserRemote {
 
 	
@@ -91,7 +93,7 @@ public class UserService implements IUserLocal,IUserRemote {
 		}
 
 		@Override
-		public String loginUser(String email, String pwd) {
+		public User loginUser(String email, String pwd) {
 
 				String hashedPwd = MD5Hash.getMD5Hash(pwd);
 				Query query = entityManager.createQuery(
@@ -99,15 +101,10 @@ public class UserService implements IUserLocal,IUserRemote {
 								+ "FROM User u WHERE (u.email=:uname AND u.password=:upwd) ");
 				User userLogged = (User) query.setParameter("uname", email).setParameter("upwd", hashedPwd)
 						.getSingleResult();
-
 				String vf = AuthJWT.SignJWT("User", userLogged);
-				// AuthJWT.VerifyJWT(vf);
-
-				return vf;
+				AuthJWT.VerifyJWT(vf);
+				return userLogged;
 			
-
-
-
 		}
 
 		@Override

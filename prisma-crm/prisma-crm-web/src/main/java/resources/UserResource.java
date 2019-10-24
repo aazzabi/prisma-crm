@@ -4,11 +4,15 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -19,11 +23,16 @@ import Entities.Agent;
 import Entities.User;
 import Interfaces.IUserLocal;
 import utilities.Secured;
+import utilities.SessionUtils;
 
 @Path("users")
 @RequestScoped
 public class UserResource {
-
+    @Context 
+    HttpServletResponse response;
+    @Context
+    HttpServletRequest request;
+    
 	@EJB
 	IUserLocal userBusiness;
 
@@ -62,6 +71,7 @@ public class UserResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("All")
 	public List<User> findAllUsers() {
+        System.out.println("#######*************##"+ SessionUtils.USER_LAST_NAME+  "####************#######");
 
 		return userBusiness.findAllUsers();
 	}
@@ -130,7 +140,17 @@ public class UserResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("{email}/{pwd}")
 	public String loginUser(@PathParam("email") String email, @PathParam("pwd") String pwd) {
-		return userBusiness.loginUser(email, pwd);
+		User userLogged = userBusiness.loginUser(email, pwd);
+		 HttpSession session = request.getSession();
+         session.setAttribute(SessionUtils.Logg, userLogged);
+         session.setAttribute(SessionUtils.USER_EMAIL, email);
+         session.setAttribute(SessionUtils.IS_LOGGED_IN, true);
+         session.setAttribute(SessionUtils.USER_ID, userLogged.getId());
+         session.setAttribute(SessionUtils.USER_FIRST_NAME, userLogged.getFirstName());
+         session.setAttribute(SessionUtils.USER_LAST_NAME, userLogged.getLastName());
+         
+		return userLogged.getEmail();
+		
 	}
 	
 	@Secured

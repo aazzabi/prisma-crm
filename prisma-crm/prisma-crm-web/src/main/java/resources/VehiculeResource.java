@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -12,10 +15,15 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+
+import Entities.Agent;
+import Entities.User;
 import Entities.Vehicule;
 import Interfaces.IResourcesRemote;
 import utilities.Secured;
+import utilities.SessionUtils;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -23,6 +31,7 @@ import javax.ws.rs.core.Response.Status;
 @Path("Resources")
 @RequestScoped
 public class VehiculeResource {
+	private Agent user;
 
 	@EJB
 	IResourcesRemote resourcesRemote;
@@ -61,13 +70,19 @@ public class VehiculeResource {
 
 	}
 	
-	
+    @Context 
+    HttpServletResponse response;
+    @Context
+    HttpServletRequest request;
+	 HttpSession session = request.getSession(true);
+
 		@PUT
 	    @Path("update/{id}")
 	    public Response update(@PathParam("id") int id, Vehicule vehicule) {
-	        Vehicule x = resourcesRemote.getVehiculeById(id);
+            Vehicule x = resourcesRemote.getVehiculeById(id);
 	        x.setFuelType(vehicule.getFuelType());
-	        x.setDriver(vehicule.getDriver());
+	       // x.setDriver();
+	        System.out.println("#######*************##"+session.getAttribute("SessionUtils.USER_ID")+  "####************#######");
 	        x.setLocation(vehicule.getLocation());
 	        x.setOdometer(vehicule.getOdometer());
 	        x.setPlate(vehicule.getPlate());

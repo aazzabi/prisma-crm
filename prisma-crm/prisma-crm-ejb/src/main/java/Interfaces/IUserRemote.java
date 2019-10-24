@@ -14,7 +14,7 @@ public interface IUserRemote {
 	public List<User> findAllUsers();
 	public void updateUser(User user);
 	public void deleteUser(int id);
-	public String loginUser(String username, String pwd);
+	public User loginUser(String username, String pwd);
 	public boolean uploadProfileImage(String imgToUpload);
 	public boolean changePwd(User user, String oldPwd, String newPwd);
 }
