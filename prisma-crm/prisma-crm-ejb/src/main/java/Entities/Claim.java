@@ -59,10 +59,14 @@ public class Claim implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date createdAt;
-
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date openedAt;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private Date delegatedAt;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -74,8 +78,9 @@ public class Claim implements Serializable {
 	@OneToOne
 	private Agent resolvedBy;//---Ok---
 
-	// Pluiseurs Réclamations peuvents étre traités par un seul agent
-	// de l'autre coté , un agent peut gerrer +eurs Réclamations
+	@ManyToOne
+	private Agent firstResponsable;
+	
 	@ManyToOne
 	private Agent responsable;//---Ok---
 
@@ -217,12 +222,29 @@ public class Claim implements Serializable {
 		return resolvedAt;
 	}
 
+	public Date getDelegatedAt() {
+		return delegatedAt;
+	}
+
+	public void setDelegatedAt(Date delegatedAt) {
+		this.delegatedAt = delegatedAt;
+	}
+
+	public Agent getFirstResponsable() {
+		return firstResponsable;
+	}
+
+	public void setFirstResponsable(Agent firstResponsable) {
+		this.firstResponsable = firstResponsable;
+	}
+
 	@Override
 	public String toString() {
 		return "Claim [id=" + id + ", title=" + title + ", code=" + code + ", description=" + description
 				+ ", priority=" + priority + ", status=" + status + ", type=" + type + ", createdAt=" + createdAt
-				+ ", openedAt=" + openedAt + ", resolvedAt=" + resolvedAt + ", createdBy=" + createdBy + ", resolvedBy="
-				+ resolvedBy + ", responsable=" + responsable + ", notes=" + notes + "]";
+				+ ", openedAt=" + openedAt + ", delegatedAt=" + delegatedAt + ", resolvedAt=" + resolvedAt
+				+ ", createdBy=" + createdBy + ", resolvedBy=" + resolvedBy + ", firstResponsable=" + firstResponsable
+				+ ", responsable=" + responsable + ", notes=" + notes + "]";
 	}
 
 	

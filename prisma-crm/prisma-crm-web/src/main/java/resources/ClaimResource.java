@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -124,7 +125,12 @@ public class ClaimResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getClaimByType(@PathParam(value = "t") ClaimType t) {
 		List<Claim> l = cs.getByType(t);
-		return Response.status(Status.OK).entity(l).build();
+		Claim c = cs.getById(1);
+		System.out.println("Minutes :"+(c.getResolvedAt().getTime() - c.getCreatedAt().getTime()) / (1000*60) );
+		System.out.println("Hours :"+(c.getResolvedAt().getTime() - c.getCreatedAt().getTime()) / (1000*60*60) );
+		System.out.println(cs.calculMoyTemp(5, 2,  c.getCreatedAt(), c.getResolvedAt()));
+		//return Response.status(Status.OK).entity(cs.calculMoyTemp(5, 2, new Date(2011,11,31,23,59), new Date(System.currentTimeMillis()))).build();
+		return Response.status(Status.OK).entity(cs.calculMoyTemp(5, 2, c.getCreatedAt(), c.getResolvedAt())).build();
 		
 	}
 

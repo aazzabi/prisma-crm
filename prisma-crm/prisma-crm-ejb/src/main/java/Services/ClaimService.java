@@ -1,7 +1,9 @@
 package Services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -36,6 +38,7 @@ public class ClaimService implements IClaimServiceRemote {
 		c.setCreatedBy(em.find(Client.class, 2));
 		System.out.print(c.getType());
 		c.setResponsable(this.findAnAgentFreeAndActif(c.getType()));
+		c.setFirstResponsable(c.getResponsable());
 		c.setResolvedBy(null);
 		em.persist(c);
 		c.setCode("CODE"+c.getId());
@@ -67,12 +70,7 @@ public class ClaimService implements IClaimServiceRemote {
 	@Override
 	public void changeStatus(Claim c, ClaimStatus status) {
 		c.setStatus(status);
-		if (status == ClaimStatus.RESOLU) {
-			//c.getResolvedBy();
-			//get agent connecté 
-			//agent.setNbrClaims(a.getNbrClaims() + 1);
-
-		}
+		if (status == ClaimStatus.RESOLU) { this.resolve(c); }
 		em.merge(c);
 	}
 
@@ -181,7 +179,6 @@ public class ClaimService implements IClaimServiceRemote {
 	@Override
 	public void affectClaimToAgent(Claim c, Agent a) {
 		c.setResponsable(a);
-		a.setNbrClaims(a.getNbrClaims() + 1);
 		a.setDispoClaim("indisponible");
 	}
 
@@ -190,4 +187,72 @@ public class ClaimService implements IClaimServiceRemote {
 		 em.merge(o);
 		 return o ;
 	}
+	
+	
+	
+	
+	public void resolve(Claim c) {
+		Agent ag = c.getResponsable();
+		c.setResolvedBy(ag);
+		c.setResolvedAt(new Date());
+		//l'agent connecté , c le responsable de la claim.. (normalement)
+		ag.setNbrClaimsResolved(ag.getNbrClaimsResolved() + 1);
+		
+		//l responsable houw bidou nafs l repsonsable lowel
+		if (c.getResponsable().equals(c.getFirstResponsable()) ) { 
+			ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getCreatedAt(), c.getResolvedAt() ) );
+			ag.setMoyReponse(calculMoyTemp(ag.getNbrClaimsResolved(), ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt() ) );
+			ag.setNbrClaimsOpenedAndResolved(ag.getNbrClaimsOpenedAndResolved() + 1);
+		} else { // sarét delegation
+			ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getDelegatedAt(), c.getResolvedAt() ) );
+			ag.setMoyReponse(calculMoyTemp(ag.getNbrClaimsResolved(), ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt() ) );
+		}
+		em.merge(ag);
+	}
+	public void open(Claim c) {
+// **************** TO-DO *********************
+//  *********ag houwa l user connecté *********
+// ********************************************
+		Agent ag = c.getResponsable();
+
+		//l responsable houw bidou nafs l repsonsable lowel
+		if (c.getResponsable().equals(c.getFirstResponsable()) ) { 
+			ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getCreatedAt(), c.getResolvedAt() ) );
+			ag.setMoyReponse(calculMoyTemp(ag.getNbrClaimsResolved(), ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt() ) );
+			ag.setNbrClaimsOpenedAndResolved(ag.getNbrClaimsOpenedAndResolved() + 1);
+		} else { // sarét delegation
+			ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getDelegatedAt(), c.getResolvedAt() ) );
+			ag.setMoyReponse(calculMoyTemp(ag.getNbrClaimsResolved(), ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt() ) );
+		}
+	}
+	public void deleguer(Claim c) {
+		Agent newAg = this.findAnAgentFreeAndActif(c.getType());
+		Agent oldAg = c.getResponsable();
+		if (c.getResponsable().equals(c.getFirstResponsable()) ) { 
+			oldAg.setMoyAssiduite(calculMoyTemp(oldAg.getNbrClaimsOpened(), oldAg.getMoyAssiduite(), c.getCreatedAt(), c.getOpenedAt() ) );	
+		} else {
+			
+		}
+		if (c.getPriority() == ClaimPriority.FAIBLE) { this.changePriority(c, ClaimPriority.MOYEN);}
+		if (c.getPriority() == ClaimPriority.MOYEN) { this.changePriority(c, ClaimPriority.ELEVEE);}
+		if (c.getPriority() == ClaimPriority.ELEVEE) {
+			this.changePriority(c, ClaimPriority.URGENT); 
+			//informer tout les Agents
+		}
+		this.changeStatus(c, ClaimStatus.EN_ATTENTE);
+		c.setDelegatedAt(new Date());
+		c.setResponsable(newAg);
+	}
+	
+	public long calculMoyTemp(int nbClaim , long moyenne, Date deb, Date fin ) {
+		long result = 0;
+		long  diff = (long) ((fin.getTime() - deb.getTime()));
+		result = (moyenne + diff) / nbClaim;
+		
+		return result;
+	}
+	
+	
+	
+	
 }

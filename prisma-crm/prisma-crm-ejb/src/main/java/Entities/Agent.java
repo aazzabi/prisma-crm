@@ -28,7 +28,11 @@ public class Agent extends User implements Serializable {
 	private double salary;
 	
 	@Column
-	private int nbrClaims;
+	private int nbrClaimsOpenedAndResolved;
+	private int nbrClaimsOpened;
+	private int nbrClaimsResolved;
+	private long moyAssiduite;
+	private long moyReponse;
 	@Column 
 	private String dispoClaim;
 
@@ -72,22 +76,56 @@ public class Agent extends User implements Serializable {
 		this.salary = salary;
 	}
 
-	
-	public int getNbrClaims() {
-		return nbrClaims;
-	}
-
-	public void setNbrClaims(int nbrClaims) {
-		this.nbrClaims = nbrClaims;
-	}
 
 	
+	public int getNbrClaimsOpenedAndResolved() {
+		return nbrClaimsOpenedAndResolved;
+	}
+
+	public void setNbrClaimsOpenedAndResolved(int nbrClaimsOpenedAndResolved) {
+		this.nbrClaimsOpenedAndResolved = nbrClaimsOpenedAndResolved;
+	}
+
 	public String getDispoClaim() {
 		return dispoClaim;
 	}
 
 	public void setDispoClaim(String dispoClaim) {
 		this.dispoClaim = dispoClaim;
+	}
+	
+	
+
+	public int getNbrClaimsOpened() {
+		return nbrClaimsOpened;
+	}
+
+	public void setNbrClaimsOpened(int nbrClaimsOpened) {
+		this.nbrClaimsOpened = nbrClaimsOpened;
+	}
+
+	public int getNbrClaimsResolved() {
+		return nbrClaimsResolved;
+	}
+
+	public void setNbrClaimsResolved(int nbrClaimsResolved) {
+		this.nbrClaimsResolved = nbrClaimsResolved;
+	}
+
+	public long getMoyAssiduite() {
+		return moyAssiduite;
+	}
+
+	public void setMoyAssiduite(long moyAssiduite) {
+		this.moyAssiduite = moyAssiduite;
+	}
+
+	public long getMoyReponse() {
+		return moyReponse;
+	}
+
+	public void setMoyReponse(long moyReponse) {
+		this.moyReponse = moyReponse;
 	}
 
 	@Override
@@ -134,15 +172,5 @@ public class Agent extends User implements Serializable {
 			return false;
 		return true;
 	}
-/*
-	public List<Claim> getManagingClaims() {
-		return managingClaims;
-	}
-
-	public void setManagingClaims(List<Claim> managingClaims) {
-		this.managingClaims = managingClaims;
-	}
-	
-*/	
 
 }
