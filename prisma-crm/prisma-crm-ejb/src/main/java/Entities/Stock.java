@@ -35,12 +35,6 @@ public class Stock implements Serializable{
 	@JoinColumn(name="store_id", referencedColumnName="id")
 	private Store store;
 
-
-	public Stock() {
-		super();
-	}
-
-
 	public int getQuantity() {
 		return quantity;
 	}

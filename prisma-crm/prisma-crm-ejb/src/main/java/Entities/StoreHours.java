@@ -2,6 +2,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "StoreHours")
@@ -26,18 +30,16 @@ public class StoreHours implements Serializable{
 	private String day;
 	
 	@Column(name = "openAt")
+	@JsonFormat(pattern="HH:mm",timezone = "GMT+1")
 	private Timestamp openAt;
 	
 	@Column(name = "closeAt")
+	@JsonFormat(pattern="HH:mm",timezone = "GMT+1")
 	private Timestamp closeAt;
 	
 	@ManyToOne
+	@JsonIgnore
 	Store store;
-
-	public StoreHours() {
-		super();
-	}
-
 
 	public int getId() {
 		return id;

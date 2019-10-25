@@ -72,7 +72,7 @@ public class Mobile extends Product implements Serializable{
 		return ram;
 	}
 
-	public void setRAM(String ram) {
+	public void setRam(String ram) {
 		this.ram = ram;
 	}
 

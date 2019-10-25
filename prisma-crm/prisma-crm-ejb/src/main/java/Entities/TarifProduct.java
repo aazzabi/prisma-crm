@@ -30,11 +30,7 @@ public class TarifProduct implements Serializable{
 	@ManyToOne
 	@JoinColumn(name="tarif_id", referencedColumnName="id")
 	private Tariff tariff;
-	
-	
-	public TarifProduct() {
-		super();
-	}
+
 
 	public int getId() {
 		return id;

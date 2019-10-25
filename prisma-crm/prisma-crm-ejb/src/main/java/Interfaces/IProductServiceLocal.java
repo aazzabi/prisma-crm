@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import Entities.Mobile;
 import Entities.Product;
 import Entities.Tariff;
 
@@ -19,7 +20,7 @@ public interface IProductServiceLocal {
 	public Product findProductById(int id);
 
 	public List<Product> findAllProducts();
-	
+
 	public Tariff addTarif(Tariff t);
 
 	public void removeTarif(int id);
@@ -29,4 +30,9 @@ public interface IProductServiceLocal {
 	public Tariff findTarifById(int id);
 
 	public List<Tariff> findAllTarifs();
+
+	public Mobile addMobile(Mobile m);
+
+	public Mobile updateMobile(Mobile m);
+
 }

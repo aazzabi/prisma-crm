@@ -9,11 +9,13 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import Entities.Store;
+import Entities.StoreHours;
 import Interfaces.IStoreServiceLocal;
 
 @Path("/store")
@@ -41,7 +43,7 @@ public class StoreResource {
 	}
 
 	@GET
-	@Path("/find/{id}")
+	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findStoreById(@PathParam(value = "id") int id) {
 		return Response.status(Status.CREATED).entity(serv.findStoreById(id)).build();
@@ -65,5 +67,56 @@ public class StoreResource {
 
 		return Response.status(Status.OK).entity("deleted").build();
 	}
+	
+	
+	@POST
+	@Path("/hours/add")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addStoreHour(StoreHours s) {
+		StoreHours sh = serv.addStoreTime(s);
+		return Response.status(Status.CREATED).entity(sh).build();
+	}
+
+	@GET
+	@Path("/hours/all")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response allStoreHours() {
+		return Response.status(Status.CREATED).entity(serv.findAllStoreTimes()).build();
+
+	}
+
+	@GET
+	@Path("/hours/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findStoreHourById(@PathParam(value = "id") int id) {
+		return Response.status(Status.CREATED).entity(serv.findStoreTimeById(id)).build();
+
+	}
+
+	@PUT
+	@Path("/hours")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateStoreHour(StoreHours newSH, @QueryParam(value="idStore")int idStore, @QueryParam(value="idTime")int idTime) {
+
+		if(idStore!=0 && idTime!=0) {
+			serv.assignTimeToStore(idStore, idTime);
+			Store s = serv.findStoreById(idStore);
+			return Response.status(Status.CREATED).entity(s).build();
+		}
+		return Response.status(Status.OK).entity(serv.updateStoreTime(newSH)).build();
+
+	}
+
+	@DELETE
+	@Path("/hours/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteStoreHour(@PathParam(value = "id") int id) {
+		serv.removeStoreTime(id);
+
+		return Response.status(Status.OK).entity("deleted").build();
+	}
+
 	
 }

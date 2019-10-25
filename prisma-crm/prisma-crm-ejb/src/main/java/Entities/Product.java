@@ -67,16 +67,6 @@ public class Product implements Serializable {
 	@OneToMany(mappedBy = "tariff",fetch=FetchType.EAGER)
 	private Set<TarifProduct> tafifProductList ;
 
-	public Product() {
-		super();
-	}
-
-
-	public Product(String name) {
-		super();
-		this.name = name;
-	}
-
 	public int getId() {
 		return id;
 	}

@@ -30,9 +30,6 @@ public class Store implements Serializable{
 	@Column(name = "name")
 	private String name;
 	
-	@Column(name = "addresStr")
-	private String addresStr;
-	
 	@Column(name = "telephone")
 	private String telephone;
 	
@@ -44,12 +41,6 @@ public class Store implements Serializable{
 	
 	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
 	private Set<StoreHours> storeHoursList;
-
-
-	public Store() {
-		super();
-	}
-
 
 	public int getId() {
 		return id;
@@ -67,13 +58,6 @@ public class Store implements Serializable{
 		this.name = name;
 	}
 
-	public String getAddresStr() {
-		return addresStr;
-	}
-
-	public void setAddresStr(String addresStr) {
-		this.addresStr = addresStr;
-	}
 
 	public String getTelephone() {
 		return telephone;

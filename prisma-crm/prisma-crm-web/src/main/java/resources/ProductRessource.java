@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import Entities.Mobile;
 import Entities.Product;
 import Entities.Tariff;
 import Interfaces.IProductServiceLocal;
@@ -46,7 +47,7 @@ public class ProductRessource {
 	}
 
 	@GET
-	@Path("/find/{id}")
+	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findProductById(@PathParam(value = "id") int id) {
 		return Response.status(Status.CREATED).entity(ps.findProductById(id)).build();
@@ -91,7 +92,7 @@ public class ProductRessource {
 	}
 
 	@GET
-	@Path("/tarif/find/{id}")
+	@Path("/tarif/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findTarifById(@PathParam(value = "id") int id) {
 		return Response.status(Status.CREATED).entity(ps.findTarifById(id)).build();
@@ -115,5 +116,24 @@ public class ProductRessource {
 		ps.removeTarif(id);
 
 		return Response.status(Status.OK).entity("deleted").build();
+	}
+	
+	@POST
+	@Path("/mobile/add")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addMobile(Mobile m) {
+		Mobile mb = ps.addMobile(m);
+		return Response.status(Status.CREATED).entity(mb).build();
+	}
+	
+	@PUT
+	@Path("/mobile")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateMobile(Mobile newMobile) {
+
+		return Response.status(Status.OK).entity(ps.updateMobile(newMobile)).build();
+
 	}
 }
