@@ -36,6 +36,8 @@ public class UserResource {
 	@EJB
 	IUserLocal userBusiness;
 
+	public static User userConnected;
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("register")
@@ -149,6 +151,7 @@ public class UserResource {
          session.setAttribute(SessionUtils.USER_FIRST_NAME, userLogged.getFirstName());
          session.setAttribute(SessionUtils.USER_LAST_NAME, userLogged.getLastName());
          
+         this.setUserConnected(userLogged);
 		return userLogged.getEmail();
 		
 	}
@@ -167,6 +170,15 @@ public class UserResource {
 		}
 	}
 
+	public static User getUserConnected() {
+		return userConnected;
+	}
+
+	public static void setUserConnected(User userConnected) {
+		UserResource.userConnected = userConnected;
+	}
+
+	
 
 
 }
