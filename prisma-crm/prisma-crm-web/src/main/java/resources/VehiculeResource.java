@@ -50,8 +50,10 @@ public class VehiculeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}")
 	public Vehicule vehiculeById(@PathParam("id") int id) {
+        System.out.println("#######*************##"+UserResource.getUserConnected().getId()+  "####************#######");
 
 		return resourcesRemote.getVehiculeById(id);
+		
 	}
 	
 	
@@ -70,19 +72,15 @@ public class VehiculeResource {
 
 	}
 	
-    @Context 
-    HttpServletResponse response;
-    @Context
-    HttpServletRequest request;
-	 HttpSession session = request.getSession(true);
+ 
 
 		@PUT
 	    @Path("update/{id}")
 	    public Response update(@PathParam("id") int id, Vehicule vehicule) {
             Vehicule x = resourcesRemote.getVehiculeById(id);
 	        x.setFuelType(vehicule.getFuelType());
-	       // x.setDriver();
-	        System.out.println("#######*************##"+session.getAttribute("SessionUtils.USER_ID")+  "####************#######");
+	       //x.setDriver();
+	        System.out.println("#######*************##"+UserResource.getUserConnected().getEmail()+  "####************#######");
 	        x.setLocation(vehicule.getLocation());
 	        x.setOdometer(vehicule.getOdometer());
 	        x.setPlate(vehicule.getPlate());
