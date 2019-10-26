@@ -41,4 +41,10 @@ public interface IClaimServiceRemote {
 	public List<Claim> getByType(ClaimType type);
 	public Agent findAnAgentFreeAndActif(ClaimType t) ;
 	public void affectClaimToAgent(Claim c, Agent a);
+
+	public Claim deleguer(Claim c);
+	public Claim open(Claim c) ;
+	public Claim resolve(Claim c);
+	//autre que le premier choisis ( lors de la delgation)
+	public Agent findAnOtherAgentFreeAndActif(Agent a, ClaimType t);
 }
