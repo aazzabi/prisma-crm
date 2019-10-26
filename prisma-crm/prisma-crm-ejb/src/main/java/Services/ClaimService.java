@@ -101,8 +101,7 @@ public class ClaimService implements IClaimServiceRemote {
 
 	@Override
 	public int deletNoteClaimById(int id) {
-		Claim c = em.find(Claim.class, id);
-		int i = em.createQuery("delete from NoteClaim c where c.id= :identifiant").setParameter("identifiant", id)
+		int i = em.createQuery("delete from NoteClaim c where c.id=:identifiant").setParameter("identifiant", id)
 				.executeUpdate();
 		return i;
 	}
