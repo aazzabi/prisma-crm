@@ -22,6 +22,7 @@ public interface IClaimServiceRemote {
 	
 	public Claim getById(int id);
 	public Claim getByCode(String code);
+	public NoteClaim getNoteClaimByCode(int id);
 	
 	public Object merge(Object o);
 	public void changeStatus(Claim c, ClaimStatus status);

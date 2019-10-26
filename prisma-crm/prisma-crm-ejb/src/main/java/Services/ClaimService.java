@@ -55,10 +55,16 @@ public class ClaimService implements IClaimServiceRemote {
 		List<Claim> cf = query.getResultList();
 		return cf;
 	}
-
+	
 	@Override
 	public Claim getById(int id) {
 		Claim c = (Claim) em.find(Claim.class, id);
+		return c;
+	}
+
+	@Override
+	public NoteClaim getNoteClaimByCode(int id) {
+		NoteClaim c = (NoteClaim) em.find(NoteClaim.class, id);
 		return c;
 	}
 
@@ -160,8 +166,7 @@ public class ClaimService implements IClaimServiceRemote {
 
 	@Override
 	public List<Claim> getByType(ClaimType type) {
-		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.type=:type", Claim.class)
-				.setParameter("type", type);
+		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.type=:type", Claim.class).setParameter("type", type);
 		List<Claim> cf = query.getResultList();
 		System.out.println(cf);
 		return cf;
