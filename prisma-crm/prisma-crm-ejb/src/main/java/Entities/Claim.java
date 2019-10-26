@@ -38,13 +38,13 @@ public class Claim implements Serializable {
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
 
-	@Column
+	@Column(nullable=true)
 	private String title;
 
 	@Column
 	private String code;
 
-	@Column
+	@Column(nullable=false)
 	private String description;
 
 	@Enumerated(EnumType.STRING)
