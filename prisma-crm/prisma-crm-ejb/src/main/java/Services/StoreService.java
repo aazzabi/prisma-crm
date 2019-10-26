@@ -10,27 +10,29 @@ import javax.persistence.PersistenceContext;
 
 import com.fasterxml.jackson.core.JsonParser;
 
+import Entities.Product;
 import Entities.Store;
 import Entities.StoreHours;
+import Interfaces.IProductServiceLocal;
 import Interfaces.IStoreServiceLocal;
 
 @Stateless
-public class StoreService implements IStoreServiceLocal{
+public class StoreService implements IStoreServiceLocal {
 	@PersistenceContext(unitName = "prisma-crm-ejb")
 	EntityManager em;
-
+	
 
 	@Override
 	public Store addStore(Store s) {
-		
+
 		em.persist(s);
 		return s;
 	}
 
 	@Override
 	public void removeStore(int id) {
-		em.remove(em.find(Store.class, id));	
-		
+		em.remove(em.find(Store.class, id));
+
 	}
 
 	@Override
@@ -62,7 +64,7 @@ public class StoreService implements IStoreServiceLocal{
 	@Override
 	public void removeStoreTime(int id) {
 		em.remove(em.find(StoreHours.class, id));
-		
+
 	}
 
 	@Override
@@ -88,9 +90,20 @@ public class StoreService implements IStoreServiceLocal{
 
 	@Override
 	public void assignTimeToStore(int idStore, int idTime) {
-		StoreHours sh =findStoreTimeById(idTime);
+		StoreHours sh = findStoreTimeById(idTime);
 		Store str = findStoreById(idStore);
 		sh.setStore(str);
+	}
+
+	@Override
+	public Store assignProductToStore(int idStore, int idProduct) {
+		Store s = findStoreById(idStore);
+		Product p = em.find(Product.class, idProduct);
+		
+		s.getProducts().add(p);
+		
+		return s;
+		
 	}
 
 }

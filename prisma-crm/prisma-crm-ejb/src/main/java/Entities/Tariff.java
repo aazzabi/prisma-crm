@@ -1,18 +1,14 @@
 package Entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -32,9 +28,7 @@ public class Tariff  implements Serializable {
 	@Column(name = "priceT")
 	private double priceT;
 	
-	
-	@OneToMany(mappedBy="tariff",fetch=FetchType.EAGER)
-	private Set<TarifProduct> tafifProductList ;
+
 	
 	public int getId() {
 		return id;
@@ -60,13 +54,7 @@ public class Tariff  implements Serializable {
 		this.priceT = priceT;
 	}
 
-	public Set<TarifProduct> getTarifProductList() {
-		return tafifProductList;
-	}
 
-	public void setTarifProductList(Set<TarifProduct> tafifProductList) {
-		this.tafifProductList = tafifProductList;
-	}
 
 
 

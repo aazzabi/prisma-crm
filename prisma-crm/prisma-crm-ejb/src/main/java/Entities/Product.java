@@ -16,9 +16,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.JoinColumn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -58,14 +61,17 @@ public class Product implements Serializable {
 	@ManyToOne(cascade = CascadeType.ALL)
 	Agent agent;
 
+	@JsonIgnore
+	@ManyToOne
+	Store store; 
 
-	//@JsonIgnore
-	@OneToMany(mappedBy = "product",fetch=FetchType.EAGER)
-	private Set<Stock> stockList ;
-
-	//@JsonIgnore
-	@OneToMany(mappedBy = "tariff",fetch=FetchType.EAGER)
-	private Set<TarifProduct> tafifProductList ;
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "tarifProduct",
+            joinColumns = {@JoinColumn(name = "product_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
+    )
+	private Set<Tariff> tarifs ;
 
 	public int getId() {
 		return id;
@@ -124,21 +130,6 @@ public class Product implements Serializable {
 	}
 
 	
-	public Set<Stock> getStockList() {
-		return stockList;
-	}
-
-	public void setStockList(Set<Stock> stockList) {
-		this.stockList = stockList;
-	}
-
-	public Set<TarifProduct> getTafifProductList() {
-		return tafifProductList;
-	}
-
-	public void setTafifProductList(Set<TarifProduct> tafifProductList) {
-		this.tafifProductList = tafifProductList;
-	}
 
 	public Agent getAgent() {
 		return agent;
@@ -147,6 +138,16 @@ public class Product implements Serializable {
 	public void setAgent(Agent agent) {
 		this.agent = agent;
 	}
+
+	public Set<Tariff> getTarifs() {
+		return tarifs;
+	}
+
+	public void setTarifs(Set<Tariff> tarifs) {
+		this.tarifs = tarifs;
+	}
+	
+	
 
 
 	

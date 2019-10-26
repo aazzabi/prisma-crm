@@ -33,5 +33,7 @@ public interface IStoreServiceLocal {
 	
 	public void assignTimeToStore(int idStore,int idTime);
 	
+	public Store assignProductToStore(int idStore,int idProduct);
+	
 
 }

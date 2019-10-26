@@ -18,6 +18,8 @@ public interface IProductServiceLocal {
 	public Product updateProduct(Product newProduct);
 
 	public Product findProductById(int id);
+	
+	public Product findProductByReference(String id);
 
 	public List<Product> findAllProducts();
 
@@ -34,5 +36,7 @@ public interface IProductServiceLocal {
 	public Mobile addMobile(Mobile m);
 
 	public Mobile updateMobile(Mobile m);
+	
+	public void assignTarifToProduct(int idProduct, int idTarif);
 
 }

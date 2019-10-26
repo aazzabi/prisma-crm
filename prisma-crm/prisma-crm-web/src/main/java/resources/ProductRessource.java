@@ -1,7 +1,5 @@
 package resources;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -12,6 +10,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -20,7 +19,7 @@ import Entities.Mobile;
 import Entities.Product;
 import Entities.Tariff;
 import Interfaces.IProductServiceLocal;
-import Services.ProductService;
+
 
 
 @Path("/product")
@@ -57,8 +56,12 @@ public class ProductRessource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateProduct(Product newProduct) {
+	public Response updateProduct(Product newProduct, @QueryParam(value="idProduct")int idProduct, @QueryParam(value="idTarif")int idTarif) {
 
+		if(idProduct!=0 && idTarif!=0) {
+			ps.assignTarifToProduct(idProduct, idTarif);
+			return Response.status(Status.CREATED).entity(ps.findProductById(idProduct)).build();
+		}
 		return Response.status(Status.OK).entity(ps.updateProduct(newProduct)).build();
 
 	}
@@ -136,4 +139,5 @@ public class ProductRessource {
 		return Response.status(Status.OK).entity(ps.updateMobile(newMobile)).build();
 
 	}
+
 }

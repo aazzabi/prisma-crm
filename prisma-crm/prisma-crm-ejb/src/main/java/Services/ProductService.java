@@ -5,10 +5,11 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+
 
 import Entities.Mobile;
 import Entities.Product;
+
 import Entities.Tariff;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IProductServiceRemote;
@@ -51,8 +52,24 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 	}
 
 	@Override
+	public Product findProductByReference(String ref) {
+		Product p = em.find(Product.class, ref);
+		/*
+		 * Product prod = em.createQuery("select e from Employe e where e.id=:id",
+		 * Employe.class).getSingleResult();
+		 */
+		return p;
+	}
+
+	@Override
 	public List<Product> findAllProducts() {
 		List<Product> products = em.createQuery("from Product", Product.class).getResultList();
+		/*
+		 * String ref="20202020"; Query query =
+		 * em.createQuery("from Product where reference:=ref", Product.class);
+		 * query.setParameter("ref", ref); List<Product> products=query.getResultList();
+		 * return products;
+		 */
 		return products;
 	}
 
@@ -105,8 +122,20 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		m.setResolution(newMobile.getResolution());
 		m.setSystem(newMobile.getSystem());
 		m.setRam(newMobile.getRam());
-		
+
 		return m;
+	}
+
+	@Override
+	public void assignTarifToProduct(int idProduct, int idTarif) {
+
+		
+		Product p =findProductById(idProduct);
+		Tariff t = findTarifById(idTarif);
+		p.getTarifs().add(t);
+
+		
+
 	}
 
 }
