@@ -11,8 +11,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.enterprise.context.RequestScoped;
 import javax.transaction.Transactional;
@@ -78,60 +82,95 @@ public class ClaimResource {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 		return Response.status(Status.CREATED).entity(claim).build();
-	}	
-	
+	}
+
 	@PUT
 	@Path("/editClaim/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateClaim(@PathParam(value = "id") int id, Claim c) {
-		Claim cl = cs.getById(id);		
+		Claim cl = cs.getById(id);
 		Claim injecter = c;
-		injecter.setId(cl.getId());		
-		if (injecter.getStatus()==null) {injecter.setStatus(cl.getStatus());}
-		if (injecter.getPriority()==null) {injecter.setPriority(cl.getPriority());}
-		if (injecter.getType()==null) {injecter.setType(cl.getType());}
-		if (injecter.getResponsable()==null) {injecter.setResponsable(cl.getResponsable());}
-		if (injecter.getResolvedAt()==null) {injecter.setResolvedAt(cl.getResolvedAt());}
-		if (injecter.getCode()==null) {injecter.setCode(cl.getCode());}
-		if (injecter.getTitle()==null) {injecter.setTitle(cl.getTitle());}
-		if (injecter.getOpenedAt()==null) {injecter.setOpenedAt(cl.getOpenedAt());}
-		if (injecter.getCreatedBy()==null) {injecter.setCreatedBy(cl.getCreatedBy());}
-		if (injecter.getCreatedAt()==null) {injecter.setCreatedAt(cl.getCreatedAt());}
-		if (injecter.getResolvedBy()==null) {injecter.setResolvedBy(cl.getResolvedBy());}
-		if (injecter.getDescription()==null) {injecter.setDescription(cl.getDescription());}
-		
+		injecter.setId(cl.getId());
+		if (injecter.getStatus() == null) {
+			injecter.setStatus(cl.getStatus());
+		}
+		if (injecter.getPriority() == null) {
+			injecter.setPriority(cl.getPriority());
+		}
+		if (injecter.getType() == null) {
+			injecter.setType(cl.getType());
+		}
+		if (injecter.getResponsable() == null) {
+			injecter.setResponsable(cl.getResponsable());
+		}
+		if (injecter.getResolvedAt() == null) {
+			injecter.setResolvedAt(cl.getResolvedAt());
+		}
+		if (injecter.getCode() == null) {
+			injecter.setCode(cl.getCode());
+		}
+		if (injecter.getTitle() == null) {
+			injecter.setTitle(cl.getTitle());
+		}
+		if (injecter.getOpenedAt() == null) {
+			injecter.setOpenedAt(cl.getOpenedAt());
+		}
+		if (injecter.getCreatedBy() == null) {
+			injecter.setCreatedBy(cl.getCreatedBy());
+		}
+		if (injecter.getCreatedAt() == null) {
+			injecter.setCreatedAt(cl.getCreatedAt());
+		}
+		if (injecter.getResolvedBy() == null) {
+			injecter.setResolvedBy(cl.getResolvedBy());
+		}
+		if (injecter.getDescription() == null) {
+			injecter.setDescription(cl.getDescription());
+		}
+
 		Claim newC = (Claim) cs.merge(injecter);
 		return Response.status(Status.OK).entity(newC).build();
 	}
-	
+
 	@PUT
 	@Path("/archiverClaim/{id}")
-	public Response archiverCalim(@PathParam(value = "id") int id){
+	public Response archiverCalim(@PathParam(value = "id") int id) {
 		Claim newC = cs.getById(id);
 		cs.changeStatus(newC, ClaimStatus.FERME_SANS_SOLUTION);
 		return Response.status(Status.OK).build();
 	}
-	
+
 	@DELETE
 	@Path("/delete/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteClaim(@PathParam(value = "id") int id) {
 		return Response.status(Status.OK).entity(cs.deleteClaimById(id)).build();
 	}
-	
+
 	@GET
 	@Path("/type/{t}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getClaimByType(@PathParam(value = "t") ClaimType t) {
 		List<Claim> l = cs.getByType(t);
 		Claim c = cs.getById(1);
-		System.out.println("Minutes :"+(c.getResolvedAt().getTime() - c.getCreatedAt().getTime()) / (1000*60) );
-		System.out.println("Hours :"+(c.getResolvedAt().getTime() - c.getCreatedAt().getTime()) / (1000*60*60) );
-		System.out.println(cs.calculMoyTemp(5, 2,  c.getCreatedAt(), c.getResolvedAt()));
-		//return Response.status(Status.OK).entity(cs.calculMoyTemp(5, 2, new Date(2011,11,31,23,59), new Date(System.currentTimeMillis()))).build();
 		return Response.status(Status.OK).entity(cs.calculMoyTemp(5, 2, c.getCreatedAt(), c.getResolvedAt())).build();
-		
 	}
 
+	@GET
+	@Path("/deleguer/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleguerClaim(@PathParam(value = "id") int id) {
+		Claim c = cs.getById(id);
+		return Response.status(Status.OK).entity(cs.deleguer(c)).build();
+	}
+	
+	/*
+	 * AFFICHAGE DE DATE
+		System.out.println("Minutes :" + (c.getResolvedAt().getTime() - c.getCreatedAt().getTime()) / (1000 * 60));
+		System.out.println("Hours :" + (c.getResolvedAt().getTime() - c.getCreatedAt().getTime()) / (1000 * 60 * 60));
+		System.out.println(cs.calculMoyTemp(5, 2, c.getCreatedAt(), c.getResolvedAt()));
+		// return Response.status(Status.OK).entity(cs.calculMoyTemp(5, 2, new
+		// Date(2011,11,31,23,59), new Date(System.currentTimeMillis()))).build();
+	*/
 }
