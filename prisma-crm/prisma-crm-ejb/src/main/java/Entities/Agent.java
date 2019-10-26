@@ -35,6 +35,17 @@ public class Agent extends User implements Serializable {
 	private long moyReponse;
 	@Column 
 	private String dispoClaim;
+	
+	
+
+	public Agent() {
+		super();
+		this.nbrClaimsOpened = 0 ; 
+		this.nbrClaimsResolved = 0 ; 
+		this.nbrClaimsOpenedAndResolved = 0 ; 
+		this.moyAssiduite = 0 ; 
+		this.moyReponse = 0 ; 
+	}
 
 	public Role getRoleAgent() {
 		return roleAgent;
