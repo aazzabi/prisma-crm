@@ -256,44 +256,24 @@ public class ClaimService implements IClaimServiceRemote {
 		em.merge(ag);
 		return c;
 	}
-	
-	
 
 	@Override
 	public Claim open(Claim c) {
-// **************** TO-DO *********************
-//  *********ag houwa l user connecté *********
-// ********************************************
-		// Agent ag = UserService.getUserConnected();
 		Agent ag = c.getResponsable();
+		ag.setNbrClaimsOpened(ag.getNbrClaimsOpened() + 1);
+		c.setStatus(ClaimStatus.EN_COURS);
+		c.setOpenedAt(new Date());
 
-		// l responsable houw bidou nafs l repsonsable lowel
+		// l responsable houwa bidou nafs l repsonsable lowel ( li 7alha zeda )
 		if (c.getResponsable().equals(c.getFirstResponsable())) {
-			if (ag.getNbrClaimsOpened()== 0) {
-				ag.setMoyAssiduite(calculMoyTemp(1, ag.getMoyAssiduite(), c.getCreatedAt(), c.getResolvedAt()));
-			} else {ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getCreatedAt(), c.getResolvedAt()));}
-			
-			if (ag.getNbrClaimsResolved()==0) {
-			ag.setMoyReponse(calculMoyTemp(1, ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt()));
-			} else {ag.setMoyReponse(calculMoyTemp(ag.getNbrClaimsResolved(), ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt()));}
-			
-			ag.setNbrClaimsOpenedAndResolved(ag.getNbrClaimsOpenedAndResolved() + 1);
-		
-		} else { // sarét delegation
-			if (ag.getNbrClaimsOpened()==0) {
-			ag.setMoyAssiduite(calculMoyTemp(1, ag.getMoyAssiduite(), c.getDelegatedAt(),c.getResolvedAt()));
-			} else {ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getDelegatedAt(),c.getResolvedAt()));}
-			
-			if (ag.getNbrClaimsResolved()==0 ) {
-			ag.setMoyReponse(calculMoyTemp(1, ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt()));
-			}else {ag.setMoyReponse(calculMoyTemp(ag.getNbrClaimsResolved(), ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt()));}
+			ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getCreatedAt(), this.getDateNow()));
+		} else { // sarét delegation deja
+			ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getDelegatedAt(), this.getDateNow()));
 		}
 		em.merge(ag);
 
 		return c;
 	}
-	
-	
 
 	@Override
 	public Claim deleguer(Claim c) {
@@ -316,7 +296,8 @@ public class ClaimService implements IClaimServiceRemote {
 			if (oldAg.getNbrClaimsOpened() == 0) {
 				oldAg.setMoyAssiduite(calculMoyTemp(1, oldAg.getMoyAssiduite(), c.getDelegatedAt(), this.getDateNow()));
 			} else {
-				oldAg.setMoyAssiduite(calculMoyTemp(oldAg.getNbrClaimsOpened(), oldAg.getMoyAssiduite(),c.getDelegatedAt(), this.getDateNow()));
+				oldAg.setMoyAssiduite(calculMoyTemp(oldAg.getNbrClaimsOpened(), oldAg.getMoyAssiduite(),
+						c.getDelegatedAt(), this.getDateNow()));
 			}
 			c.setTitle("delegated 2 ");
 			// infomer tout les agents
@@ -340,7 +321,6 @@ public class ClaimService implements IClaimServiceRemote {
 	}
 
 	
-	
 	public long calculMoyTemp(int nbClaim, long moyenne, Date deb, Date fin) {
 		long result = 0;
 		long diff = (long) ((fin.getTime() - deb.getTime()));
@@ -348,6 +328,7 @@ public class ClaimService implements IClaimServiceRemote {
 
 		return result;
 	}
+
 	
 	public Date getDateNow() {
 		SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -360,7 +341,7 @@ public class ClaimService implements IClaimServiceRemote {
 
 		java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(date);
 		java.util.Date improperUtilDate = sqlTimestamp;
-		
+
 		return improperUtilDate;
 	}
 
