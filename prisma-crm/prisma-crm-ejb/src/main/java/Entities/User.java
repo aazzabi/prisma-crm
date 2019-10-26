@@ -21,7 +21,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import Enums.Role;
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="userType")
 @Table(name="user")
 @Entity
@@ -40,9 +40,6 @@ public class User implements Serializable {
 	private boolean isActive;
 	@ManyToOne
 	private Address address;
-
-	
-
 
 
 	public boolean isActive() {
