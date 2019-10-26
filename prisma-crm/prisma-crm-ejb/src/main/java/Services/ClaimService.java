@@ -89,13 +89,21 @@ public class ClaimService implements IClaimServiceRemote {
 	public void deleteClaim(Claim c) {
 		em.remove(c);
 	}
-
+	
 	@Override
 	public int deleteClaimById(int id) {
 		Claim c = em.find(Claim.class, id);
 		int i = em.createQuery("delete from Claim c where c.id= :identifiant").setParameter("identifiant", id)
 				.executeUpdate();
 		System.out.println("CLAIMSERVICE DEL !");
+		return i;
+	}
+
+	@Override
+	public int deletNoteClaimById(int id) {
+		Claim c = em.find(Claim.class, id);
+		int i = em.createQuery("delete from NoteClaim c where c.id= :identifiant").setParameter("identifiant", id)
+				.executeUpdate();
 		return i;
 	}
 
@@ -114,12 +122,17 @@ public class ClaimService implements IClaimServiceRemote {
 
 	@Override
 	public List<Claim> getClaimsByResponsable(Agent a) {
-		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.responsable=:a", Claim.class);
+		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.responsable=:a", Claim.class).setParameter("a", a);
 		List<Claim> cf = query.getResultList();
 		System.out.println(cf);
 		return cf;
 	}
-
+	@Override
+	public Agent getResponsableById(int id) {
+		Agent a = (Agent) em.find(Agent.class, id);
+		return a;
+	}
+	
 	@Override
 	public List<Claim> getClaimsResolvedBy(Agent a) {
 		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.resolvedBy=:a", Claim.class);

@@ -31,6 +31,7 @@ public interface IClaimServiceRemote {
 	
 	public int deleteClaimById(int id);	
 	public void deleteClaimByClient(Client c);	
+	public int deletNoteClaimById(int id);	
 	
 	public List<Claim> getClaimsByClient(Client u);
 	public List<Claim> getClaimsByResponsable(Agent a);
@@ -42,6 +43,9 @@ public interface IClaimServiceRemote {
 	public Agent findAnAgentFreeAndActif(ClaimType t) ;
 	public void affectClaimToAgent(Claim c, Agent a);
 
+	public Agent getResponsableById(int id);
+	
+	
 	public Claim deleguer(Claim c);
 	public Claim open(Claim c) ;
 	public Claim resolve(Claim c);
