@@ -40,8 +40,6 @@ import javax.ejb.EJB;
 @Path("notesClaim")
 public class NoteClaimResource {
 
-//	IClaimServiceRemote cs;
-//	INoteClaimRemote noteService;
 	@EJB
 	public static NoteClaimService noteService = new NoteClaimService();
 	@EJB
@@ -80,5 +78,36 @@ public class NoteClaimResource {
 		NoteClaim note = noteService.addNoteClaim(nc,c);
 		return Response.status(Status.OK).entity(note).build();
 	}
+	
+	@DELETE
+	@Path("/deleteNote/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteNoteClaim(@PathParam(value = "id") int id) {
+		return Response.status(Status.OK).entity(noteService.deletNoteClaimById(id)).build();
+	}
+	
+	@PUT
+	@Path("/editNoteClaim/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateNoteClaim(@PathParam(value = "id") int id, NoteClaim nc) {
+		NoteClaim ncl = noteService.getNoteClaimByCode(id);
+		NoteClaim injecter = nc;
+		
+		injecter.setId(ncl.getId());
+		if (injecter.getDescription() == null) {
+			injecter.setDescription(ncl.getDescription());
+		}
+		if (injecter.getClaim() == null) {
+			injecter.setClaim(ncl.getClaim());
+		}
+		if (injecter.getCreatedBy() == null) {
+			injecter.setCreatedBy(ncl.getCreatedBy());
+		}
+		injecter.setCreatedAt(ncl.getCreatedAt());
+		NoteClaim newC = (NoteClaim) cs.merge(injecter);
+		return Response.status(Status.OK).entity(newC).build();
+	}
+	
 	
 }

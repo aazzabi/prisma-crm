@@ -57,8 +57,6 @@ public class NoteClaimService implements INoteClaimRemote {
 
 	@Override
 	public List<NoteClaim> getNotesByClaimId(int id) {
-		//TypedQuery<NoteClaim> query = em.createQuery("SELECT n.* from NoteClaim n , Claim c where n.claim_id= c.id AND c =: claim ", NoteClaim.class)
-		//TypedQuery<NoteClaim> query = em.createQuery("SELECT * from NoteClaim  Where claim = :c ", NoteClaim.class).setParameter("c", c);
 		Claim c = em.find(Claim.class, id);
 		TypedQuery<NoteClaim> query = em
 				.createQuery("SELECT n from NoteClaim n where n.claim=:claim", NoteClaim.class)
@@ -74,16 +72,24 @@ public class NoteClaimService implements INoteClaimRemote {
 		NoteClaim nc = em.find(NoteClaim.class,id);
 		return nc;
 	}
-	
-	@Override
-	public void deleteNoteClaim(NoteClaim nc) {
-		em.remove(nc);
-	}
 
 	@Override
 	public NoteClaim updateNoteClaim(NoteClaim nc) {
 		em.merge(nc);
 		return nc;
+	}
+	
+	@Override
+	public int deletNoteClaimById(int id) {
+		int i = em.createQuery("delete from NoteClaim c where c.id=:identifiant").setParameter("identifiant", id)
+				.executeUpdate();
+		return i;
+	}
+
+	@Override
+	public NoteClaim getNoteClaimByCode(int id) {
+		NoteClaim c = (NoteClaim) em.find(NoteClaim.class, id);
+		return c;
 	}
 
 }

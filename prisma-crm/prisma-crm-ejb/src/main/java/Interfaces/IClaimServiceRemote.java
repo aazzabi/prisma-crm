@@ -22,7 +22,6 @@ public interface IClaimServiceRemote {
 	
 	public Claim getById(int id);
 	public Claim getByCode(String code);
-	public NoteClaim getNoteClaimByCode(int id);
 	
 	public Object merge(Object o);
 	public void changeStatus(Claim c, ClaimStatus status);
@@ -32,7 +31,6 @@ public interface IClaimServiceRemote {
 	
 	public int deleteClaimById(int id);	
 	public void deleteClaimByClient(Client c);	
-	public int deletNoteClaimById(int id);	
 	
 	public List<Claim> getClaimsByClient(Client u);
 	public List<Claim> getClaimsByResponsable(Agent a);

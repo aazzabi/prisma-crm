@@ -46,6 +46,8 @@ public class ClaimResource {
 
 	@EJB
 	public static ClaimService cs = new ClaimService();
+	
+	@EJB
 	public static NoteClaimService noteService = new NoteClaimService();
 
 	@POST
@@ -69,7 +71,6 @@ public class ClaimResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getClaimByID(@PathParam(value = "id") int id) {
 		Claim c = cs.getById(id);
-		// return Response.status(Status.CREATED).entity(cs.claimToJSON(c)).build();
 		return Response.status(Status.CREATED).entity(cs.getById(id)).build();
 	}
 
@@ -141,30 +142,6 @@ public class ClaimResource {
 		Claim newC = (Claim) cs.merge(injecter);
 		return Response.status(Status.OK).entity(newC).build();
 	}
-	
-	@PUT
-	@Path("/editNoteClaim/{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateNoteClaim(@PathParam(value = "id") int id, NoteClaim nc) {
-		NoteClaim ncl = cs.getNoteClaimByCode(id);
-		NoteClaim injecter = nc;
-		
-		injecter.setId(ncl.getId());
-		if (injecter.getDescription() == null) {
-			injecter.setDescription(ncl.getDescription());
-		}
-		if (injecter.getClaim() == null) {
-			injecter.setClaim(ncl.getClaim());
-		}
-		if (injecter.getCreatedBy() == null) {
-			injecter.setCreatedBy(ncl.getCreatedBy());
-		}
-		injecter.setCreatedAt(ncl.getCreatedAt());
-		NoteClaim newC = (NoteClaim) cs.merge(injecter);
-		return Response.status(Status.OK).entity(newC).build();
-	}
-	
 
 	@PUT
 	@Path("/archiverClaim/{id}")
@@ -178,15 +155,10 @@ public class ClaimResource {
 	@Path("/delete/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteClaim(@PathParam(value = "id") int id) {
+		noteService.deleteNotesByClaimId(id);
 		return Response.status(Status.OK).entity(cs.deleteClaimById(id)).build();
 	}
 
-	@DELETE
-	@Path("/deleteNote/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response deleteNoteClaim(@PathParam(value = "id") int id) {
-		return Response.status(Status.OK).entity(cs.deletNoteClaimById(id)).build();
-	}
 
 	@GET
 	@Path("/type/{t}")

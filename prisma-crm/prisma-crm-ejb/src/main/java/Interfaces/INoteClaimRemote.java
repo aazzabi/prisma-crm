@@ -17,7 +17,8 @@ public interface INoteClaimRemote {
 	public void deleteNotesByClaimId(int id);	
 	public List<NoteClaim> getNotesByClaimId(int id);
 	public NoteClaim getNoteById(int id) ;
-	public void deleteNoteClaim(NoteClaim nc );
 	public NoteClaim updateNoteClaim(NoteClaim nc);
 
+	public NoteClaim getNoteClaimByCode(int id);
+	public int deletNoteClaimById(int id);
 }

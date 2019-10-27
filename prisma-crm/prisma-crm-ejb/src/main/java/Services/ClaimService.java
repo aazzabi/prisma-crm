@@ -62,11 +62,6 @@ public class ClaimService implements IClaimServiceRemote {
 		return c;
 	}
 
-	@Override
-	public NoteClaim getNoteClaimByCode(int id) {
-		NoteClaim c = (NoteClaim) em.find(NoteClaim.class, id);
-		return c;
-	}
 
 	@Override
 	public Claim getByCode(String code) {
@@ -102,13 +97,6 @@ public class ClaimService implements IClaimServiceRemote {
 		int i = em.createQuery("delete from Claim c where c.id= :identifiant").setParameter("identifiant", id)
 				.executeUpdate();
 		System.out.println("CLAIMSERVICE DEL !");
-		return i;
-	}
-
-	@Override
-	public int deletNoteClaimById(int id) {
-		int i = em.createQuery("delete from NoteClaim c where c.id=:identifiant").setParameter("identifiant", id)
-				.executeUpdate();
 		return i;
 	}
 
