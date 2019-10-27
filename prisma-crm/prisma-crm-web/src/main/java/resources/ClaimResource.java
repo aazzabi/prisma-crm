@@ -83,6 +83,15 @@ public class ClaimResource {
 		}
 		return Response.status(Status.CREATED).entity(claim).build();
 	}
+	
+
+	@GET
+	@Path("/agent/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllClaimByAgent(@PathParam(value="id") int id) {
+		Agent a = cs.getResponsableById(id);
+		return Response.status(Status.CREATED).entity(cs.getClaimsByResponsable(a)).build();
+	}
 
 	@PUT
 	@Path("/editClaim/{id}")
@@ -132,6 +141,30 @@ public class ClaimResource {
 		Claim newC = (Claim) cs.merge(injecter);
 		return Response.status(Status.OK).entity(newC).build();
 	}
+	
+	@PUT
+	@Path("/editNoteClaim/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateNoteClaim(@PathParam(value = "id") int id, NoteClaim nc) {
+		NoteClaim ncl = cs.getNoteClaimByCode(id);
+		NoteClaim injecter = nc;
+		
+		injecter.setId(ncl.getId());
+		if (injecter.getDescription() == null) {
+			injecter.setDescription(ncl.getDescription());
+		}
+		if (injecter.getClaim() == null) {
+			injecter.setClaim(ncl.getClaim());
+		}
+		if (injecter.getCreatedBy() == null) {
+			injecter.setCreatedBy(ncl.getCreatedBy());
+		}
+		injecter.setCreatedAt(ncl.getCreatedAt());
+		NoteClaim newC = (NoteClaim) cs.merge(injecter);
+		return Response.status(Status.OK).entity(newC).build();
+	}
+	
 
 	@PUT
 	@Path("/archiverClaim/{id}")
@@ -140,12 +173,19 @@ public class ClaimResource {
 		cs.changeStatus(newC, ClaimStatus.FERME_SANS_SOLUTION);
 		return Response.status(Status.OK).build();
 	}
-
+	
 	@DELETE
 	@Path("/delete/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteClaim(@PathParam(value = "id") int id) {
 		return Response.status(Status.OK).entity(cs.deleteClaimById(id)).build();
+	}
+
+	@DELETE
+	@Path("/deleteNote/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteNoteClaim(@PathParam(value = "id") int id) {
+		return Response.status(Status.OK).entity(cs.deletNoteClaimById(id)).build();
 	}
 
 	@GET
@@ -154,7 +194,7 @@ public class ClaimResource {
 	public Response getClaimByType(@PathParam(value = "t") ClaimType t) {
 		List<Claim> l = cs.getByType(t);
 		Claim c = cs.getById(1);
-		return Response.status(Status.OK).entity(cs.calculMoyTemp(5, 2, c.getCreatedAt(), c.getResolvedAt())).build();
+		return Response.status(Status.OK).entity(cs.getByType(t)).build();
 	}
 
 	@GET
