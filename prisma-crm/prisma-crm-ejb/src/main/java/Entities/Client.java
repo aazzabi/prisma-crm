@@ -27,6 +27,21 @@ private ClientType clientType;
 private String entrepriseName;
 @Column(name="entreprisePosition" , nullable=true,length=255)
 private String entreprisePosition;
+
+public Client()
+{
+	super();
+}
+
+
+public Client(String fullName, String email, String password, String phoneNumber, boolean isActive,ClientGroups group,int fidelityScore,ClientType clientType) {
+	super(fullName, email, password, phoneNumber, isActive);
+	this.clientgroup=group;
+	this.clientType=clientType;
+	this.fidelityScore=fidelityScore;
+}
+
+
 public Set<ClientOrder> getClientOrders() {
 	return clientOrders;
 }

@@ -29,21 +29,48 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
+	private String fullName;
 	private String email;
 	private String password;
 	private java.sql.Date createdAt;
 	private String phoneNumber;
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastAuthentificated;
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date passwordLastChanged;
 	private boolean isActive;
 	@ManyToOne
 	private Address address;
+	
+	public User()
+	{
+		
+	}
+	
 
 	
 
 
+
+	public User(String fullName, String email, String password, String phoneNumber, boolean isActive) {
+		super();
+		this.fullName = fullName;
+		this.email = email;
+		this.password = password;
+		this.phoneNumber = phoneNumber;
+		this.isActive = isActive;
+	}
+
+
+
+
+
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
 
 	public boolean isActive() {
 		return isActive;
