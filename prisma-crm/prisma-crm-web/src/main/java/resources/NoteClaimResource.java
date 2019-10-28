@@ -44,7 +44,7 @@ public class NoteClaimResource {
 	public static NoteClaimService noteService = new NoteClaimService();
 	@EJB
 	public static ClaimService cs = new ClaimService();
-	
+
 	@GET
 	@Path("claim/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -107,6 +107,15 @@ public class NoteClaimResource {
 		injecter.setCreatedAt(ncl.getCreatedAt());
 		NoteClaim newC = (NoteClaim) cs.merge(injecter);
 		return Response.status(Status.OK).entity(newC).build();
+	}
+	
+	
+	
+	@GET
+	@Path("mail")
+	public Response sendMail() throws Exception {
+		noteService.sendJavaMail();
+		return Response.status(Status.OK).entity("sended").build();
 	}
 	
 	

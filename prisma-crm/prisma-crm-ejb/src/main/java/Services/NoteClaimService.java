@@ -1,9 +1,11 @@
 package Services;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -13,6 +15,7 @@ import Entities.Claim;
 import Entities.NoteClaim;
 import Interfaces.IClaimServiceRemote;
 import Interfaces.INoteClaimRemote;
+import Utils.JavaMailUtil;
 
 
 @Stateless
@@ -90,6 +93,11 @@ public class NoteClaimService implements INoteClaimRemote {
 	public NoteClaim getNoteClaimByCode(int id) {
 		NoteClaim c = (NoteClaim) em.find(NoteClaim.class, id);
 		return c;
+	}
+	
+	
+	public void sendJavaMail() throws Exception {
+		JavaMailUtil.sendMail("arafet.azzabi@esprit.tn", "TITRE", "CONTENU");
 	}
 
 }
