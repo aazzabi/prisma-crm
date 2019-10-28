@@ -58,12 +58,33 @@ public class ClaimResource {
 		c.setId(cs.addClaim(c));
 		return Response.status(Status.CREATED).entity(c).build();
 	}
-
+	
 	@GET
 	@Path("getAll")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllClaim() {
 		return Response.status(Status.CREATED).entity(cs.getAll()).build();
+	}
+	
+	@GET
+	@Path("FAQ")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllFaq() {
+		return Response.status(Status.CREATED).entity(cs.getAllFaq()).build();
+	}
+	
+	@GET
+	@Path("FAQ/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getFaqById(@PathParam(value = "id") int id) {
+		return Response.status(Status.CREATED).entity(cs.getFaqById(id)).build();
+	}
+
+	@PUT
+	@Path("addFAQ/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response setClaimAsFaq(@PathParam(value = "id") int id) {
+		return Response.status(Status.CREATED).entity(cs.addClaimToFaq(id)).build();
 	}
 
 	@GET
@@ -114,6 +135,9 @@ public class ClaimResource {
 		if (injecter.getResponsable() == null) {
 			injecter.setResponsable(cl.getResponsable());
 		}
+		if (injecter.getFirstResponsable() == null) {
+			injecter.setFirstResponsable(cl.getFirstResponsable());
+		}
 		if (injecter.getResolvedAt() == null) {
 			injecter.setResolvedAt(cl.getResolvedAt());
 		}
@@ -138,6 +162,10 @@ public class ClaimResource {
 		if (injecter.getDescription() == null) {
 			injecter.setDescription(cl.getDescription());
 		}
+		if (injecter.getDelegatedAt() == null) {
+			injecter.setDelegatedAt(cl.getDelegatedAt());
+		}
+		injecter.setIsFaq(cl.getIsFaq());
 
 		Claim newC = (Claim) cs.merge(injecter);
 		return Response.status(Status.OK).entity(newC).build();

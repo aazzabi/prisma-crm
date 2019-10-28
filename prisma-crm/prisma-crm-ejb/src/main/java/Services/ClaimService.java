@@ -57,6 +57,27 @@ public class ClaimService implements IClaimServiceRemote {
 	}
 	
 	@Override
+	public List<Claim> getAllFaq() {
+		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.isFaq=true", Claim.class);
+		List<Claim> cf = query.getResultList();
+		return cf;
+	}
+	
+	@Override
+	public Claim getFaqById(int id) {
+		Claim c = (Claim) em.find(Claim.class, id);
+		return c;
+	}
+	
+	@Override
+	public Claim addClaimToFaq(int id) {
+		Claim c = (Claim) em.find(Claim.class, id);
+		c.setIsFaq(true);
+		em.merge(c);
+		return c;
+	}
+	
+	@Override
 	public Claim getById(int id) {
 		Claim c = (Claim) em.find(Claim.class, id);
 		return c;
@@ -173,7 +194,7 @@ public class ClaimService implements IClaimServiceRemote {
 			type = Role.relational;
 		}
 
-		String qlString = "SELECT a from Agent a where a.roleAgent=:t and a.dispoClaim=:d ORDER BY a.nbrClaims";
+		String qlString = "SELECT a from Agent a where a.roleAgent=:t and a.dispoClaim=:d ORDER BY a.nbrClaimsResolved";
 		Query query = em.createQuery(qlString, Agent.class).setParameter("d", "disponible").setParameter("t", type);
 		List<Agent> agents = query.getResultList();
 		System.out.println("160 - CLAIM TYPE " + t);
@@ -184,7 +205,7 @@ public class ClaimService implements IClaimServiceRemote {
 			System.out.println(a.getRoleAgent());
 		} else { // on prend l'agent ayant le moins de Réclamation traités
 			TypedQuery<Agent> query2 = em
-					.createQuery("SELECT a from Agent a WHERE a.roleAgent=:t ORDER BY nbrClaims DESC", Agent.class)
+					.createQuery("SELECT a from Agent a WHERE a.roleAgent=:t ORDER BY nbrClaimsResolved DESC", Agent.class)
 					.setParameter("t", type);
 			a = query2.getResultList().get(0);
 		}
@@ -272,7 +293,7 @@ public class ClaimService implements IClaimServiceRemote {
 		// l responsable houwa bidou nafs l repsonsable lowel ( li 7alha zeda )
 		if (c.getResponsable().equals(c.getFirstResponsable())) {
 			ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getCreatedAt(), this.getDateNow()));
-		} else { // sarét delegation deja
+		} else { // sarét delegation deja : donc li bech y7elha mehouch nafsou le premier responsable
 			ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getDelegatedAt(), this.getDateNow()));
 		}
 		em.merge(ag);
@@ -283,30 +304,31 @@ public class ClaimService implements IClaimServiceRemote {
 	@Override
 	public Claim deleguer(Claim c) {
 		Agent oldAg = c.getResponsable();
-		System.out.println("old ag " + oldAg.getId());
-		System.out.println("c.getDelegatedAt()" + c.getDelegatedAt());
-
 		Agent newAg = this.findAnOtherAgentFreeAndActif(oldAg, c.getType());
-		System.out.println("New ag : " + newAg.getId());
+		
 		if (c.getResponsable().equals(c.getFirstResponsable())) {
+			//awel mara tsir delegation : donc bech n3a9eb l 1er responsable, 
+			//w nzziiddlou l wa9t li 9a3dou entre OpenedAt w delegatedAt , lel moyAssiduité
 			System.out.println("1er RESP === RESP ");
+			
 			if (oldAg.getNbrClaimsOpened() == 0) {
-				oldAg.setMoyAssiduite(calculMoyTemp(1, oldAg.getMoyAssiduite(), c.getCreatedAt(), c.getOpenedAt()));
+				oldAg.setMoyAssiduite(calculMoyTemp(1, oldAg.getMoyAssiduite(), c.getOpenedAt(), this.getDateNow()));
 			} else {
-				oldAg.setMoyAssiduite(calculMoyTemp(oldAg.getNbrClaimsOpened(), oldAg.getMoyAssiduite(),
-						c.getCreatedAt(), c.getOpenedAt()));
+				oldAg.setMoyAssiduite(calculMoyTemp(oldAg.getNbrClaimsOpened(), oldAg.getMoyAssiduite(),c.getCreatedAt(), c.getOpenedAt()));
 			}
-			c.setTitle("delegated 1 ");
-		} else {
-			if (oldAg.getNbrClaimsOpened() == 0) {
-				oldAg.setMoyAssiduite(calculMoyTemp(1, oldAg.getMoyAssiduite(), c.getDelegatedAt(), this.getDateNow()));
-			} else {
-				oldAg.setMoyAssiduite(calculMoyTemp(oldAg.getNbrClaimsOpened(), oldAg.getMoyAssiduite(),
-						c.getDelegatedAt(), this.getDateNow()));
-			}
-			c.setTitle("delegated 2 ");
-			// infomer tout les agents
 		}
+		this.upgradePriority(c);
+		this.changeStatus(c, ClaimStatus.EN_ATTENTE);
+		c.setDelegatedAt(new Date());
+		c.setResponsable(newAg);
+		c.setOpenedAt(null);
+		em.merge(oldAg);
+		em.merge(c);
+		return c;
+	}
+
+	
+	private void upgradePriority(Claim c) {
 		if (c.getPriority() == ClaimPriority.FAIBLE) {
 			this.changePriority(c, ClaimPriority.MOYEN);
 		}
@@ -316,16 +338,9 @@ public class ClaimService implements IClaimServiceRemote {
 		if (c.getPriority() == ClaimPriority.ELEVEE) {
 			this.changePriority(c, ClaimPriority.URGENT);
 			// informer tout les Agents
-		}
-		this.changeStatus(c, ClaimStatus.EN_ATTENTE);
-		c.setDelegatedAt(new Date());
-		c.setResponsable(newAg);
-		em.merge(oldAg);
-		em.merge(c);
-		return c;
+		}		
 	}
 
-	
 	public long calculMoyTemp(int nbClaim, long moyenne, Date deb, Date fin) {
 		long result = 0;
 		long diff = (long) ((fin.getTime() - deb.getTime()));

@@ -20,8 +20,12 @@ public interface IClaimServiceRemote {
 	public int addClaim(Claim c);
 	public List<Claim> getAll();
 	
+	public List<Claim> getAllFaq();
+	
 	public Claim getById(int id);
 	public Claim getByCode(String code);
+	public Claim getFaqById(int id);
+	public Claim addClaimToFaq(int id);
 	
 	public Object merge(Object o);
 	public void changeStatus(Claim c, ClaimStatus status);

@@ -88,12 +88,13 @@ public class Claim implements Serializable {
 	@OneToMany(mappedBy = "claim", cascade=CascadeType.REMOVE, fetch=FetchType.EAGER)
 	private List<NoteClaim> notes;//---Ok---
 
-	
+	private Boolean isFaq;
 	
 	public Claim() {
 		this.status = ClaimStatus.EN_ATTENTE;
 		this.createdAt = new Date(System.currentTimeMillis());
 		this.notes = new ArrayList<NoteClaim>();
+		this.isFaq = false;
 	}
 
 	public int getId() {
@@ -236,6 +237,14 @@ public class Claim implements Serializable {
 
 	public void setFirstResponsable(Agent firstResponsable) {
 		this.firstResponsable = firstResponsable;
+	}
+
+	public Boolean getIsFaq() {
+		return isFaq;
+	}
+
+	public void setIsFaq(Boolean isFaq) {
+		this.isFaq = isFaq;
 	}
 
 	@Override
