@@ -42,8 +42,19 @@ public class ClientOrder implements Serializable {
 	private Client client;
 	@ManyToOne
 	private Store store;
+	@OneToOne
+	private Invoice invoice;
+	
 	
 
+
+	public Invoice getInvoice() {
+		return invoice;
+	}
+
+	public void setInvoice(Invoice invoice) {
+		this.invoice = invoice;
+	}
 
 	public Store getStore() {
 		return store;
