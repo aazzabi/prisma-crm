@@ -5,12 +5,14 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import Entities.Mobile;
 import Entities.Product;
-
+import Entities.Store;
 import Entities.Tariff;
+import Enums.ProductType;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IProductServiceRemote;
 
@@ -49,27 +51,26 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 	public Product findProductById(int id) {
 		Product p = em.find(Product.class, id);
 		return p;
+		
 	}
+	
+	
 
 	@Override
-	public Product findProductByReference(String ref) {
-		Product p = em.find(Product.class, ref);
-		/*
-		 * Product prod = em.createQuery("select e from Employe e where e.id=:id",
-		 * Employe.class).getSingleResult();
-		 */
-		return p;
+	public List<Product> findProductByReference(String ref) {
+		
+		TypedQuery<Product> query = em.createQuery(
+				"SELECT c FROM Product c WHERE c.reference = :ref", Product.class);
+
+		return query.setParameter("ref", ref).getResultList();
 	}
 
 	@Override
 	public List<Product> findAllProducts() {
 		List<Product> products = em.createQuery("from Product", Product.class).getResultList();
-		/*
-		 * String ref="20202020"; Query query =
-		 * em.createQuery("from Product where reference:=ref", Product.class);
-		 * query.setParameter("ref", ref); List<Product> products=query.getResultList();
-		 * return products;
-		 */
+
+		
+
 		return products;
 	}
 
@@ -128,14 +129,24 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 
 	@Override
 	public void assignTarifToProduct(int idProduct, int idTarif) {
-
-		
-		Product p =findProductById(idProduct);
+		Product p = findProductById(idProduct);
 		Tariff t = findTarifById(idTarif);
 		p.getTarifs().add(t);
+	}
 
-		
+	public void iterateEnum() {
+		for (ProductType type : ProductType.values()) { 
+			System.out.println(type); 
+		}
 
+	}
+
+	@Override
+	public List<Product> findProductsByStore(Store s ) {
+		TypedQuery<Product> query = em.createQuery(
+				"SELECT c FROM Product c WHERE c.store = :store", Product.class);
+
+		return query.setParameter("store", s).getResultList();
 	}
 
 }

@@ -101,6 +101,8 @@ public class StoreService implements IStoreServiceLocal {
 		Product p = em.find(Product.class, idProduct);
 		
 		s.getProducts().add(p);
+		p.setStore(s);
+		
 		
 		return s;
 		

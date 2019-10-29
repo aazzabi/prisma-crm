@@ -146,6 +146,14 @@ public class Product implements Serializable {
 	public void setTarifs(Set<Tariff> tarifs) {
 		this.tarifs = tarifs;
 	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
 	
 	
 

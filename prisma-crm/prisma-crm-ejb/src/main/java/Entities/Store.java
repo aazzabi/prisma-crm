@@ -19,6 +19,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "Store")
 public class Store implements Serializable{
@@ -42,12 +44,14 @@ public class Store implements Serializable{
 	@ManyToOne
 	private Address address;
 	
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy="store",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	private Set<Product> products; 
 
 	
 	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
 	private Set<StoreHours> storeHoursList;
+	
+
 
 	public int getId() {
 		return id;
@@ -107,7 +111,6 @@ public class Store implements Serializable{
 		this.products = products;
 	}
 
- 
 	
 	
 }

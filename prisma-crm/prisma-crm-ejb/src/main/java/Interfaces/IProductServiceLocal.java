@@ -6,6 +6,7 @@ import javax.ejb.Local;
 
 import Entities.Mobile;
 import Entities.Product;
+import Entities.Store;
 import Entities.Tariff;
 
 @Local
@@ -19,7 +20,9 @@ public interface IProductServiceLocal {
 
 	public Product findProductById(int id);
 	
-	public Product findProductByReference(String id);
+	public List<Product> findProductByReference(String ref);
+	
+	public List<Product> findProductsByStore(Store store);
 
 	public List<Product> findAllProducts();
 
