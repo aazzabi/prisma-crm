@@ -42,6 +42,18 @@ public class Store implements Serializable {
 	
 	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
 	private Set<StoreHours> storeHoursList;
+	
+	@OneToMany(mappedBy="store")
+	private Set<ClientOrder> orders;
+	
+
+	public Set<ClientOrder> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(Set<ClientOrder> orders) {
+		this.orders = orders;
+	}
 
 	public int getId() {
 		return id;

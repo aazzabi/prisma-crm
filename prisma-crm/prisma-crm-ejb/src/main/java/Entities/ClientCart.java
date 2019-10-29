@@ -24,6 +24,16 @@ public class ClientCart implements Serializable {
 	private Timestamp updatedAt;
 	@ManyToOne
 	private Client client;
+	
+	@ManyToOne
+	private ClientOrder clientOrder;
+	public ClientOrder getOrder() {
+		return clientOrder;
+	}
+	public void setOrder(ClientOrder order) {
+		this.clientOrder = order;
+	}
+
 	@OneToMany(mappedBy="cart")
 	private Set<CartProductRow> cartRows;
 	

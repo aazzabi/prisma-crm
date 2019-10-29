@@ -40,7 +40,22 @@
    </licenses>
 
    <dependencies>
-
+<dependency>
+ <groupId>javax.transaction</groupId>
+ <artifactId>javax.transaction-api</artifactId>
+ <version>1.2</version>
+ </dependency>
+ <dependency>
+ <groupId>io.jsonwebtoken</groupId>
+ <artifactId>jjwt</artifactId>
+ <version>0.6.0</version>
+ </dependency>
+ <dependency>
+ <groupId>javax</groupId>
+ <artifactId>javaee-api</artifactId>
+ <version>6.0</version>
+ <scope>provided</scope>
+ </dependency>
       <!-- Dependency on the EJB module so we can use it's services if needed -->
       <dependency>
          <groupId>prisma</groupId>
@@ -48,7 +63,22 @@
          <type>ejb</type>
          <scope>provided</scope>
       </dependency>
-
+<dependency>
+ <groupId>javax.transaction</groupId>
+ <artifactId>javax.transaction-api</artifactId>
+ <version>1.2</version>
+ </dependency>
+ <dependency>
+ <groupId>io.jsonwebtoken</groupId>
+ <artifactId>jjwt</artifactId>
+ <version>0.6.0</version>
+ </dependency>
+ <dependency>
+ <groupId>javax</groupId>
+ <artifactId>javaee-api</artifactId>
+ <version>6.0</version>
+ <scope>provided</scope>
+ </dependency>
       <!-- Import the JAX-RS API, we use provided scope as the API is included in JBoss WildFly -->
       <dependency>
          <groupId>org.jboss.resteasy</groupId>

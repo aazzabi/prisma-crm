@@ -3,16 +3,23 @@ package Entities;
 import java.io.Serializable;
 
 import java.sql.Date;
+import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import Enums.OrderType;
 
 @Entity
 @Table(name = "ClientOrder")
@@ -27,11 +34,24 @@ public class ClientOrder implements Serializable {
 	private Date updatedAt;
 	private boolean isValid;
 	private float reductionRatio;
-	private String orderNature;
+	@Enumerated(EnumType.STRING)	
+	private OrderType orderNature;
 	private float totale;
 	@ManyToOne
 	@JsonIgnore
 	private Client client;
+	@ManyToOne
+	private Store store;
+	
+
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
 
 	public Client getClient() {
 		return client;
@@ -73,11 +93,11 @@ public class ClientOrder implements Serializable {
 		this.reductionRatio = reductionRatio;
 	}
 
-	public String getOrderNature() {
+	public OrderType getOrderNature() {
 		return orderNature;
 	}
 
-	public void setOrderNature(String orderNature) {
+	public void setOrderNature(OrderType orderNature) {
 		this.orderNature = orderNature;
 	}
 

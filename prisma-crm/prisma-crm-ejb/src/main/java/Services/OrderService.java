@@ -1,11 +1,17 @@
 package Services;
 
+import java.util.Comparator;
 import java.util.List;
-
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import Entities.Client;
 import Entities.ClientCart;
 import Entities.ClientOrder;
@@ -16,9 +22,28 @@ import Interfaces.IOrderLocal;
 public class OrderService implements IOrderLocal {
 	@PersistenceContext(unitName = "prisma-crm-ejb")
 	EntityManager manager;
+	private final String distanceMatrixAPI = "http://www.mapquestapi.com/directions/v2/routematrix";
+	private final String distanceMatrixAPITokenKey = "qgluQem4iTGKYyMxdp1MdsyGHnwwFdva";
+	private JsonObject distanceMatrixParams = new JsonObject();
+
+	public JsonObject getDistanceMatrixAPIParams() {
+		return distanceMatrixParams;
+	}
+
+	public void setDistanceMatrixAPIParams(JsonObject distanceMatrixAPIParams) {
+		this.distanceMatrixParams = distanceMatrixAPIParams;
+	}
+
+	public String getDistanceMatrixAPI() {
+		return distanceMatrixAPI;
+	}
+
+	public String getDistanceMatrixAPITokenKey() {
+		return distanceMatrixAPITokenKey;
+	}
 
 	@Override
-	public String addOrder(int clientId, ClientOrder order,ClientCart cart) {
+	public String addOrder(int clientId, ClientOrder order, ClientCart cart) {
 		Client client = manager.find(Client.class, clientId);
 		if (client != null) {
 			order.setClient(client);
@@ -67,16 +92,6 @@ public class OrderService implements IOrderLocal {
 	}
 
 	@Override
-	public boolean convertClientFidelityPointsToReduction(ClientOrder order) {
-		if(order.getClient().getFidelityScore()>0)
-		{
-			return true;
-		}
-		else
-		return false;
-	}
-
-	@Override
 	public void checkOutOrder(ClientOrder order) {
 
 	}
@@ -84,12 +99,41 @@ public class OrderService implements IOrderLocal {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ClientOrder> fetchAllClientOrders(Client client) {
-		if (manager.find(Client.class, client.getId())!=null)
-		{
-			return manager.createQuery("SELECT c FROM ClientOrder where c.client =:client").setParameter("client", client).getResultList();
-		}
-		else
-		return null;
+		if (manager.find(Client.class, client.getId()) != null) {
+			return manager.createQuery("SELECT c FROM ClientOrder where c.client =:client")
+					.setParameter("client", client).getResultList();
+		} else
+			return null;
+	}
+
+	// This service is invoked after linking the client with a certain store
+	@Override
+	public String calculateDistanceBetweenClientAndStore(ClientOrder order, String origin) {
+		javax.ws.rs.client.Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(distanceMatrixAPI).queryParam("key", distanceMatrixAPITokenKey);
+		JsonArray locations = new JsonArray();
+		locations.add(origin);
+		locations.add(order.getStore().getAddress().getDisplayName());
+		distanceMatrixParams.add("locations", locations);
+		distanceMatrixParams.addProperty("allToAll", false);
+		Response response = target.request().post(Entity.text(distanceMatrixParams));
+		String responseStr = response.readEntity(String.class);
+		client.close();
+		return responseStr;
+	}
+
+	@Override
+	public Client getClientWithTheHighestOrdersOccurency() {
+		
+		return (Client) manager.createQuery("SELECT c.client  from ClientOrder c group by max(c.client) "
+										  + "order by max(c.client) ").getResultList().get(0);
+	}
+
+	@Override
+	public Client getClientWithTheHighestOrdersSpendings() {
+		return (Client) manager.createQuery("SELECT c.client from ClientOrder c   group by max(c.totale)" + 
+											"order by max(c.totale) ").getResultList().get(0);
+
 	}
 
 }

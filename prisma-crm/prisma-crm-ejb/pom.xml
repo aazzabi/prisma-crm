@@ -50,6 +50,33 @@
     <artifactId>jackson-annotations</artifactId>
     <version>2.9.8</version>
 </dependency>
+<dependency>
+   <groupId>com.sun.mail</groupId>
+   <artifactId>javax.mail</artifactId>
+   <version> 1.6.1</version>
+</dependency>
+
+<dependency>
+ <groupId>org.jboss.resteasy</groupId>
+ <artifactId>resteasy-jaxrs</artifactId>
+ <version>3.0.19.Final</version>
+ <scope>provided</scope>
+ </dependency>
+ 
+ <dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.0</version>
+</dependency>
+
+<dependency>
+	<groupId>com.paypal.sdk</groupId>
+	<artifactId>rest-api-sdk</artifactId>
+	<version>LATEST</version>
+</dependency>
+ 
+
+
         
         <dependency>        
             <groupId>org.jboss.spec.javax.ejb</groupId>

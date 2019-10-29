@@ -16,6 +16,9 @@ import Entities.foreignid.CartProductRowId;
 @Table(name="cartproductrow")
 @IdClass(CartProductRowId.class)
 public class CartProductRow implements Serializable {
+		
+	private static final long serialVersionUID = 1L;
+
 		@Id
 	    @ManyToOne
 	    @JoinColumn(name = "product_id", referencedColumnName = "id")
@@ -28,6 +31,39 @@ public class CartProductRow implements Serializable {
 		
 		@Column(name="desiredQuantity")
 		private int quantity;
+		
+		@Column(name="OriginalPrice")
+		private double originalPrice;
+		@ManyToOne
+		private ReductionFidelityRation reductionRatio;
+		@Column(name="finalPrice")
+		private double finalPrice;
+
+		public double getOriginalPrice() {
+			return originalPrice;
+		}
+
+		public void setOriginalPrice(double originalPrice) {
+			this.originalPrice = originalPrice;
+		}
+
+		public ReductionFidelityRation getReductionRatio() {
+			return reductionRatio;
+		}
+
+		public void setReductionRatio(ReductionFidelityRation reductionRatio) {
+			if (reductionRatio.getProductType()==this.product.getType())
+			{
+			this.reductionRatio = reductionRatio;}
+		}
+
+		public double getFinalPrice() {
+			return finalPrice;
+		}
+
+		public void setFinalPrice(double finalPrice) {
+			this.finalPrice = finalPrice;
+		}
 
 		public Product getProduct() {
 			return product;
