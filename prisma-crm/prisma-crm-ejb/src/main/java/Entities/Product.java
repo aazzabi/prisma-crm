@@ -64,7 +64,10 @@ public class Product implements Serializable {
 	@JsonIgnore
 	@ManyToOne
 	Store store; 
-
+	
+	@OneToMany(mappedBy="product")
+	private Set<CartProductRow> cartRows;
+		
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "tarifProduct",
@@ -127,9 +130,7 @@ public class Product implements Serializable {
 
 	public void setPrice(double price) {
 		this.price = price;
-	}
-
-	
+	}	
 
 	public Agent getAgent() {
 		return agent;
@@ -154,10 +155,15 @@ public class Product implements Serializable {
 	public void setStore(Store store) {
 		this.store = store;
 	}
-	
-	
 
+	public Set<CartProductRow> getCartRows() {
+		return cartRows;
+	}
 
+	public void setCartRows(Set<CartProductRow> cartRows) {
+		this.cartRows = cartRows;
+	}
+	
 	
 
 }

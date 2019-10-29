@@ -20,12 +20,11 @@ import Enums.ClientType;
 
 @Entity
 @DiscriminatorValue("client")
-@Table(name = "client")
-public class Client extends User implements Serializable {
-	
+@Table(name="client")public class Client extends User implements Serializable {
+
 	private static final long serialVersionUID = 1L;
-	
-	@OneToMany(mappedBy = "client", fetch=FetchType.EAGER)
+
+	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
 	private Set<ClientOrder> clientOrders;
 	@Enumerated(EnumType.STRING)
 	private ClientGroups clientgroup;
@@ -37,7 +36,6 @@ public class Client extends User implements Serializable {
 	@Column(name = "entreprisePosition", nullable = true, length = 255)
 	private String entreprisePosition;
 
-	
 	public Client() {
 		super();
 		this.clientOrders = new TreeSet<ClientOrder>();
@@ -46,7 +44,7 @@ public class Client extends User implements Serializable {
 	public Set<ClientOrder> getClientOrders() {
 		return clientOrders;
 	}
-
+	
 	public void setClientOrders(Set<ClientOrder> clientOrders) {
 		this.clientOrders = clientOrders;
 	}
