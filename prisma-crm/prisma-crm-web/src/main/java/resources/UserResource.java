@@ -27,10 +27,6 @@ import utilities.*;
 @Path("users")
 @RequestScoped
 public class UserResource {
-//    @Context 
-//    HttpServletResponse response;
-//    @Context
-//    HttpServletRequest request;
     
 	@EJB
 	IUserLocal userBusiness;
@@ -142,13 +138,6 @@ public class UserResource {
 	@Path("{email}/{pwd}")
 	public String loginUser(@PathParam("email") String email, @PathParam("pwd") String pwd) {
 		User userLogged = userBusiness.loginUser(email, pwd);
-		// HttpSession session = request.getSession();
-//         session.setAttribute(SessionUtils.Logg, userLogged);
-//         session.setAttribute(SessionUtils.USER_EMAIL, email);
-//         session.setAttribute(SessionUtils.IS_LOGGED_IN, true);
-//         session.setAttribute(SessionUtils.USER_ID, userLogged.getId());
-//         session.setAttribute(SessionUtils.USER_FIRST_NAME, userLogged.getFirstName());
-//         session.setAttribute(SessionUtils.USER_LAST_NAME, userLogged.getLastName());
          
          UserResource.setUserConnected(userLogged);
          

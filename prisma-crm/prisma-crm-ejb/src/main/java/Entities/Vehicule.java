@@ -2,6 +2,7 @@ package Entities;
 
 import java.io.Serializable;
 
+import javax.jws.soap.SOAPBinding.Use;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,7 +19,7 @@ public class Vehicule implements Serializable {
 	private float odometer;
 	private FuelType fuelType;
 	@OneToOne
-	private Agent driver;
+	private User driver;
 	private float location;
 	public int getId() {
 		return id;
@@ -38,10 +39,10 @@ public class Vehicule implements Serializable {
 	public void setFuelType(FuelType fuelType) {
 		this.fuelType = fuelType;
 	}
-	public Agent getDriver() {
+	public User getDriver() {
 		return driver;
 	}
-	public void setDriver(Agent driver) {
+	public void setDriver(User driver) {
 		this.driver = driver;
 	}
 	public float getLocation() {
@@ -51,7 +52,7 @@ public class Vehicule implements Serializable {
 		this.location = location;
 	}
 
-	public Vehicule(int id, float odometer, FuelType fuelType, Agent driver, float location) {
+	public Vehicule(int id, float odometer, FuelType fuelType, User driver, float location) {
 		super();
 		this.id = id;
 		this.odometer = odometer;

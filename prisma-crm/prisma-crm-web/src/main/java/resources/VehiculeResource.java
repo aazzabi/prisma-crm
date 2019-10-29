@@ -79,7 +79,7 @@ public class VehiculeResource {
 	    public Response update(@PathParam("id") int id, Vehicule vehicule) {
             Vehicule x = resourcesRemote.getVehiculeById(id);
 	        x.setFuelType(vehicule.getFuelType());
-	       //x.setDriver();
+	        x.setDriver(UserResource.getUserConnected());
 	        System.out.println("#######*************##"+UserResource.getUserConnected().getEmail()+  "####************#######");
 	        x.setLocation(vehicule.getLocation());
 	        x.setOdometer(vehicule.getOdometer());

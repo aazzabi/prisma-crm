@@ -3,12 +3,15 @@ package Entities;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import Enums.RepairStatus;
@@ -19,8 +22,8 @@ public class RepairRequest implements Serializable {
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
 	private Date warentyExp; 
-	@ManyToOne
-	private Client client;
+	@ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+	private User client;
 	@OneToOne
     @JoinColumn(name = "product_id")
 	private Product product;
@@ -41,10 +44,10 @@ public class RepairRequest implements Serializable {
 	public void setWarentyExp(Date warentyExp) {
 		this.warentyExp = warentyExp;
 	}
-	public Client getClient() {
+	public User getClient() {
 		return client;
 	}
-	public void setClient(Client client) {
+	public void setClient(User client) {
 		this.client = client;
 	}
 	public RepairStatus getStatusRep() {
@@ -65,7 +68,7 @@ public class RepairRequest implements Serializable {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-	public RepairRequest(int id, Date warentyExp, Client client, RepairStatus statusRep, Date createdDate,
+	public RepairRequest(int id, Date warentyExp, User client, RepairStatus statusRep, Date createdDate,
 			String notes) {
 		super();
 		this.id = id;
