@@ -7,8 +7,8 @@ import Entities.Client;
 
 import java.util.Properties;
 public class Mailer {
-	private static final String senderEmail = "atef.ayedi@esprit.tn";//change with your sender email
-	private static final String senderPassword = "tomahawk1994";//change with your sender password
+	private static final String senderEmail = "user@user";//change with your sender email
+	private static final String senderPassword = "password";//change with your sender password
 	public static void sendAsHtml(String to, String title, String html,Client client) throws MessagingException {
 	      System.out.println("Sending email to " + to);
 
