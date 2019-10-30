@@ -1,15 +1,21 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.jws.soap.SOAPBinding.Use;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import Enums.FuelType;
+import Enums.ServiceType;
 @Entity
 public class Vehicule implements Serializable {
 	@Id
@@ -21,6 +27,9 @@ public class Vehicule implements Serializable {
 	@OneToOne
 	private User driver;
 	private float location;
+	@JsonIgnore
+	@OneToMany(mappedBy="vehicule")
+	private List<VehiculeMaintenance> vehiculeMaintenances;
 	public int getId() {
 		return id;
 	}
@@ -82,6 +91,22 @@ public class Vehicule implements Serializable {
 	}
 	public void setPlate(String plate) {
 		this.plate = plate;
+	}
+	public List<VehiculeMaintenance> getVehiculeMaintenances() {
+		return vehiculeMaintenances;
+	}
+	public void setVehiculeMaintenances(List<VehiculeMaintenance> vehiculeMaintenances) {
+		this.vehiculeMaintenances = vehiculeMaintenances;
+	}
+	
+	public List<VehiculeMaintenance> getVehiculeMaintenancesType(ServiceType t) { 
+		List<VehiculeMaintenance> list = new ArrayList<VehiculeMaintenance>();
+		for (VehiculeMaintenance vm : vehiculeMaintenances) {
+			if (vm.getServiceType() == t) {
+				list.add(vm);
+			}
+		}
+		return list;
 	}
 	
 

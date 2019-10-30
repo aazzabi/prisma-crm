@@ -2,9 +2,12 @@ package resources;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,50 +21,50 @@ import javax.ws.rs.core.Response.Status;
 
 import Entities.Product;
 import Entities.RepairRequest;
-import Entities.Store;
-import Interfaces.IProductServiceLocal;
-import Interfaces.IRepaiRequest;
+import Entities.Vehicule;
+import Entities.VehiculeMaintenance;
+import Interfaces.IVehiculeMtRemote;
 
-@Path("Repair")
-public class RepairResource {
+@Path("maintenance")
+@RequestScoped
+public class VehiculeMaintenanceResource {
 	@EJB
-	IRepaiRequest repaiRequest;
+	IVehiculeMtRemote vehiculeMtRemote;
 
-	@EJB
-	IProductServiceLocal ps;
-
-	
-	@PUT
+	@POST
 	@Path("/add/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	
-	public Response addRepair(@PathParam(value = "id") int id) {
-		Product xx= ps.findProductById(id);
-		RepairRequest x = new RepairRequest();
-		
-		if (xx != null)
-		{
-			System.out.println("Connectedddd :" +UserResource.getUserConnected());
-			x.setClient(UserResource.getUserConnected());
-			x.setCreatedDate(getDateNow());
-			x.setProduct(xx);
-			x.setStatusRep(Enums.RepairStatus.OnHold);
-			repaiRequest.createRepairRequest(x);
 
+	public Response addMaintenanceR(@PathParam(value = "id") int id, VehiculeMaintenance maintenance) {
+		Vehicule xx = vehiculeMtRemote.getVehiculeById(id);
+
+		if (xx != null) {
+			maintenance.setVehicule(xx);
+			vehiculeMtRemote.addMaintanceRequest(maintenance);
 		}
-		
-		
+
 		return Response.status(Status.CREATED).build();
 	}
 
 	@GET
-	@Path("/all")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response allRepairRequest() {
-		return Response.status(Status.CREATED).entity(repaiRequest.getAllRepairRequest()).build();
+	@Path("find/{id}")
+	public List<VehiculeMaintenance> vehiculeMByVeh(@PathParam("id") int id) {
+
+		return vehiculeMtRemote.findMaintancebyVehicule(id);
 
 	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("findMostMaintained")
+	public Response MostMaintainedVehicule() {
+
+		return Response.status(Status.CREATED).entity(vehiculeMtRemote.findMostMaintainedVehicule()).build();
+
+	}
+
 	public Date getDateNow() {
 		SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		String pattern = "yyyy-MM-dd HH:mm:ss.SSS";
@@ -76,5 +79,4 @@ public class RepairResource {
 
 		return improperUtilDate;
 	}
-
 }

@@ -21,7 +21,7 @@ import javax.ws.rs.core.MediaType;
 import Entities.Agent;
 import Entities.User;
 import Entities.Vehicule;
-import Interfaces.IResourcesRemote;
+import Interfaces.IVehiculeMtRemote;
 import utilities.Secured;
 import utilities.SessionUtils;
 
@@ -34,7 +34,7 @@ public class VehiculeResource {
 	private Agent user;
 
 	@EJB
-	IResourcesRemote resourcesRemote;
+	IVehiculeMtRemote resourcesRemote;
 
 
 	@POST
@@ -60,7 +60,7 @@ public class VehiculeResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("{id}")
-	public Response updateAnswer(Vehicule vehicule,@PathParam(value="id")int id){
+	public Response updateVehicule(Vehicule vehicule,@PathParam(value="id")int id){
         Vehicule x = resourcesRemote.getVehiculeById(id);
 
 		try {
@@ -106,4 +106,5 @@ public class VehiculeResource {
 			resourcesRemote.deleteVehicule(id);
 
 		}
+		
 }
