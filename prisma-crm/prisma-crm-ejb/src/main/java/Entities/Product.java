@@ -59,7 +59,7 @@ public class Product implements Serializable {
 	private List<Pack> packs;
 	
 	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
-			double price/* , List<Stock> stockList, List<TarifProduct> tafifProductList */, Promotion promotion,
+			double price/*  List<TarifProduct> tafifProductList */, Promotion promotion,
 			double new_price) {
 		super();
 		this.id = id;
@@ -118,8 +118,6 @@ public class Product implements Serializable {
 		
 	}
 
-//	@OneToMany(mappedBy = "product",cascade = {CascadeType.ALL},fetch=FetchType.EAGER)
-	//private List<Stock> stockList = new ArrayList<>();
 
 	//@OneToMany(mappedBy = "tariff" ,cascade = {CascadeType.ALL},fetch=FetchType.EAGER)
 	//private List<TarifProduct> tafifProductList = new ArrayList<>();
