@@ -40,13 +40,26 @@ public class ClientOrder implements Serializable {
 	@ManyToOne
 	@JsonIgnore
 	private Client client;
+	@JsonIgnore
 	@ManyToOne
 	private Store store;
+	@JsonIgnore
 	@OneToOne
 	private Invoice invoice;
+	@JsonIgnore
+	@OneToOne
+	private ClientCart cart;
 	
 	
 
+
+	public ClientCart getCart() {
+		return cart;
+	}
+
+	public void setCart(ClientCart cart) {
+		this.cart = cart;
+	}
 
 	public Invoice getInvoice() {
 		return invoice;

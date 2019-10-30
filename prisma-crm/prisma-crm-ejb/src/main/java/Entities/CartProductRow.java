@@ -13,80 +13,89 @@ import javax.persistence.Table;
 import Entities.foreignid.CartProductRowId;
 
 @Entity
-@Table(name="cartproductrow")
+@Table(name = "cartproductrow")
 @IdClass(CartProductRowId.class)
 public class CartProductRow implements Serializable {
-		
+
 	private static final long serialVersionUID = 1L;
 
-		@Id
-	    @ManyToOne
-	    @JoinColumn(name = "product_id", referencedColumnName = "id")
-		private Product product;
-		
-		@Id
-	    @ManyToOne
-	    @JoinColumn(name = "cart_id", referencedColumnName = "id")
-		private ClientCart cart;
-		
-		@Column(name="desiredQuantity")
-		private int quantity;
-		
-		@Column(name="OriginalPrice")
-		private double originalPrice;
-		@ManyToOne
-		private ReductionFidelityRation reductionRatio;
-		@Column(name="finalPrice")
-		private double finalPrice;
+	@Id
+	@ManyToOne
+	@JoinColumn(name = "product_id", referencedColumnName = "id")
+	private Product product;
 
-		public double getOriginalPrice() {
-			return originalPrice;
-		}
+	@Id
+	@ManyToOne
+	@JoinColumn(name = "cart_id", referencedColumnName = "id")
+	private ClientCart cart;
 
-		public void setOriginalPrice(double originalPrice) {
-			this.originalPrice = originalPrice;
-		}
+	@Column(name = "desiredQuantity")
+	private int quantity;
 
-		public ReductionFidelityRation getReductionRatio() {
-			return reductionRatio;
-		}
+	@Column(name = "OriginalPrice")
+	private double originalPrice;
+	@ManyToOne
+	private ReductionFidelityRation reductionRatio;
+	@Column(name = "finalPrice")
+	private double finalPrice;
+	private int usedFidelityPoints;
 
-		public void setReductionRatio(ReductionFidelityRation reductionRatio) {
-			if (reductionRatio.getProductType()==this.product.getType())
-			{
-			this.reductionRatio = reductionRatio;}
-		}
+	public double getOriginalPrice() {
+		return originalPrice;
+	}
 
-		public double getFinalPrice() {
-			return finalPrice;
-		}
+	public void setOriginalPrice(double originalPrice) {
+		this.originalPrice = originalPrice;
+	}
 
-		public void setFinalPrice(double finalPrice) {
-			this.finalPrice = finalPrice;
-		}
+	public ReductionFidelityRation getReductionRatio() {
+		return reductionRatio;
+	}
 
-		public Product getProduct() {
-			return product;
+	public void setReductionRatio(ReductionFidelityRation reductionRatio) {
+		if (reductionRatio.getProductType() == this.product.getType()) {
+			this.reductionRatio = reductionRatio;
 		}
+	}
 
-		public void setProduct(Product product) {
-			this.product = product;
-		}
+	public double getFinalPrice() {
+		return finalPrice;
+	}
 
-		public ClientCart getCart() {
-			return cart;
-		}
+	public void setFinalPrice(double finalPrice) {
+		this.finalPrice = finalPrice;
+	}
 
-		public void setCart(ClientCart cart) {
-			this.cart = cart;
-		}
+	public Product getProduct() {
+		return product;
+	}
 
-		public int getQuantity() {
-			return quantity;
-		}
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 
-		public void setQuantity(int quantity) {
-			this.quantity = quantity;
-		}
-		
+	public ClientCart getCart() {
+		return cart;
+	}
+
+	public void setCart(ClientCart cart) {
+		this.cart = cart;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public int getUsedFidelityPoints() {
+		return usedFidelityPoints;
+	}
+
+	public void setUsedFidelityPoints(int usedFidelityPoints) {
+		this.usedFidelityPoints = usedFidelityPoints;
+	}
+
 }

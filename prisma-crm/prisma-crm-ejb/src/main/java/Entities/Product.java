@@ -75,6 +75,9 @@ public class Product implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
     )
 	private Set<Tariff> tarifs ;
+	
+	@Column(name="stock")
+	private int stock;
 
 	public int getId() {
 		return id;
@@ -163,7 +166,16 @@ public class Product implements Serializable {
 	public void setCartRows(Set<CartProductRow> cartRows) {
 		this.cartRows = cartRows;
 	}
+
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
 	
 	
 
 }
+

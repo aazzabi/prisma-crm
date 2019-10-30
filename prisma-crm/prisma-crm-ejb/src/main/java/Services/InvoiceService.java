@@ -9,6 +9,8 @@ import javax.persistence.PersistenceContext;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+
+import Entities.CartProductRow;
 import Entities.ClientOrder;
 import Entities.Invoice;
 import Interfaces.IInvoiceLocal;
@@ -32,7 +34,9 @@ public class InvoiceService implements IInvoiceLocal {
 			java.util.Date date=new java.util.Date();
 			invoice.setCreatedAt(new Timestamp(date.getTime()));
 			invoice.setOrder(order);
+			order.setInvoice(invoice);
 			manager.persist(invoice);
+			manager.merge(order);
 			manager.flush();
 			return invoice;			
 		}
@@ -71,16 +75,22 @@ public class InvoiceService implements IInvoiceLocal {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public float getCurrencyCurrentValue(String base,String trgt,float ammount)
+	public String getCurrencyCurrentValue(String base,String trgt,int invoiceId)
 	{
+		Invoice invoice=manager.find(Invoice.class, invoiceId);
+		if (invoice!=null)
+		{
 		javax.ws.rs.client.Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(CURRENCY_API_URL).path(Float.toString(ammount)).path(base).path(trgt);
+		WebTarget target = client.target(CURRENCY_API_URL).path(Float.toString(invoice.getOrder().getTotale())).path(base).path(trgt);
 		Response response = target.request().header("Authorization", CURRENCY_API_KEY).get();
 		
 		Map<String,Object> responseStr =(Map<String,Object>) response.readEntity(Map.class);
 		client.close();
 		Double amount=(Double)responseStr.get("amount");
-		return amount.floatValue();
+		return "Totale En "+base+" : "+invoice.getOrder().getTotale()
+			+"\nTotale En "+trgt+" : "+amount;
+		}
+		else return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,6 +114,37 @@ public class InvoiceService implements IInvoiceLocal {
 	public boolean sendInvoiceToClient(int invoiceId) {
 		
 		return false;
+	}
+
+	@Override
+	public String getInvoiceProductRows(int invoice) {
+		Invoice INVOICE=manager.find(Invoice.class,invoice);
+		String result="";
+		if (INVOICE!=null)
+		{
+			ClientOrder order=(ClientOrder)manager.createQuery("SELECT O FROM ClientOrder O WHERE O.invoice=:invoice")
+									 .setParameter("invoice", INVOICE)
+									 .getSingleResult();
+			if ((order!=null) && (order.getCart().getCartRows().size()>0))
+			{
+				for (CartProductRow row:order.getCart().getCartRows())
+				{
+					result+="--------------------------------------------------\n"
+							+"Product reference : "+row.getProduct().getName()+
+						  "\nProduct desired quantity : "+row.getQuantity()+"\n"
+						 +"\nProduct original price   : "+row.getOriginalPrice()
+						+"\nTotal line price		  : "+row.getFinalPrice();
+					if (row.getUsedFidelityPoints()==0)
+					{
+					result+="\nReduction is being applied in this row with the use of "+row.getUsedFidelityPoints()+"\n\n";	
+					}
+					else result+="\nReduction is not being applied \n\n";	
+				}
+				return result;
+			}
+			else return null;
+		}
+		else return null;
 	}
 
 }

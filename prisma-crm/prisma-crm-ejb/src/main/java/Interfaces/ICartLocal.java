@@ -17,7 +17,7 @@ public interface ICartLocal {
 	
 public ClientCart createCart(ClientCart cart,int client);	
 
-public Product addProductToCart(int product,int cart,int quantity,int points);
+public Product addProductToCart(int product,int cart,int quantity,int points,boolean withReduction);
 
 public Product deleteProductFromCart(int product,int cart);
 
@@ -29,7 +29,7 @@ public boolean sendCartReminder(ClientCart cart);
 
 public List<ClientCart> fetchCarts();
 
-public ClientCart getClientCart(int clientid,int cartId);
+public List<ClientCart> getClientCarts(int clientid);
 
 public List<ClientCart> searchForClientCarts(String value,String criteria);
 

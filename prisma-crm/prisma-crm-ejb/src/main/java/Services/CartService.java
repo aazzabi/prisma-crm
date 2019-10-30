@@ -1,7 +1,9 @@
 package Services;
 
-import java.sql.Date;
 
+
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -28,97 +30,111 @@ public class CartService implements ICartLocal {
 	EntityManager manager;
 	@EJB
 	OrderService orderBusiness;
-	
+
 	@Override
-	public ClientCart createCart(ClientCart cart,int client) {
-		Client cl=manager.find(Client.class, client);
-		if (cl!=null)
-		{
-		cart.setClient(cl);	
-		manager.persist(cart);
-		manager.flush();
-		return cart;
-		}
-		else 
-		return null;
+	public ClientCart createCart(ClientCart cart, int client) {
+		Client cl = manager.find(Client.class, client);
+		if (cl != null) {
+			cart.setClient(cl);
+			manager.persist(cart);
+			manager.flush();
+			return cart;
+		} else
+			return null;
 	}
 
 	@Override
-	public Product addProductToCart(int product, int cart, int quantity,int points) {
-		Product pr=manager.find(Product.class, product);
-		ClientCart crt=manager.find(ClientCart.class, cart);
-		if((crt!=null)
-				&& (pr!=null))
-		{
-			CartProductRow row=new CartProductRow();
-			row.setCart(manager.find(ClientCart.class, cart));
-			row.setProduct(manager.find(Product.class, product));
-			row.setOriginalPrice(pr.getPrice());
-			row.setFinalPrice(pr.getPrice()*quantity);
-			ReductionFidelityRation ratio=(ReductionFidelityRation)manager.createQuery("SELECT R FROM ReductionFidelityRation"
-														   + " R where R.productType=:producttype")
-															 .setParameter(":producttype", pr.getType());
-			row.setReductionRatio(ratio);
-			if (applyCartReduction(row, points))
-				return pr;
-			else
-			manager.persist(row);
-			manager.flush();
-			return pr;
-		}
-		else
-		return null;
+	public Product addProductToCart(int product, int cart, int quantity, int points, boolean withReduction) {
+		Product PRODUCT = manager.find(Product.class, product);
+		ClientCart CART = manager.find(ClientCart.class, cart);
+		if ((PRODUCT != null) && (CART != null) && (PRODUCT.getStock() >= quantity)) {
+			// Initializing ROW
+			CartProductRow ROW = new CartProductRow();
+			ROW.setCart(CART);
+			ROW.setOriginalPrice(PRODUCT.getPrice());
+			ROW.setQuantity(quantity);
+			ROW.setProduct(PRODUCT);
+			PRODUCT.setStock(PRODUCT.getStock() - quantity);
+			ROW.setFinalPrice(quantity*PRODUCT.getPrice());
+			manager.merge(PRODUCT);
+			// Searching for Reduction Ratio for the product
+			ReductionFidelityRation RATION = (ReductionFidelityRation) manager.createQuery(
+					"SELECT R FROM ReductionFidelityRation R WHERE R.productType =:a")
+					.setParameter("a", PRODUCT.getType())
+					.getSingleResult();
+			// Calling for the Reduction service to apply reduction
+			if ((withReduction) && (RATION!=null)) {
+				ROW.setReductionRatio(RATION);
+				if (applyCartReduction(ROW, points)) {
+					return PRODUCT;
+				} else {
+					manager.persist(ROW);
+					return PRODUCT;
+				}
+
+			} else {
+				manager.persist(ROW);
+				return PRODUCT;
+			}
+
+		} else
+			return null;
+
 	}
 
 	@Override
 	public Product deleteProductFromCart(int product, int cart) {
-		if((manager.find(Product.class, product)!=null)
-				&& (manager.find(ClientCart.class, cart)!=null))
-		{
-		ClientCart crt=manager.find(ClientCart.class,cart);
-		Product prdct=manager.find(Product.class,product);
-		CartProductRow row=(CartProductRow)manager.createQuery("SELECT c FROM CartProductRow c "
-											 + "where c.cart =:cart AND c.product=:product")
-								                  .setParameter("cart",crt)
-								                  .setParameter("product",prdct)
-								                  .getSingleResult();
-		manager.remove(row);
-		manager.flush();
-		return prdct;
-		}
-		else return null;
+		ClientCart CART = manager.find(ClientCart.class, cart);
+		Product PRODUCT = manager.find(Product.class, product);
+		if ((CART != null) && (PRODUCT != null)) {
+
+			CartProductRow row = (CartProductRow) manager
+					.createQuery("SELECT c FROM CartProductRow c " + "where c.cart =:cart AND c.product=:product")
+					.setParameter("cart", CART).setParameter("product", PRODUCT).getSingleResult();
+			PRODUCT.setStock(PRODUCT.getStock()+row.getQuantity());
+			row.getCart().getClient().setFidelityScore(row.getCart().getClient().getFidelityScore()+row.getUsedFidelityPoints());
+			manager.merge(PRODUCT);
+			manager.merge(row.getCart().getClient());
+			manager.remove(row);
+			manager.flush();
+			return PRODUCT;
+		} else
+			return null;
 	}
 
 	@Override
-	public ClientOrder passToCheckOut(OrderType orderType,int client,int cart) {
-		Client customer=manager.find(Client.class, client);
-		ClientCart crt=manager.find(ClientCart.class, cart);
-		if ((customer!=null) && (crt!=null))
-		{
-			ClientOrder order=new ClientOrder();
+	public ClientOrder passToCheckOut(OrderType orderType, int client, int cart) {
+		Client customer = manager.find(Client.class, client);
+		ClientCart crt = manager.find(ClientCart.class, cart);
+		if ((customer != null) && (crt != null)) {
+			ClientOrder order = new ClientOrder();
 			order.setClient(customer);
-			java.util.Date date=new java.util.Date();
+			java.util.Date date = new java.util.Date();
 			order.setCreatedAt(new Date(date.getTime()));
 			order.setOrderNature(orderType);
 			order.setClient(customer);
 			order.setValid(false);
+			order.setCart(crt);
+			crt.setUpdatedAt(new Timestamp(date.getTime()));
 			crt.setOrder(order);
-			orderBusiness.addOrder(customer.getId(), order, crt);
+			Double total=crt.getCartRows().stream().filter(o->o.getFinalPrice()>0).mapToDouble(o->o.getFinalPrice()).sum();
+			order.setTotale(total.floatValue());
+			manager.persist(order);
+			manager.flush();
 			manager.merge(crt);
 			manager.flush();
+			return order;
 		}
-				
-		return null;
+
+		else return null;
 	}
 
 	@Override
 	public boolean sendCartReminder(ClientCart cart) {
 		try {
-		Mailer.sendAsHtml(cart.getClient().getEmail(), "Forgotten cart","<p>Test mail</p>", cart.getClient());
-		return true;
-		}
-		catch (MessagingException m)
-		{
+			Mailer.sendAsHtml(cart.getClient().getEmail(), "Forgotten cart", "<p>Test mail</p>", cart.getClient());
+			return true;
+		} catch (MessagingException m) {
 			m.printStackTrace();
 			return false;
 		}
@@ -127,58 +143,47 @@ public class CartService implements ICartLocal {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ClientCart> fetchCarts() {
-		
+
 		return manager.createQuery("SELECT C FROM ClientCart C ").getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public ClientCart getClientCart(int id,int cartid) {
-		Client client=manager.find(Client.class,id);
-		ClientCart cart=manager.find(ClientCart.class,cartid);
-		if ((client!=null) && (cart!=null))
-		{
-			return(ClientCart) manager.createQuery("SELECT C FROM ClientCart C WHERE C.client=:client")
-					      			  .setParameter("client",client)
-					      			  .getSingleResult();
-		}
-		else {
-			return null;
-		}
-		
+	public List<ClientCart> getClientCarts(int clientid) {
+		Client client = manager.find(Client.class, clientid);
+		return client!=null?manager.createQuery("SELECT C FROM ClientCart C WHERE C.client=:client")
+								   .setParameter("client",client)
+								   .getResultList()
+							:null;	   
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ClientCart> searchForClientCarts(String value, String criteria) {
-		return manager.createQuery("SELECT C FROM ClientCart C WHERE C."+criteria+"=:value")
-    			  .setParameter("value",value)
-    			  .getResultList();
+		return manager.createQuery("SELECT C FROM ClientCart C WHERE C." + criteria + "=:value")
+				.setParameter("value", value).getResultList();
 
 	}
 
-	
-/*This web service is for time cost from point a to b : 
- * http://www.mapquestapi.com/directions/v2/routematrix?key=qgluQem4iTGKYyMxdp1MdsyGHnwwFdva
-*/
-
-	public boolean applyCartReduction(CartProductRow cart,int desiredFidelityPoints) {
-		if ((cart!=null) && (desiredFidelityPoints<=cart.getCart().getClient().getFidelityScore()))
-		{
-			float finalRatio=((int)desiredFidelityPoints/cart.
-					getReductionRatio().getFidelityScoreForEach())
-					*(cart.getReductionRatio().getReductionRatio());
-			cart.setFinalPrice((cart.getFinalPrice())-(finalRatio*cart.getQuantity()));
+	public boolean applyCartReduction(CartProductRow cart, int desiredFidelityPoints) {
+		if (cart.getCart().getClient().getFidelityScore() >= desiredFidelityPoints) {
+			cart.setUsedFidelityPoints(desiredFidelityPoints);
+			// Calculating the sum of reduction
+			float REDUCTION_AMMOUNT_PER_UNIT = (desiredFidelityPoints
+					/ cart.getReductionRatio().getFidelityScoreForEach())
+					* (cart.getReductionRatio().getReductionRatio());
+			// Updating final sum
+			cart.setFinalPrice(cart.getFinalPrice() - (cart.getQuantity() * REDUCTION_AMMOUNT_PER_UNIT));
+			cart.getCart().getClient()
+					.setFidelityScore(cart.getCart().getClient().getFidelityScore() - desiredFidelityPoints);
 			manager.persist(cart);
+			manager.merge(cart.getCart().getClient());
 			manager.flush();
 			return true;
-		
-		}
-		
-		else return false;
+		} else
+			return false;
+
 	}
-	
-	
-	
-	
 
 }
