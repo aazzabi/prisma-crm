@@ -2,22 +2,27 @@ package Entities;
 
 import java.io.Serializable;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.enterprise.context.Destroyed;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import Enums.PeriodType;
 
@@ -30,54 +35,91 @@ public class Promotion implements Serializable {
 	@Column(name = "id")
 	private int id;
 
-	@Column
+	@Temporal(TemporalType.DATE)
 	private Date s_date;
-
-	@Column
-	private Date e_date;
 	
+	@Temporal(TemporalType.DATE)
+	private Date e_date;
+
+	
+	public Promotion() {
+		super();
+		
+	}
+
+
+
+	
+
+
+
+	public Promotion(int id, Date s_date, Date e_date, PeriodType period, int percentage) {
+		super();
+		this.id = id;
+		this.s_date = s_date;
+		this.e_date = e_date;
+		this.period = period;
+		this.percentage = percentage;
+	}
+
+
+
 	@Enumerated(EnumType.STRING)
 	private PeriodType period;
-
-	
 
 	public int getId() {
 		return id;
 	}
 
+	public Promotion(int id, Date s_date, Date e_date, PeriodType period, int percentage, List<Product> products) {
+		super();
+		this.id = id;
+		this.s_date = s_date;
+		this.e_date = e_date;
+		this.period = period;
+		this.percentage = percentage;
+		this.products = products;
+	}
+
+
+
+
+
+
+
 	public void setId(int id) {
 		this.id = id;
 	}
-	@Column(name = "new_price")
-	private double new_price;
+
+	
 
 	@Column(name = "percentage")
 	private int percentage;
 
-	public Agent getAgent() {
-		return agent;
+	
+
+	public List<Product> getProducts() {
+		return products;
 	}
 
-	public void setAgent(Agent agent) {
-		this.agent = agent;
+
+
+
+
+
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
 
-	public List<Product> getListP() {
-		return listP;
-	}
 
-	public void setListP(List<Product> listP) {
-		this.listP = listP;
-	}
+	@JsonIgnore
+	@OneToMany(mappedBy="promotion", cascade = {CascadeType.ALL}, 
+			fetch=FetchType.EAGER)
+	private List<Product> products = new ArrayList<>();
 
 	
 
-	@ManyToOne(cascade = CascadeType.ALL)
-	Agent agent;
-
-	@OneToMany
-	List<Product> listP;
-	
 	
 
 	public PeriodType getPeriod() {
@@ -88,13 +130,7 @@ public class Promotion implements Serializable {
 		this.period = period;
 	}
 
-	public double getNew_price() {
-		return new_price;
-	}
-
-	public void setNew_price(double new_price) {
-		this.new_price = new_price;
-	}
+	
 
 	public int getPercentage() {
 		return percentage;

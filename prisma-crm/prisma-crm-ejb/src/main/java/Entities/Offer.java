@@ -28,6 +28,28 @@ public class Offer implements Serializable {
 	private String name;
 	
 	@Column
+	private String avantages;
+	
+	@Column
+	private String tarification;
+	
+	public String getAvantages() {
+		return avantages;
+	}
+
+	public void setAvantages(String avantages) {
+		this.avantages = avantages;
+	}
+
+	public String getTarification() {
+		return tarification;
+	}
+
+	public void setTarification(String tarification) {
+		this.tarification = tarification;
+	}
+
+	@Column
 	private String description;
 	
 	@Enumerated(EnumType.STRING)

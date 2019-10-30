@@ -1,16 +1,23 @@
 package Entities;
 
 import java.io.Serializable;
+
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @DiscriminatorValue("Pack")
@@ -24,6 +31,31 @@ public class Pack  implements Serializable{
 	@Column
 	private String description;
 	
+	@Column
+	private double price;
+	@JsonIgnore
+	@ManyToMany(cascade = {CascadeType.ALL},fetch=FetchType.EAGER)
+	private List<Product> products;
+	
+	@Column
+	private String name;
+	
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -32,11 +64,9 @@ public class Pack  implements Serializable{
 		this.description = description;
 	}
 
-	@Column
-	private String name;
 	
-	@OneToMany
-	List<Product> listP;
+	
+	
 
 	public int getId() {
 		return id;
@@ -54,12 +84,7 @@ public class Pack  implements Serializable{
 		this.name = name;
 	}
 
-	public List<Product> getListP() {
-		return listP;
-	}
-
-	public void setListP(List<Product> listP) {
-		this.listP = listP;
+	
 	}
 
 	
@@ -67,4 +92,4 @@ public class Pack  implements Serializable{
 	
 	
 
-}
+
