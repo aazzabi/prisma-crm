@@ -4,13 +4,9 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-<<<<<<< HEAD
 import Entities.Mobile;
 import Entities.Product;
 import Entities.Store;
-=======
-import Entities.Product;
->>>>>>> f09d376b1f622471b8f62e53f21f8b05c844cb7e
 import Entities.Tariff;
 
 @Local

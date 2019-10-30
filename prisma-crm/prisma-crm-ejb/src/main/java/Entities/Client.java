@@ -44,11 +44,6 @@ public class Client extends User implements Serializable {
 	public Set<ClientOrder> getClientOrders() {
 		return clientOrders;
 	}
-	
-
-	public Set<ClientOrder> getClientOrders() {
-		return clientOrders;
-	}
 
 	public void setClientOrders(Set<ClientOrder> clientOrders) {
 		this.clientOrders = clientOrders;
