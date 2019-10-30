@@ -2,6 +2,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -9,6 +10,7 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,68 +22,136 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import Enums.AccountState;
 import Enums.Role;
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="userType")
-@Table(name="user")
+
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "userType")
+@Table(name = "user")
 @Entity
 public class User implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
-	private String fullName;
+	private String firstName;
+	private String lastName;
 	private String email;
 	private String password;
-	private java.sql.Date createdAt;
+	private Date createdAt;
 	private String phoneNumber;
+	private String confirmationToken;
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastAuthentificated;
 	private Date passwordLastChanged;
-	private boolean isActive;
+	private AccountState accountState;
 	@ManyToOne
 	private Address address;
-	
-	public User()
-	{
-		
+
+	public User() {
 	}
-	
 
-
-	public User(String fullName, String email, String password, String phoneNumber, boolean isActive) {
+	public User(int id, String firstName, String lastName, String email, String password, Date createdAt,
+			String phoneNumber, String confirmationToken, Date lastAuthentificated, Date passwordLastChanged,
+			AccountState accountState, Address address, String profileImage) {
 		super();
-		this.fullName = fullName;
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
+		this.createdAt = createdAt;
 		this.phoneNumber = phoneNumber;
-		this.isActive = isActive;
+		this.confirmationToken = confirmationToken;
+		this.lastAuthentificated = lastAuthentificated;
+		this.passwordLastChanged = passwordLastChanged;
+		this.accountState = accountState;
+		this.address = address;
+		this.profileImage = profileImage;
 	}
 
+	public User(int id, String firstName, String lastName, String profileImage, String phoneNumber, String email,
+			String password, Date createdAt, AccountState accountState, String confirmationToken) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.createdAt = createdAt;
+		this.phoneNumber = phoneNumber;
+		this.confirmationToken = confirmationToken;
+		this.accountState = accountState;
+		this.profileImage = profileImage;
 
-
-
-
-
-	public String getFullName() {
-		return fullName;
 	}
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public User(int id, String confirmationToken) {
+		super();
+		this.id = id;
+		this.confirmationToken = confirmationToken;
 	}
 
-	public boolean isActive() {
-		return isActive;
+	private String profileImage;
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<RepairRequest> repairRequests;
+
+	public List<RepairRequest> getRepairRequests() {
+		return repairRequests;
 	}
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
+	public void setRepairRequests(List<RepairRequest> repairRequests) {
+		this.repairRequests = repairRequests;
 	}
 
-	public java.sql.Date getCreatedAt() {
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getConfirmationToken() {
+		return confirmationToken;
+	}
+
+	public void setConfirmationToken(String confirmationToken) {
+		this.confirmationToken = confirmationToken;
+	}
+
+	public String getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(String profileImage) {
+		this.profileImage = profileImage;
+	}
+
+	public AccountState getAccountState() {
+		return accountState;
+	}
+
+	public void setAccountState(AccountState accountState) {
+		this.accountState = accountState;
+	}
+
+	public Date getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(java.sql.Date createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 
@@ -104,8 +174,6 @@ public class User implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-
 
 	public String getPhoneNumber() {
 		return phoneNumber;
@@ -130,7 +198,6 @@ public class User implements Serializable {
 	public void setPasswordLastChanged(Date passwordLastChanged) {
 		this.passwordLastChanged = passwordLastChanged;
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -183,7 +250,5 @@ public class User implements Serializable {
 			return false;
 		return true;
 	}
-
-
 
 }

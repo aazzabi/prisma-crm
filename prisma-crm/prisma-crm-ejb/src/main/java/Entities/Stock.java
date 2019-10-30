@@ -66,6 +66,5 @@ public class Stock  implements Serializable{
 	public void setQuantityMin(int quantityMin) {
 		this.quantityMin = quantityMin;
 	}
-	
-	
+		
 }

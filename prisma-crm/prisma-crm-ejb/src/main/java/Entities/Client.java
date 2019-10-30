@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -20,7 +19,8 @@ import Enums.ClientType;
 
 @Entity
 @DiscriminatorValue("client")
-@Table(name="client")public class Client extends User implements Serializable {
+@Table(name="client")
+public class Client extends User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,6 +45,11 @@ import Enums.ClientType;
 		return clientOrders;
 	}
 	
+
+	public Set<ClientOrder> getClientOrders() {
+		return clientOrders;
+	}
+
 	public void setClientOrders(Set<ClientOrder> clientOrders) {
 		this.clientOrders = clientOrders;
 	}

@@ -87,5 +87,4 @@ public class NoteClaim implements Serializable {
 		this.claim = claim;
 	}
 	
-	
 }

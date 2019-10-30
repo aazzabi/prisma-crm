@@ -1,12 +1,9 @@
 package Interfaces;
 
 import java.util.List;
-
 import javax.ejb.Local;
-
 import Entities.Store;
 import Entities.StoreHours;
-
 
 @Local
 public interface IStoreServiceLocal {
@@ -20,7 +17,7 @@ public interface IStoreServiceLocal {
 	public Store findStoreById(int id);
 
 	public List<Store> findAllStores();
-	
+
 	public StoreHours addStoreTime(StoreHours sh);
 
 	public void removeStoreTime(int id);
@@ -30,10 +27,9 @@ public interface IStoreServiceLocal {
 	public StoreHours findStoreTimeById(int id);
 
 	public List<StoreHours> findAllStoreTimes();
-	
-	public void assignTimeToStore(int idStore,int idTime);
-	
-	public Store assignProductToStore(int idStore,int idProduct);
-	
+
+	public void assignTimeToStore(int idStore, int idTime);
+
+	public Store assignProductToStore(int idStore, int idProduct);
 
 }
