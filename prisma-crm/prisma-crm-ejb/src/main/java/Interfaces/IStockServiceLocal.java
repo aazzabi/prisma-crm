@@ -14,5 +14,7 @@ public interface IStockServiceLocal {
 	public String addStock(Stock stock,Store store);
 	
 	public ProviderOrder addProviderOrder(ProviderOrder order);
+	
+	public void sendJavaMail(ProviderOrder order) ;
 
 }

@@ -16,6 +16,7 @@ import Entities.Store;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IStockServiceLocal;
 import Interfaces.IStoreServiceLocal;
+import Utils.JavaMailUtil;
 
 @Stateless
 public class StockService implements IStockServiceLocal {
@@ -70,15 +71,34 @@ public class StockService implements IStockServiceLocal {
 				order.setStore(store);
 				order.setState("untreated");
 				addProviderOrder(order);
+				sendJavaMail(order);
+				
 			}
 			
 
 			em.persist(stock);
-			return "added";
+			return "order sended";
 		}
 
 		
 	}
+	@Override
+	public void sendJavaMail(ProviderOrder order) {
+		try {
+			JavaMailUtil.sendMail("provider.prisma@gmail.com", "Products Order",
+					"<h3>Products Order</h3>"
+					+"<p>Store Name :"+order.getStore().getName()+"</p>"
+					+"<p>Product Reference :"+order.getProductRef()+"</p>"
+					+"<p>Quantity :"+order.getQuantity()+"</p>"
+					+"<a href='http://localhost:9080/prisma-crm-web/stock/add_products?idStore="+order.getStore().getId()+"&&ref="+order.getProductRef()+"&&quantity="+order.getQuantity()+"'>Accept the order</a>"
+					);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+	}
+
+
 
 	@Override
 	public ProviderOrder addProviderOrder(ProviderOrder order) {

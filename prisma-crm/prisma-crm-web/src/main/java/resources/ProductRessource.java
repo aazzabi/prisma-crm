@@ -59,9 +59,10 @@ public class ProductRessource {
 	@GET
 	@Path("/ref/{ref}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findProductByRef(@PathParam(value = "ref") String ref) {
-		return Response.status(Status.CREATED).entity(ps.findProductByReference(ref)).build();
+	public Response findProductsByRef(@PathParam(value = "ref") String ref) {
+		return Response.status(Status.CREATED).entity(ps.findProductsByReference(ref)).build();
 	}
+
 	
 	@GET
 	@Path("/store/{idStore}")

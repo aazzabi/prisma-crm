@@ -18,9 +18,9 @@ public interface IProductServiceLocal {
 
 	public Product updateProduct(Product newProduct);
 
-	public Product findProductById(int id);
+	public Product findProductById(int id);	
 	
-	public List<Product> findProductByReference(String ref);
+	public List<Product> findProductsByReference(String ref);
 	
 	public List<Product> findProductsByStore(Store store);
 

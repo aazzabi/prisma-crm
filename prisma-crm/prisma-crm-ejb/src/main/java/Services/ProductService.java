@@ -53,11 +53,19 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		return p;
 		
 	}
-	
+	@Override
+	public List<Product> findProductsByStore(Store s ) {
+		TypedQuery<Product> query = em.createQuery(
+				"SELECT c FROM Product c WHERE c.store = :store", Product.class);
+
+		return query.setParameter("store", s).getResultList();
+	}
+
+
 	
 
 	@Override
-	public List<Product> findProductByReference(String ref) {
+	public List<Product> findProductsByReference(String ref) {
 		
 		TypedQuery<Product> query = em.createQuery(
 				"SELECT c FROM Product c WHERE c.reference = :ref", Product.class);
@@ -134,19 +142,15 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		p.getTarifs().add(t);
 	}
 
-	public void iterateEnum() {
+	/*public void iterateEnum() {
 		for (ProductType type : ProductType.values()) { 
 			System.out.println(type); 
 		}
 
-	}
+	}*/
 
-	@Override
-	public List<Product> findProductsByStore(Store s ) {
-		TypedQuery<Product> query = em.createQuery(
-				"SELECT c FROM Product c WHERE c.store = :store", Product.class);
+	
 
-		return query.setParameter("store", s).getResultList();
-	}
+
 
 }

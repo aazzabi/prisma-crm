@@ -72,6 +72,22 @@ public class Product implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
     )
 	private Set<Tariff> tarifs ;
+	
+	
+
+	public Product() {
+		super();
+	}
+
+	public Product(String reference, String name, String description, ProductType type, int guarantee, double price) {
+		super();
+		this.reference = reference;
+		this.name = name;
+		this.description = description;
+		this.type = type;
+		this.guarantee = guarantee;
+		this.price = price;
+	}
 
 	public int getId() {
 		return id;
