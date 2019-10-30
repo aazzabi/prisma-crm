@@ -1,6 +1,6 @@
 package Services;
 
-import java.util.Comparator;
+
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -13,7 +13,6 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import Entities.Client;
-import Entities.ClientCart;
 import Entities.ClientOrder;
 import Interfaces.IOrderLocal;
 
@@ -40,18 +39,6 @@ public class OrderService implements IOrderLocal {
 
 	public String getDistanceMatrixAPITokenKey() {
 		return distanceMatrixAPITokenKey;
-	}
-
-	@Override
-	public String addOrder(int clientId, ClientOrder order, ClientCart cart) {
-		Client client = manager.find(Client.class, clientId);
-		if (client != null) {
-			order.setClient(client);
-			manager.persist(order);
-			manager.flush();
-			return "Creating Order for Mr/Ms " + client.getFullName();
-		} else
-			return "Client not found";
 	}
 
 	@SuppressWarnings("unchecked")

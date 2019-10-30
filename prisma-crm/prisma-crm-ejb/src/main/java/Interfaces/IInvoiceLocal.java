@@ -18,7 +18,10 @@ public interface IInvoiceLocal {
 	
 	public boolean sendInvoiceToClient(int invoiceId);
 	
-	public float getCurrencyCurrentValue(String base,String trgt,float ammount);
+	public String getCurrencyCurrentValue(String base,String trgt,int invoiceId);
+	
+	public String getInvoiceProductRows(int invoice);
+	
 	
 	
 

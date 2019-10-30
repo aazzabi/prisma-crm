@@ -51,20 +51,38 @@ public class Product implements Serializable{
 
 	@Column(name = "guarantee")
 	private int guarantee;
+	
+	@Column(name="stock")
+	private int stock;
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
 
 	@Column(name = "price")
 	private double price;
-
+	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.ALL)
 	Agent agent;
-	
+	@JsonIgnore
 	@OneToMany(mappedBy="product")
 	private Set<CartProductRow> cartRows;
 
 	@JsonIgnore
 	@ManyToOne
 	Store store; 
-
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "tarifProduct",

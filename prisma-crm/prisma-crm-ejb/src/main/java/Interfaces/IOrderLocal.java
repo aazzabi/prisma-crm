@@ -13,7 +13,6 @@ import Entities.ClientOrder;
 @Local
 public interface IOrderLocal {
 
-	public String addOrder(int clientId, ClientOrder order,ClientCart cart);
 
 	public List<ClientOrder> fetchOrders();
 
