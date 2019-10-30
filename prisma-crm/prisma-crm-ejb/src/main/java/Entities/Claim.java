@@ -83,17 +83,17 @@ public class Claim implements Serializable {
 	
 	@ManyToOne
 	private Agent responsable;//---Ok---
-
+/*
 	//@JsonIgnore
-	@OneToMany(mappedBy = "claim", cascade=CascadeType.REMOVE, fetch=FetchType.EAGER)
+	@OneToMany(mappedBy = "claim", cascade=CascadeType.REMOVE, fetch= FetchType.LAZY)
 	private List<NoteClaim> notes;//---Ok---
-
+*/
 	private Boolean isFaq;
 	
 	public Claim() {
 		this.status = ClaimStatus.EN_ATTENTE;
 		this.createdAt = new Date(System.currentTimeMillis());
-		this.notes = new ArrayList<NoteClaim>();
+//		this.notes = new ArrayList<NoteClaim>();
 		this.isFaq = false;
 	}
 
@@ -184,7 +184,7 @@ public class Claim implements Serializable {
 	public void setCreatedBy(Client createdBy) {
 		this.createdBy = createdBy;
 	}
-
+/*
 	public List<NoteClaim> getNotes() {
 		return notes;
 	}
@@ -202,7 +202,7 @@ public class Claim implements Serializable {
 		this.notes.remove(note.getId());
 		note.setClaim(null);
 	}
-
+*/
 	public Agent getResponsable() {
 		return responsable;
 	}
@@ -253,7 +253,7 @@ public class Claim implements Serializable {
 				+ ", priority=" + priority + ", status=" + status + ", type=" + type + ", createdAt=" + createdAt
 				+ ", openedAt=" + openedAt + ", delegatedAt=" + delegatedAt + ", resolvedAt=" + resolvedAt
 				+ ", createdBy=" + createdBy + ", resolvedBy=" + resolvedBy + ", firstResponsable=" + firstResponsable
-				+ ", responsable=" + responsable + ", notes=" + notes + "]";
+				+ ", responsable=" + responsable + "]";
 	}
 
 	

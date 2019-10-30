@@ -196,13 +196,30 @@ public class ClaimResource {
 		Claim c = cs.getById(1);
 		return Response.status(Status.OK).entity(cs.getByType(t)).build();
 	}
-
+	
+	/***** TEST *****/
 	@GET
 	@Path("/deleguer/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deleguerClaim(@PathParam(value = "id") int id) {
+	public Response deleguerClaim(@PathParam(value = "id") int id) throws Exception {
 		Claim c = cs.getById(id);
 		return Response.status(Status.OK).entity(cs.deleguer(c)).build();
+	}
+	
+	@GET
+	@Path("/open/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response testOpenClaim(@PathParam(value = "id") int id) throws Exception {
+		Claim c = cs.getById(id);
+		return Response.status(Status.OK).entity(cs.open(c)).build();
+	}
+
+	@GET
+	@Path("/resolve/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response testResolveClaim(@PathParam(value = "id") int id) throws Exception {
+		Claim c = cs.getById(id);
+		return Response.status(Status.OK).entity(cs.resolve(c)).build();
 	}
 	
 	/*

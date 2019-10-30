@@ -49,9 +49,10 @@ public interface IClaimServiceRemote {
 	public Agent getResponsableById(int id);
 	
 	
-	public Claim deleguer(Claim c);
+	public Claim deleguer(Claim c) throws Exception;
 	public Claim open(Claim c) ;
 	public Claim resolve(Claim c);
 	//autre que le premier choisis ( lors de la delgation)
 	public Agent findAnOtherAgentFreeAndActif(Agent a, ClaimType t);
+	public List<Agent> getAllAgents();
 }

@@ -92,7 +92,7 @@ public class User implements Serializable {
 	}
 
 	private String profileImage;
-	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<RepairRequest> repairRequests;
 
 	public List<RepairRequest> getRepairRequests() {
