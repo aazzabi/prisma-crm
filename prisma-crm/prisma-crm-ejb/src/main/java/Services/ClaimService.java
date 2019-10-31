@@ -200,7 +200,7 @@ public class ClaimService implements IClaimServiceRemote {
 			type = Role.relational;
 		}
 
-		String qlString = "SELECT a from Agent a where a.roleAgent=:t and a.dispoClaim=:d ORDER BY a.nbrClaimsResolved";
+		String qlString = "SELECT a from Agent a where a.role=:t and a.dispoClaim=:d ORDER BY a.nbrClaimsResolved";
 		Query query = em.createQuery(qlString, Agent.class).setParameter("d", "disponible").setParameter("t", type);
 		List<Agent> agents = query.getResultList();
 		System.out.println("160 - CLAIM TYPE " + t);
@@ -208,7 +208,7 @@ public class ClaimService implements IClaimServiceRemote {
 		if (agents.size() == 1) {
 			a = (Agent) query.getResultList().get(0);
 			a.setDispoClaim("indisponible");
-			System.out.println(a.getRoleAgent());
+			System.out.println(a.getRole());
 		} else { // on prend l'agent ayant le moins de Réclamation traités
 			TypedQuery<Agent> query2 = em
 					.createQuery("SELECT a from Agent a WHERE a.roleAgent=:t ORDER BY nbrClaimsResolved DESC",

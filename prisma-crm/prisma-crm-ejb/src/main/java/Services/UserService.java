@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import Entities.User;
 import Enums.AccountState;
+import Enums.Role;
 import Interfaces.IUserLocal;
 import Interfaces.IUserRemote;
 import Utils.AuthJWT;
@@ -20,12 +21,12 @@ import Utils.MD5Hash;
 @Stateful
 public class UserService implements IUserLocal,IUserRemote {
 
-	
-
 
 		@PersistenceContext(unitName = "prisma-crm-ejb")
 		EntityManager entityManager;
 
+		public static User UserLogged;
+		
 		public UserService() {
 
 		}
@@ -97,13 +98,16 @@ public class UserService implements IUserLocal,IUserRemote {
 
 				String hashedPwd = MD5Hash.getMD5Hash(pwd);
 				Query query = entityManager.createQuery(
-						"SELECT new User(u.id,u.firstName,u.lastName,u.profileImage,u.phoneNumber,u.email,u.password,u.createdAt,u.accountState,u.confirmationToken) "
-								+ "FROM User u WHERE (u.email=:uname AND u.password=:upwd) ");
-				User userLogged = (User) query.setParameter("uname", email).setParameter("upwd", hashedPwd)
+						//"SELECT new User(u.id,u.firstName,u.lastName,u.profileImage,u.phoneNumber,u.email,u.password,u.createdAt,u.accountState,u.confirmationToken) "
+						"SELECT u FROM User u WHERE (u.email=:uname AND u.password=:upwd) ");
+				User user = (User) query.setParameter("uname", email).setParameter("upwd", hashedPwd)
 						.getSingleResult();
-				String vf = AuthJWT.SignJWT("User", userLogged);
+				Role a  = user.getRole();
+				this.UserLogged = user;
+				/*String vf = AuthJWT.SignJWT("User", userLogged);
 				AuthJWT.VerifyJWT(vf);
-				return userLogged;
+				System.out.println(vf);*/
+				return user;
 			
 		}
 
@@ -120,11 +124,7 @@ public class UserService implements IUserLocal,IUserRemote {
 				return true;
 			}
 			return false;
-
-		
-	
-	
-}
+		}
 
 
 		@Override
@@ -132,4 +132,4 @@ public class UserService implements IUserLocal,IUserRemote {
 			// TODO Auto-generated method stub
 			return false;
 		}
-		}
+}

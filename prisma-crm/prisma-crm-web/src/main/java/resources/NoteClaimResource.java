@@ -52,7 +52,7 @@ public class NoteClaimResource {
 		List<NoteClaim> notes = noteService.getNotesByClaimId(id);
 		return Response.status(Status.OK).entity(notes).build();
 	}
-	
+
 	@GET
 	@Path("getAll")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -60,7 +60,7 @@ public class NoteClaimResource {
 		List<NoteClaim> notes = noteService.getAll();
 		return Response.status(Status.OK).entity(notes).build();
 	}
-	
+
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -75,17 +75,17 @@ public class NoteClaimResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addNotesToClaim(@PathParam(value = "id") int id, NoteClaim nc) {
 		Claim c = cs.getById(id);
-		NoteClaim note = noteService.addNoteClaim(nc,c);
+		NoteClaim note = noteService.addNoteClaim(nc, c);
 		return Response.status(Status.OK).entity(note).build();
 	}
-	
+
 	@DELETE
 	@Path("/deleteNote/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteNoteClaim(@PathParam(value = "id") int id) {
 		return Response.status(Status.OK).entity(noteService.deletNoteClaimById(id)).build();
 	}
-	
+
 	@PUT
 	@Path("/editNoteClaim/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -93,7 +93,7 @@ public class NoteClaimResource {
 	public Response updateNoteClaim(@PathParam(value = "id") int id, NoteClaim nc) {
 		NoteClaim ncl = noteService.getNoteClaimByCode(id);
 		NoteClaim injecter = nc;
-		
+
 		injecter.setId(ncl.getId());
 		if (injecter.getDescription() == null) {
 			injecter.setDescription(ncl.getDescription());
@@ -108,15 +108,13 @@ public class NoteClaimResource {
 		NoteClaim newC = (NoteClaim) cs.merge(injecter);
 		return Response.status(Status.OK).entity(newC).build();
 	}
-	
-	
-	
-	@GET
-	@Path("mail")
-	public Response sendMail() throws Exception {
-		noteService.sendJavaMail();
-		return Response.status(Status.OK).entity("sended").build();
-	}
-	
-	
+
+	/*
+	 * @GET
+	 * 
+	 * @Path("mail") public Response sendMail() throws Exception {
+	 * noteService.sendJavaMail(); return
+	 * Response.status(Status.OK).entity("sended").build(); }
+	 */
+
 }
