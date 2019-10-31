@@ -2,6 +2,8 @@ package Services;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -35,7 +37,15 @@ public class InvoiceService implements IInvoiceLocal {
 			invoice.setCreatedAt(new Timestamp(date.getTime()));
 			invoice.setOrder(order);
 			order.setInvoice(invoice);
-			manager.persist(invoice);
+			Set<CartProductRow> rows=order.getCart().getCartRows();
+			if (rows!=null)
+			{
+			for (CartProductRow p : rows)
+			{
+				invoice.addProduct(p.getProduct());
+			}
+			}
+			manager.persist(invoice);			
 			manager.merge(order);
 			manager.flush();
 			return invoice;			
