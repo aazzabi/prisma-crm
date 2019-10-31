@@ -46,6 +46,9 @@ public class User implements Serializable {
 	private AccountState accountState;
 	@ManyToOne
 	private Address address;
+	
+	@Enumerated(EnumType.STRING)
+	private Role role;
 
 	public User() {
 	}
@@ -197,6 +200,22 @@ public class User implements Serializable {
 
 	public void setPasswordLastChanged(Date passwordLastChanged) {
 		this.passwordLastChanged = passwordLastChanged;
+	}
+	
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	@Override

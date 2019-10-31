@@ -22,8 +22,8 @@ import Enums.*;
 @DiscriminatorValue("Agent")
 @Table(name = "agent")
 public class Agent extends User implements Serializable {
-	@Enumerated(EnumType.STRING)
-	private Role roleAgent;
+//	@Enumerated(EnumType.STRING)
+//	private Role roleAgent;
 	private String contractType;
 	private Date startDate;
 	private Date endDate;
@@ -48,7 +48,7 @@ public class Agent extends User implements Serializable {
 		this.moyAssiduite = 0 ; 
 		this.moyReponse = 0 ; 
 	}
-
+/*
 	public Role getRoleAgent() {
 		return roleAgent;
 	}
@@ -56,7 +56,7 @@ public class Agent extends User implements Serializable {
 	public void setRoleAgent(Role roleAgent) {
 		this.roleAgent = roleAgent;
 	}
-
+*/
 	public String getContractType() {
 		return contractType;
 	}
@@ -147,7 +147,6 @@ public class Agent extends User implements Serializable {
 		int result = super.hashCode();
 		result = prime * result + ((contractType == null) ? 0 : contractType.hashCode());
 		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
-		result = prime * result + ((roleAgent == null) ? 0 : roleAgent.hashCode());
 		long temp;
 		temp = Double.doubleToLongBits(salary);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -173,8 +172,6 @@ public class Agent extends User implements Serializable {
 			if (other.endDate != null)
 				return false;
 		} else if (!endDate.equals(other.endDate))
-			return false;
-		if (roleAgent != other.roleAgent)
 			return false;
 		if (Double.doubleToLongBits(salary) != Double.doubleToLongBits(other.salary))
 			return false;

@@ -39,10 +39,7 @@ public class NoteClaimService implements INoteClaimRemote {
 	@Override
 	public NoteClaim addNoteClaim(NoteClaim nc , Claim c) {
 		nc.setClaim(c);
-		//*************************
-		//******** Ne9saa *********
-		//*************************
-		//nc.setCreatedBy(user.connecté);
+		nc.setCreatedBy(UserService.UserLogged);
 		em.persist(nc);
 		return nc;
 	}
@@ -84,8 +81,7 @@ public class NoteClaimService implements INoteClaimRemote {
 	
 	@Override
 	public int deletNoteClaimById(int id) {
-		int i = em.createQuery("delete from NoteClaim c where c.id=:identifiant").setParameter("identifiant", id)
-				.executeUpdate();
+		int i = em.createQuery("delete from NoteClaim c where c.id=:identifiant").setParameter("identifiant", id).executeUpdate();
 		return i;
 	}
 
@@ -94,10 +90,6 @@ public class NoteClaimService implements INoteClaimRemote {
 		NoteClaim c = (NoteClaim) em.find(NoteClaim.class, id);
 		return c;
 	}
-	
-	
-	public void sendJavaMail() throws Exception {
-		JavaMailUtil.sendMail("arafet.azzabi@esprit.tn", "TITRE", "CONTENU");
-	}
+
 
 }

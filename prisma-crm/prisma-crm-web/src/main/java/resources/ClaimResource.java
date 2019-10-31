@@ -36,8 +36,11 @@ import Entities.NoteClaim;
 import Entities.Claim;
 import Enums.ClaimStatus;
 import Enums.ClaimType;
+import Enums.Role;
 import Services.ClaimService;
 import Services.NoteClaimService;
+import utilities.RolesAllowed;
+import utilities.Secured;
 import Entities.Claim;
 import javax.ejb.EJB;
 
@@ -59,6 +62,7 @@ public class ClaimResource {
 		return Response.status(Status.CREATED).entity(c).build();
 	}
 	
+	//@RolesAllowed(Permissions = {Role.financial})
 	@GET
 	@Path("getAll")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -67,6 +71,7 @@ public class ClaimResource {
 	}
 	
 	@GET
+	//@RolesAllowed(Permissions = {Role.technical})
 	@Path("FAQ")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllFaq() {
