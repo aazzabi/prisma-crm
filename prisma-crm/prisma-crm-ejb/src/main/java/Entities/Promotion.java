@@ -16,7 +16,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -37,21 +36,23 @@ public class Promotion implements Serializable {
 
 	@Temporal(TemporalType.DATE)
 	private Date s_date;
-	
+
+	@Column(name = "percentage")
+	private int percentage;
 	@Temporal(TemporalType.DATE)
 	private Date e_date;
 
-	
+	@Enumerated(EnumType.STRING)
+	private PeriodType period;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "promotion", cascade = { CascadeType.PERSIST }, fetch = FetchType.EAGER)
+	private List<Product> products = new ArrayList<>();
+
 	public Promotion() {
 		super();
-		
+
 	}
-
-
-
-	
-
-
 
 	public Promotion(int id, Date s_date, Date e_date, PeriodType period, int percentage) {
 		super();
@@ -61,11 +62,6 @@ public class Promotion implements Serializable {
 		this.period = period;
 		this.percentage = percentage;
 	}
-
-
-
-	@Enumerated(EnumType.STRING)
-	private PeriodType period;
 
 	public int getId() {
 		return id;
@@ -81,46 +77,17 @@ public class Promotion implements Serializable {
 		this.products = products;
 	}
 
-
-
-
-
-
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
-	
-
-	@Column(name = "percentage")
-	private int percentage;
-
-	
 
 	public List<Product> getProducts() {
 		return products;
 	}
 
-
-
-
-
-
-
 	public void setProducts(List<Product> products) {
 		this.products = products;
 	}
-
-
-	@JsonIgnore
-	@OneToMany(mappedBy="promotion", cascade = {CascadeType.ALL}, 
-			fetch=FetchType.EAGER)
-	private List<Product> products = new ArrayList<>();
-
-	
-
-	
 
 	public PeriodType getPeriod() {
 		return period;
@@ -129,8 +96,6 @@ public class Promotion implements Serializable {
 	public void setPeriod(PeriodType period) {
 		this.period = period;
 	}
-
-	
 
 	public int getPercentage() {
 		return percentage;

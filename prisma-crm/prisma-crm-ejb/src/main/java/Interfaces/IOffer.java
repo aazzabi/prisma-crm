@@ -12,7 +12,7 @@ public interface IOffer {
 	public Offer addOffer(Offer offer);
 	public void deleteOffer(int id);
 	public Offer findOffer(int id);
-	public Offer updateOffer(Offer offer,int id );
+	public Offer updateOffer(Offer offer );
 	public List<Offer> listeoffer();
 
 

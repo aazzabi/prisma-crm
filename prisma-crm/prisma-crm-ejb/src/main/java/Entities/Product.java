@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import Enums.ProductType;
 
-
 @Entity
 @Table(name = "Product")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -51,16 +50,17 @@ public class Product implements Serializable {
 	@Column(name = "guarantee")
 	private int guarantee;
 
-
 	@Column(name = "price")
 	private double price;
+	@Column(name = "new_price")
+	private double new_price;
+
 	@JsonIgnore
-	@ManyToMany(mappedBy="products",fetch=FetchType.EAGER)
+	@ManyToMany(mappedBy = "products", fetch = FetchType.EAGER)
 	private List<Pack> packs;
-	
+
 	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
-			double price/*  List<TarifProduct> tafifProductList */, Promotion promotion,
-			double new_price) {
+			double price/* List<TarifProduct> tafifProductList */, Promotion promotion, double new_price) {
 		super();
 		this.id = id;
 		this.reference = reference;
@@ -69,19 +69,18 @@ public class Product implements Serializable {
 		this.type = type;
 		this.guarantee = guarantee;
 		this.price = price;
-		//this.stockList = stockList;
-	//	this.tafifProductList = tafifProductList;
+		// this.stockList = stockList;
+		// this.tafifProductList = tafifProductList;
 		this.promotion = promotion;
 		this.new_price = new_price;
 	}
 
-	
 	public Product() {
 		super();
 	}
 
 	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
-			double price,  List<Pack> packs, Promotion promotion, double new_price) {
+			double price, List<Pack> packs, Promotion promotion, double new_price) {
 		super();
 		this.id = id;
 		this.reference = reference;
@@ -96,7 +95,7 @@ public class Product implements Serializable {
 	}
 
 	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
-			double price ) {
+			double price) {
 		super();
 		this.id = id;
 		this.reference = reference;
@@ -115,17 +114,12 @@ public class Product implements Serializable {
 		this.type = type;
 		this.guarantee = guarantee;
 		this.price = price;
-		
+
 	}
 
-
-	//@OneToMany(mappedBy = "tariff" ,cascade = {CascadeType.ALL},fetch=FetchType.EAGER)
-	//private List<TarifProduct> tafifProductList = new ArrayList<>();
-	
-	
-	
-	
-	
+	// @OneToMany(mappedBy = "tariff" ,cascade =
+	// {CascadeType.ALL},fetch=FetchType.EAGER)
+	// private List<TarifProduct> tafifProductList = new ArrayList<>();
 
 	@ManyToOne
 	private Promotion promotion;
@@ -134,13 +128,9 @@ public class Product implements Serializable {
 		return packs;
 	}
 
-
 	public void setPacks(List<Pack> packs) {
 		this.packs = packs;
 	}
-
-	@Column(name = "new_price")
-	private double new_price;
 
 	public Promotion getPromotion() {
 		return promotion;
@@ -157,8 +147,6 @@ public class Product implements Serializable {
 	public void setNew_price(double new_price) {
 		this.new_price = new_price;
 	}
-
-	
 
 	public int getId() {
 		return id;
@@ -236,8 +224,6 @@ public class Product implements Serializable {
 	 * public void setTafifProductList(List<TarifProduct> tafifProductList) {
 	 * this.tafifProductList = tafifProductList; }
 	 */
-
-
 
 	/*
 	 * @Override public String toString() { return "Product [id=" + id +

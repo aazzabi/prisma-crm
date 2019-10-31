@@ -18,28 +18,28 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
 @Entity
 @DiscriminatorValue("Pack")
-@Table(name="pack")
-public class Pack  implements Serializable{
+@Table(name = "pack")
+public class Pack implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
-	
+
 	@Column
 	private String description;
-	
+
 	@Column
 	private double price;
-	@JsonIgnore
-	@ManyToMany(cascade = {CascadeType.ALL},fetch=FetchType.EAGER)
-	private List<Product> products;
-	
+
 	@Column
 	private String name;
-	
+
+	@JsonIgnore
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+	private List<Product> products;
+
 	public List<Product> getProducts() {
 		return products;
 	}
@@ -64,10 +64,6 @@ public class Pack  implements Serializable{
 		this.description = description;
 	}
 
-	
-	
-	
-
 	public int getId() {
 		return id;
 	}
@@ -84,12 +80,4 @@ public class Pack  implements Serializable{
 		this.name = name;
 	}
 
-	
-	}
-
-	
-	
-	
-	
-
-
+}

@@ -1,7 +1,9 @@
 package Services;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-
+import java.util.Locale;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -72,11 +74,45 @@ public class PromotionService  implements IPromotion{
 
 	@Override
 	public List<Promotion> listepromotions() {
+		this.deleteOldPrmotions();
 		List<Promotion> promotions = em.createQuery("FROM Promotion", Promotion.class).getResultList();
 
 		return promotions;
 	}
+	
+	@Override
+	public List<Promotion> getOldPromotions() {
+		List<Promotion> promotions = em.createQuery("Select p FROM Promotion p where p.e_date <:d ", Promotion.class)
+				.setParameter("d", this.getDateNow())
+				.getResultList();
 
+		return promotions;
+	}
+
+	public void deleteOldPrmotions() {
+		List<Promotion> listPromotions = this.getOldPromotions();
+		for (Promotion prom:listPromotions) {
+			List<Product> listProd = prom.getProducts();
+			for (Product prod:listProd) {
+				prod.setNew_price(0);
+				prod.setPromotion(null);
+			}
+			this.deletePromotion(prom.getId());
+		}
+	}
 	
-	
+	public Date getDateNow() {
+		SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		String pattern = "yyyy-MM-dd HH:mm:ss.SSS";
+
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, new Locale("fr", "FR"));
+
+		String date = simpleDateFormat.format(new Date());
+		System.out.println("DATE " + date);
+
+		java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(date);
+		java.util.Date improperUtilDate = sqlTimestamp;
+
+		return improperUtilDate;
+	}
 }

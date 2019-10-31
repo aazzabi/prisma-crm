@@ -16,5 +16,5 @@ public interface IPromotion {
 	public void addPromotiontoproduct(int p , int pr);
 	public List<Product> listedesProduitpromotion();
 	public List<Promotion> listepromotions();
-	
+	public List<Promotion> getOldPromotions();
 }

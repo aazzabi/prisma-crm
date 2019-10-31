@@ -33,9 +33,9 @@ public class OfferService implements IOffer {
 	}
 
 	@Override
-	public Offer updateOffer(Offer offer,int id) {
+	public Offer updateOffer(Offer offer) {
 
-		Offer o = em.find(Offer.class,id);
+		Offer o = em.find(Offer.class,offer.getId());
 		o.setAvantages(offer.getAvantages());
 		o.setDescription(offer.getDescription());
 		o.setName(offer.getName());

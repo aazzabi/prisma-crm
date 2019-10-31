@@ -15,7 +15,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import Entities.Offer;
-import Entities.Promotion;
 import Interfaces.IOffer;
 
 @Path("/offer")
@@ -42,18 +41,15 @@ public class OfferResource {
 		return "deleted";
 	}
 	
-//	@PUT
-//	@Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public Response updatePromotion(Offer offer, @QueryParam(value="idoffre")int idoffre) {
-//
-//		if(idoffre!=0 ) {
-//			off.updateOffer(offer,idoffre);
-//			return Response.status(Status.CREATED).entity(off.findOffer(idoffre)).build();
-//		}
-//		return Response.status(Status.OK).entity(off.updateOffer(offer,idoffre)).build();
-//
-//	}
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateoffer(Offer offer) {
+
+	
+	return Response.status(Status.OK).entity(off.updateOffer(offer)).build();
+
+	}
 	
 	@GET
 	@Path("/all")

@@ -26,13 +26,18 @@ public class Offer implements Serializable {
 
 	@Column
 	private String name;
-	
+
 	@Column
 	private String avantages;
-	
+
 	@Column
 	private String tarification;
-	
+	@Column
+	private String description;
+
+	@Enumerated(EnumType.STRING)
+	private OfferType offtype;
+
 	public String getAvantages() {
 		return avantages;
 	}
@@ -48,12 +53,6 @@ public class Offer implements Serializable {
 	public void setTarification(String tarification) {
 		this.tarification = tarification;
 	}
-
-	@Column
-	private String description;
-	
-	@Enumerated(EnumType.STRING)
-	private OfferType offtype;
 
 	public int getId() {
 		return id;
@@ -86,7 +85,5 @@ public class Offer implements Serializable {
 	public void setOfftype(OfferType offtype) {
 		this.offtype = offtype;
 	}
-
-	
 
 }
