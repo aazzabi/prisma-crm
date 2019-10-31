@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import Entities.Pack;
 import Entities.Product;
+import Entities.Promotion;
 import Interfaces.IPack;
 
 @Stateless
@@ -36,8 +37,14 @@ public class PackService implements IPack {
 
 	@Override
 	public Pack updatepack(Pack pack) {
-		// TODO Auto-generated method stub
-		return null;
+		Pack p= em.find(Pack.class, pack.getId());
+		p.setDescription(pack.getDescription());
+		p.setName(pack.getName());
+		p.setPrice(pack.getPrice());
+		
+		
+		return p;
+
 	}
 
 	

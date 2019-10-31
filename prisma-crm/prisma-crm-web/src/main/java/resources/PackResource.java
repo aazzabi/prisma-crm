@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import Entities.Offer;
 import Entities.Pack;
 import Interfaces.IPack;
 
@@ -44,6 +46,15 @@ public class PackResource {
 		return "deleted";
 	}
 	
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updatepack(Pack pack) {
+
+	
+	return Response.status(Status.OK).entity(pac.updatepack(pack)).build();
+
+	}
 	
 	@POST
 	@Path("/addproductpack/{idp}/{idpa}")
