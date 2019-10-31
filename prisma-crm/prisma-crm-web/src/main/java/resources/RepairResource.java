@@ -39,7 +39,6 @@ public class RepairResource {
 	public Response addRepair(@PathParam(value = "id") int id) {
 		Product xx= ps.findProductById(id);
 		RepairRequest x = new RepairRequest();
-		
 		if (xx != null)
 		{
 			System.out.println("Connectedddd :" +UserResource.getUserConnected());

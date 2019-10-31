@@ -24,9 +24,10 @@ import javax.persistence.TemporalType;
 
 import Enums.AccountState;
 import Enums.Role;
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="userType")
-@Table(name="user")
+
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "userType")
+@Table(name = "user")
 @Entity
 public class User implements Serializable {
 	@Id
@@ -41,13 +42,60 @@ public class User implements Serializable {
 	private String confirmationToken;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastAuthentificated;
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date passwordLastChanged;
 	private AccountState accountState;
 	@ManyToOne
 	private Address address;
+	
+	@Enumerated(EnumType.STRING)
+	private Role role;
+
+	public User() {
+	}
+
+	public User(int id, String firstName, String lastName, String email, String password, Date createdAt,
+			String phoneNumber, String confirmationToken, Date lastAuthentificated, Date passwordLastChanged,
+			AccountState accountState, Address address, String profileImage) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.createdAt = createdAt;
+		this.phoneNumber = phoneNumber;
+		this.confirmationToken = confirmationToken;
+		this.lastAuthentificated = lastAuthentificated;
+		this.passwordLastChanged = passwordLastChanged;
+		this.accountState = accountState;
+		this.address = address;
+		this.profileImage = profileImage;
+	}
+
+	public User(int id, String firstName, String lastName, String profileImage, String phoneNumber, String email,
+			String password, Date createdAt, AccountState accountState, String confirmationToken) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.createdAt = createdAt;
+		this.phoneNumber = phoneNumber;
+		this.confirmationToken = confirmationToken;
+		this.accountState = accountState;
+		this.profileImage = profileImage;
+
+	}
+
+	public User(int id, String confirmationToken) {
+		super();
+		this.id = id;
+		this.confirmationToken = confirmationToken;
+	}
+
 	private String profileImage;
-	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<RepairRequest> repairRequests;
 
 	public List<RepairRequest> getRepairRequests() {
@@ -93,8 +141,7 @@ public class User implements Serializable {
 	public void setProfileImage(String profileImage) {
 		this.profileImage = profileImage;
 	}
- 
-	
+
 	public AccountState getAccountState() {
 		return accountState;
 	}
@@ -131,8 +178,6 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-
-
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -156,7 +201,22 @@ public class User implements Serializable {
 	public void setPasswordLastChanged(Date passwordLastChanged) {
 		this.passwordLastChanged = passwordLastChanged;
 	}
+	
+	public Address getAddress() {
+		return address;
+	}
 
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
 
 	@Override
 	public int hashCode() {
@@ -209,53 +269,5 @@ public class User implements Serializable {
 			return false;
 		return true;
 	}
-
-	public User() {
-	}
-
-	public User(int id, String firstName, String lastName, String email, String password, Date createdAt,
-			String phoneNumber, String confirmationToken, Date lastAuthentificated, Date passwordLastChanged,
-			AccountState accountState, Address address, String profileImage) {
-		super();
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.password = password;
-		this.createdAt = createdAt;
-		this.phoneNumber = phoneNumber;
-		this.confirmationToken = confirmationToken;
-		this.lastAuthentificated = lastAuthentificated;
-		this.passwordLastChanged = passwordLastChanged;
-		this.accountState = accountState;
-		this.address = address;
-		this.profileImage = profileImage;
-	}
-
-	public User(int id, String firstName, String lastName,String profileImage,
-			String phoneNumber, String email, String password, Date createdAt, AccountState accountState, String confirmationToken) {
-		super();
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.password = password;
-		this.createdAt = createdAt;
-		this.phoneNumber = phoneNumber;
-		this.confirmationToken = confirmationToken;
-		this.accountState = accountState;
-		this.profileImage = profileImage;
-
-	}
-
-	public User(int id, String confirmationToken) {
-		super();
-		this.id = id;
-		this.confirmationToken = confirmationToken;
-	}
-	
-	
-
-
 
 }

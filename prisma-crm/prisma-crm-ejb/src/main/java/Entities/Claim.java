@@ -21,6 +21,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import Enums.*;
 
@@ -29,75 +34,67 @@ public class Claim implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	//@JsonProperty("id")
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
 
-	@Column
-	//@JsonProperty("title")
+	@Column(nullable=true)
 	private String title;
 
 	@Column
-	//@JsonProperty("code")
 	private String code;
 
-	@Column
-	//@JsonProperty("description")
+	@Column(nullable=false)
 	private String description;
 
 	@Enumerated(EnumType.STRING)
-	//@JsonProperty("priority")
 	private ClaimPriority priority;
 
 	@Enumerated(EnumType.STRING)
-	//@JsonProperty("status")
 	private ClaimStatus status;
 
 	@Enumerated(EnumType.STRING)
-	//@JsonProperty("type")
 	private ClaimType type;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	//@JsonProperty("createdAt")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date createdAt;
-
+	
 	@Temporal(TemporalType.TIMESTAMP)
-	///@JsonProperty("openedAt")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date openedAt;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	//@JsonProperty("resolvedAt")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private Date delegatedAt;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date resolvedAt;
 
 	@ManyToOne
-	//@JsonProperty("createdBy")
-	//@JsonIgnore
 	private Client createdBy;
 
-	//@JsonIgnore
 	@OneToOne
-	//@JsonProperty("resolvedBy")
-	private Agent resolvedBy;
+	private Agent resolvedBy;//---Ok---
 
-	// Pluiseurs Réclamations peuvents étre traités par un seul agent
-	// de l'autre coté , un agent peut gerrer +eurs Réclamations
 	@ManyToOne
-	//@JsonProperty("responsable")
-	//@JsonIgnore
-	private Agent responsable;
-
-	//@JsonIgnore
-	@OneToMany(mappedBy = "claim", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	private List<NoteClaim> notes;
-
+	private Agent firstResponsable;
 	
+	@ManyToOne
+	private Agent responsable;//---Ok---
+/*
+	//@JsonIgnore
+	@OneToMany(mappedBy = "claim", cascade=CascadeType.REMOVE, fetch= FetchType.LAZY)
+	private List<NoteClaim> notes;//---Ok---
+*/
+	private Boolean isFaq;
 	
 	public Claim() {
-		this.code = "CODE"+this.id;
 		this.status = ClaimStatus.EN_ATTENTE;
-		this.createdAt = new Date();
-		this.notes = new ArrayList<NoteClaim>();
+		this.createdAt = new Date(System.currentTimeMillis());
+//		this.notes = new ArrayList<NoteClaim>();
+		this.isFaq = false;
 	}
 
 	public int getId() {
@@ -187,7 +184,7 @@ public class Claim implements Serializable {
 	public void setCreatedBy(Client createdBy) {
 		this.createdBy = createdBy;
 	}
-
+/*
 	public List<NoteClaim> getNotes() {
 		return notes;
 	}
@@ -205,7 +202,7 @@ public class Claim implements Serializable {
 		this.notes.remove(note.getId());
 		note.setClaim(null);
 	}
-
+*/
 	public Agent getResponsable() {
 		return responsable;
 	}
@@ -226,12 +223,37 @@ public class Claim implements Serializable {
 		return resolvedAt;
 	}
 
+	public Date getDelegatedAt() {
+		return delegatedAt;
+	}
+
+	public void setDelegatedAt(Date delegatedAt) {
+		this.delegatedAt = delegatedAt;
+	}
+
+	public Agent getFirstResponsable() {
+		return firstResponsable;
+	}
+
+	public void setFirstResponsable(Agent firstResponsable) {
+		this.firstResponsable = firstResponsable;
+	}
+
+	public Boolean getIsFaq() {
+		return isFaq;
+	}
+
+	public void setIsFaq(Boolean isFaq) {
+		this.isFaq = isFaq;
+	}
+
 	@Override
 	public String toString() {
 		return "Claim [id=" + id + ", title=" + title + ", code=" + code + ", description=" + description
 				+ ", priority=" + priority + ", status=" + status + ", type=" + type + ", createdAt=" + createdAt
-				+ ", openedAt=" + openedAt + ", resolvedAt=" + resolvedAt + ", createdBy=" + createdBy + ", resolvedBy="
-				+ resolvedBy + ", responsable=" + responsable + ", notes=" + notes + "]";
+				+ ", openedAt=" + openedAt + ", delegatedAt=" + delegatedAt + ", resolvedAt=" + resolvedAt
+				+ ", createdBy=" + createdBy + ", resolvedBy=" + resolvedBy + ", firstResponsable=" + firstResponsable
+				+ ", responsable=" + responsable + "]";
 	}
 
 	

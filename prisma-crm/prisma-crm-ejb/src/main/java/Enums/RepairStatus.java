@@ -1,5 +1,5 @@
 package Enums;
 
 public enum RepairStatus {
-	Completed,OnHold,Replaced,InProgress,Refused
+	Completed,OnHold,Replaced,InProgress
 }

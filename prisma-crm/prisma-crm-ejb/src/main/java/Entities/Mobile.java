@@ -35,14 +35,10 @@ public class Mobile extends Product implements Serializable{
 	@Column(name = "imageUrl")
 	private String imageUrl;
 	
-	
-	
-
 	public Mobile() {
 		super();
 	}
 	
-
 	public String getBrand() {
 		return brand;
 	}
@@ -72,7 +68,7 @@ public class Mobile extends Product implements Serializable{
 		return ram;
 	}
 
-	public void setRAM(String ram) {
+	public void setRam(String ram) {
 		this.ram = ram;
 	}
 
@@ -99,9 +95,5 @@ public class Mobile extends Product implements Serializable{
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-
-	
-	
-	
 
 }

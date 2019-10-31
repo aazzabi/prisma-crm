@@ -1,9 +1,10 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
+import java.util.TreeSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -18,9 +19,12 @@ import Enums.ClientType;
 
 @Entity
 @DiscriminatorValue("client")
-@Table(name = "client")
+@Table(name="client")
 public class Client extends User implements Serializable {
-	@OneToMany(mappedBy = "client")
+
+	private static final long serialVersionUID = 1L;
+
+	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
 	private Set<ClientOrder> clientOrders;
 	@Enumerated(EnumType.STRING)
 	private ClientGroups clientgroup;
@@ -32,6 +36,10 @@ public class Client extends User implements Serializable {
 	@Column(name = "entreprisePosition", nullable = true, length = 255)
 	private String entreprisePosition;
 
+	public Client() {
+		super();
+		this.clientOrders = new TreeSet<ClientOrder>();
+	}
 
 	public Set<ClientOrder> getClientOrders() {
 		return clientOrders;

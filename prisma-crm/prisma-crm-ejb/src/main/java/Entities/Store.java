@@ -12,9 +12,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "Store")
@@ -30,26 +35,23 @@ public class Store implements Serializable{
 	@Column(name = "name")
 	private String name;
 	
-	@Column(name = "addresStr")
-	private String addresStr;
-	
 	@Column(name = "telephone")
 	private String telephone;
+	
+	@Column(name = "capacity")
+	private int capacity;
 	
 	@ManyToOne
 	private Address address;
 	
-	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
-	private Set<Stock> stockList ;
+	@OneToMany(mappedBy="store",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
+	private Set<Product> products; 
 	
 	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
 	private Set<StoreHours> storeHoursList;
-
-
-	public Store() {
-		super();
-	}
-
+	
+	@OneToMany(mappedBy="store")
+	private Set<ClientOrder> orders;
 
 	public int getId() {
 		return id;
@@ -67,13 +69,6 @@ public class Store implements Serializable{
 		this.name = name;
 	}
 
-	public String getAddresStr() {
-		return addresStr;
-	}
-
-	public void setAddresStr(String addresStr) {
-		this.addresStr = addresStr;
-	}
 
 	public String getTelephone() {
 		return telephone;
@@ -83,13 +78,6 @@ public class Store implements Serializable{
 		this.telephone = telephone;
 	}
 
-	public Set<Stock> getStockList() {
-		return stockList;
-	}
-
-	public void setStockList(Set<Stock> stockList) {
-		this.stockList = stockList;
-	}
 
 	public Set<StoreHours> getStoreHoursList() {
 		return storeHoursList;
@@ -99,7 +87,37 @@ public class Store implements Serializable{
 		this.storeHoursList = storeHoursList;
 	}
 
+	public int getCapacity() {
+		return capacity;
+	}
 
-	
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public Set<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(Set<Product> products) {
+		this.products = products;
+	}
+
+	public Set<ClientOrder> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(Set<ClientOrder> orders) {
+		this.orders = orders;
+	}
+
 	
 }

@@ -5,11 +5,15 @@ import java.sql.Timestamp;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class ClientCart implements Serializable {
@@ -22,10 +26,11 @@ public class ClientCart implements Serializable {
 	private boolean isCheckedOut;
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
+	@JsonIgnore
 	@ManyToOne
 	private Client client;
-	
-	@ManyToOne
+	@JsonIgnore
+	@OneToOne(mappedBy="cart")	
 	private ClientOrder clientOrder;
 	public ClientOrder getOrder() {
 		return clientOrder;
@@ -33,8 +38,8 @@ public class ClientCart implements Serializable {
 	public void setOrder(ClientOrder order) {
 		this.clientOrder = order;
 	}
-
-	@OneToMany(mappedBy="cart")
+	@JsonIgnore
+	@OneToMany(mappedBy="cart",fetch=FetchType.LAZY)
 	private Set<CartProductRow> cartRows;
 	
 	public Set<CartProductRow> getCartRows() {

@@ -145,7 +145,7 @@ public class UserResource {
 		
 	}
 	
-	@Secured
+	//@Secured
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
