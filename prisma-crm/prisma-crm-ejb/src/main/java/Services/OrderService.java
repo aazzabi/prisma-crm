@@ -100,7 +100,7 @@ public class OrderService implements IOrderLocal {
 		WebTarget target = client.target(distanceMatrixAPI).queryParam("key", distanceMatrixAPITokenKey);
 		JsonArray locations = new JsonArray();
 		locations.add(origin);
-		locations.add(order.getStore().getAddress().getDisplayName());
+		locations.add("Tunis , Tunisia");
 		distanceMatrixParams.add("locations", locations);
 		distanceMatrixParams.addProperty("allToAll", false);
 		Response response = target.request().post(Entity.text(distanceMatrixParams));
