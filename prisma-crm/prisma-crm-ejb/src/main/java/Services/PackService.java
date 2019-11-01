@@ -75,4 +75,22 @@ public class PackService implements IPack {
 
 	}
 
+	@Override
+	public void deleteproductpack(int idp, int idpa) {
+		Product pr = em.find(Product.class, idp);
+		Pack pa = em.find(Pack.class, idpa);
+		List<Pack> lpack = pr.getPacks();
+		List<Product> lprod = pa.getProducts();
+		if (pr.getNew_price() == 0) {
+			pa.setPrice(pa.getPrice() - pr.getPrice());}
+		else {
+			pa.setPrice(pa.getPrice() - pr.getNew_price());
+
+	            }
+		lpack.remove(pa);
+		lprod.remove(pr);
+		pr.setPacks(lpack);
+		pa.setProducts(lprod);
+	}
+
 }
