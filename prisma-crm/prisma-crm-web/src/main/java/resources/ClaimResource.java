@@ -218,13 +218,22 @@ public class ClaimResource {
 		Claim c = cs.getById(id);
 		return Response.status(Status.OK).entity(cs.open(c)).build();
 	}
-
+	
 	@GET
 	@Path("/resolve/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response testResolveClaim(@PathParam(value = "id") int id) throws Exception {
 		Claim c = cs.getById(id);
 		return Response.status(Status.OK).entity(cs.resolve(c)).build();
+	}
+
+	@GET
+	@Path("/freqWord/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response freqWordClaim(@PathParam(value = "id") int id) throws Exception {
+		Claim c = cs.getById(id);
+		//return Response.status(Status.OK).entity(cs.extractKeyWords(c)).build();
+		return Response.status(Status.OK).entity(cs.getKeyWords()).build();
 	}
 	
 	/*
