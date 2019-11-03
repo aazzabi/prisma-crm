@@ -12,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import Entities.ClientCart;
@@ -19,6 +20,7 @@ import Entities.ClientOrder;
 import Entities.Product;
 import Enums.OrderType;
 import Services.CartService;
+import Utils.TimeDistance;
 
 @Path("/cart")
 @javax.enterprise.context.RequestScoped
@@ -79,7 +81,8 @@ public class CartWsFrontOffice {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response CheckOut(@FormParam("order") String ORDER_TYPE ,@FormParam("client") int client ,@FormParam("cart") int cart )
+	public Response CheckOut(@FormParam("order") String ORDER_TYPE ,@FormParam("client") int client ,
+			@FormParam("cart") int cart )
 	{
 		OrderType orderT;
 		switch (ORDER_TYPE)
@@ -97,5 +100,26 @@ public class CartWsFrontOffice {
 		return result!=null?Response.ok().status(Response.Status.CREATED).entity(result).build()
 				: Response.status(Response.Status.NOT_FOUND).entity(new String(Response.Status.NOT_FOUND.toString())).build();
 	}
+	
+	@Path("/getNearesAddress/{lon}/{lat}")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String testAddressDistance(@PathParam(value="lon") double lon,@PathParam(value="lat") double lat)
+	{
+		
+		return cartService.getNearestStoreAddress(lon,lat).getName();
+		//return cartService.reverseGeoCode(lon, lat);
+		
+	}
+	
+	@Path("/testTime")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response testTimeDistance(@FormParam("lon") double lon,@FormParam("lat") double lat)
+	{
+		TimeDistance result=cartService.getTimeNeededToGetOrderProducts(lon, lat,19);
+		return Response.ok().entity(result).build();
+	}
+	
 
 }
