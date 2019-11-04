@@ -81,7 +81,7 @@ public class Product implements Serializable {
 	private int stock;
 
 	@JsonIgnore
-	@ManyToMany(mappedBy = "products", fetch = FetchType.EAGER)
+	@ManyToMany(mappedBy = "products")
 	private List<Pack> packs;
 	
 

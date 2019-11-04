@@ -89,16 +89,6 @@ public class Client extends User implements Serializable {
 		this.clientType = clientType;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((clientOrders == null) ? 0 : clientOrders.hashCode());
-		result = prime * result + ((clientType == null) ? 0 : clientType.hashCode());
-		result = prime * result + ((clientgroup == null) ? 0 : clientgroup.hashCode());
-		result = prime * result + fidelityScore;
-		return result;
-	}
 
 	@Override
 	public boolean equals(Object obj) {

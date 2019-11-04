@@ -3,10 +3,15 @@ package Services;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+
+import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -22,6 +27,8 @@ import Entities.VehiculeMaintenance;
 import Enums.RepairStatus;
 import Enums.ServiceType;
 import Interfaces.IVehiculeMtRemote;
+import Utils.Emailer;
+import Utils.Mailer;
 
 @Stateless
 public class VehiculeMaintenanceService implements IVehiculeMtRemote {
@@ -63,7 +70,7 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 	@Override
 	public int addMaintanceRequest(VehiculeMaintenance vehiculeMaintenance) {
 
-		em.persist(vehiculeMaintenance);
+		em.merge(vehiculeMaintenance);
 
 		return vehiculeMaintenance.getId();
 	}
@@ -95,6 +102,42 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 		Vehicule s = em.find(Vehicule.class, id);
 
 		return s.getVehiculeMaintenances();
+
+	}
+	@Override
+//	@Schedule(hour = "8", minute = "0", second = "0", persistent = false)
+  //  @Schedule(second = "*/5", minute = "*", hour = "*", persistent = false)
+	public List<VehiculeMaintenance> alertEntreiens() {
+		List<VehiculeMaintenance> realEv = new ArrayList<>();
+		List<VehiculeMaintenance> ev = em.createQuery("select ev from VehiculeMaintenance ev where ev.repairStatus = 2  ").getResultList();
+
+		for (VehiculeMaintenance entretienVoiture : ev) {
+			if (entretienVoiture.getMaintainceDate() != null) {
+				int intervalle = 180;
+				int days = Days.daysBetween(new DateTime(entretienVoiture.getMaintainceDate() ),new DateTime(new Date())).getDays();
+				if (days >= intervalle) {
+					realEv.add(entretienVoiture);
+					System.out.println("daysssssssssssssssssssssssssssssss !" +days+" id : "+entretienVoiture.getId());
+					
+			Emailer.SendEmail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance" ,"Hey, you have depassed the car maintenance deadline with : "+ days +"days");
+				}
+			}
+			if (entretienVoiture.getOdometer() != 0) {
+				float kilos = 10000;
+				
+				float KmLastEntretien = entretienVoiture.getOdometer()
+						- entretienVoiture.getVehicule().getOdometer();
+
+				if (KmLastEntretien >= kilos) {
+					System.out.println("intervaleKilometres+++++++++++++++ !" +KmLastEntretien +" id : "+entretienVoiture.getId());
+					realEv.add(entretienVoiture);
+					Emailer.SendEmail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance" ,"Hey, you have depassed the car maintenance Km: "+ KmLastEntretien);
+
+				}
+			}
+
+		}
+		return realEv;
 
 	}
 

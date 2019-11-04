@@ -23,5 +23,6 @@ public interface IVehiculeMtRemote {
 	public void traitMaintance(int id, RepairStatus r);
 	public Vehicule findMostMaintainedVehicule();
 	public List<VehiculeMaintenance> findMaintancebyVehicule(int id);
+	public List<VehiculeMaintenance> alertEntreiens();
 
 }

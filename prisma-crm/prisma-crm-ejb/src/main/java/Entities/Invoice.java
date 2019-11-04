@@ -30,7 +30,7 @@ public class Invoice implements Serializable {
 	@OneToOne
 	@JsonIgnore
 	private ClientOrder orderInvoice;
-	@OneToMany	
+	@OneToMany
 	@JsonIgnore
 	private Set<CurrencyUnit> currencies;
 	@OneToMany
@@ -52,9 +52,8 @@ public class Invoice implements Serializable {
 	public void setProducts(Set<Product> products) {
 		this.products = products;
 	}
-	
-	public void addProduct(Product p)
-	{
+
+	public void addProduct(Product p) {
 		this.products.add(p);
 	}
 

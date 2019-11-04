@@ -4,8 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -16,42 +19,55 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.auth0.jwt.internal.org.apache.commons.lang3.time.DateUtils;
+
+import Entities.Invoice;
+import Entities.Pack;
 import Entities.Product;
 import Entities.RepairRequest;
 import Entities.Store;
+import Enums.RepairStatus;
+import Enums.Role;
+import Interfaces.IInvoiceRemote;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IRepaiRequest;
 
 @Path("Repair")
+@RequestScoped
 public class RepairResource {
 	@EJB
 	IRepaiRequest repaiRequest;
-
 	@EJB
 	IProductServiceLocal ps;
 
-	
 	@PUT
-	@Path("/add/{id}")
+	@Path("/add/{idinv}/{idprod}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	
-	public Response addRepair(@PathParam(value = "id") int id) {
-		Product xx= ps.findProductById(id);
-		RepairRequest x = new RepairRequest();
-		if (xx != null)
-		{
-			System.out.println("Connectedddd :" +UserResource.getUserConnected());
-			x.setClient(UserResource.getUserConnected());
-			x.setCreatedDate(getDateNow());
-			x.setProduct(xx);
-			x.setStatusRep(Enums.RepairStatus.OnHold);
-			repaiRequest.createRepairRequest(x);
 
+	public Response addRepair(@PathParam(value = "idinv") int idinv, @PathParam(value = "idprod") int idprod,
+			RepairRequest x) {
+		Invoice check = repaiRequest.findInvoiceById(idinv);
+		Product p = repaiRequest.findProductByinvoice(idprod, idinv);
+		if (check != null & p != null) {
+			Date WarrentyExp = DateUtils.addYears(check.getCreatedAt(), p.getGuarantee());
+			if (WarrentyExp.after(new Date())) {
+				System.out.println("Expirationnnnnnnnn" + UserResource.getUserConnected().getEmail());
+				x.setClient(UserResource.getUserConnected());
+				x.setCreatedDate(new Date());
+				x.setStatusRep(Enums.RepairStatus.OnHold);
+				x.setWarentyExp(WarrentyExp);
+				x.setInvoice(check);
+				repaiRequest.createRepairRequest(x);
+				return Response.status(Status.CREATED).build();
+
+			} else {
+				return Response.status(Response.Status.NOT_FOUND).entity("Warrenty expired").build();
+
+			}
 		}
-		
-		
-		return Response.status(Status.CREATED).build();
+		return Response.status(Status.NOT_FOUND).build();
+
 	}
 
 	@GET
@@ -61,19 +77,48 @@ public class RepairResource {
 		return Response.status(Status.CREATED).entity(repaiRequest.getAllRepairRequest()).build();
 
 	}
-	public Date getDateNow() {
-		SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		String pattern = "yyyy-MM-dd HH:mm:ss.SSS";
 
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, new Locale("fr", "FR"));
+	@GET
+	@Path("/check/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response checkRepairRequest(@PathParam(value = "id") int id) {
+		return Response.status(Status.CREATED).entity(repaiRequest.findRepairRequest(id)).build();
 
-		String date = simpleDateFormat.format(new Date());
-		System.out.println("DATE " + date);
+	}
 
-		java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(date);
-		java.util.Date improperUtilDate = sqlTimestamp;
+	@PUT
+	@Path("/update/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateRepReq(@PathParam(value = "id") int id, RepairRequest reprequest) {
 
-		return improperUtilDate;
+		return Response.status(Status.OK).entity(repaiRequest.updateRepairRequest(id, reprequest)).build();
+
+	}
+
+	@PUT
+	@Path("/status/{id}")
+	public Response RepRequestStatus(@PathParam(value = "id") int id, RepairRequest xx) {
+
+		return Response.status(Status.OK).entity(repaiRequest.RepairRequestStatus(id, xx)).build();
+
+	}
+
+	@DELETE
+	@Path("/delete/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String deleteRepRequest(@PathParam(value = "id") int id) {
+		repaiRequest.deleteRepairRequest(id);
+		return "deleted";
+	}
+
+	@GET
+	@Path("find/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findrep(@PathParam(value = "id") int id) {
+
+		return Response.status(Status.OK).entity(repaiRequest.findRepairRequest(id)).build();
 	}
 
 }

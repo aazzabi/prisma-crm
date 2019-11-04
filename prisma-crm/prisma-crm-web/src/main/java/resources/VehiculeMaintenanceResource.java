@@ -64,19 +64,14 @@ public class VehiculeMaintenanceResource {
 		return Response.status(Status.CREATED).entity(vehiculeMtRemote.findMostMaintainedVehicule()).build();
 
 	}
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("NearEntreiens")
+	public List<VehiculeMaintenance> findAllNearEntreiens() {
 
-	public Date getDateNow() {
-		SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		String pattern = "yyyy-MM-dd HH:mm:ss.SSS";
+		return vehiculeMtRemote.alertEntreiens();
 
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, new Locale("fr", "FR"));
-
-		String date = simpleDateFormat.format(new Date());
-		System.out.println("DATE " + date);
-
-		java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(date);
-		java.util.Date improperUtilDate = sqlTimestamp;
-
-		return improperUtilDate;
 	}
+
+
 }

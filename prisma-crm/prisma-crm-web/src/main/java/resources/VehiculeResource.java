@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import Entities.Agent;
 import Entities.User;
 import Entities.Vehicule;
+import Interfaces.IResourcesRemote;
 import Interfaces.IVehiculeMtRemote;
 import utilities.Secured;
 import utilities.SessionUtils;
@@ -35,7 +36,8 @@ public class VehiculeResource {
 
 	@EJB
 	IVehiculeMtRemote resourcesRemote;
-
+	@EJB
+	IResourcesRemote vh;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -74,9 +76,9 @@ public class VehiculeResource {
 	
  
 
-		@PUT
-	    @Path("update/{id}")
-	    public Response update(@PathParam("id") int id, Vehicule vehicule) {
+	@PUT
+	@Path("update/{id}")
+	public Response update(@PathParam("id") int id, Vehicule vehicule) {
             Vehicule x = resourcesRemote.getVehiculeById(id);
 	        x.setFuelType(vehicule.getFuelType());
 	        x.setDriver(UserResource.getUserConnected());
@@ -87,7 +89,7 @@ public class VehiculeResource {
 	        resourcesRemote.updateVehicule(x);
 
 
-	        return Response.ok().build();
+	    	return Response.status(Status.OK).build();
 	    }
 
 		@Secured
@@ -101,10 +103,20 @@ public class VehiculeResource {
 
 		@DELETE
 		@Path("{id}")
-		public void deleteVehicule(@PathParam("id") int id) {
+		public Response deleteVehicule(@PathParam("id") int id) {
 
 			resourcesRemote.deleteVehicule(id);
+			return Response.status(Status.OK).build();
 
 		}
-		
+		   	@PUT
+		    @Path("assign/{dId}/{vId}")
+		    @Produces(MediaType.APPLICATION_JSON)
+		    @Consumes(MediaType.APPLICATION_JSON)
+		    public Response assignDriverToVehicule(@PathParam("dId") int id,@PathParam("vId") int Vehicule_id) {
+		      
+		   		vh.assignDriverToVehicule(id, Vehicule_id);
+		        return Response.status(Response.Status.CREATED).entity("Driver Id:"+ id+ " assigned to VehiculeID: " + Vehicule_id).build();
+
+		    }
 }

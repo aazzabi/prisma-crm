@@ -44,6 +44,17 @@ public class ResourcesService implements IResourcesRemote {
 		em.remove(em.find(Vehicule.class, id));
 
 	}
+	@Override
+	public Vehicule assignDriverToVehicule(int Driver_id, int Vehicule_id) {
+		
+		Vehicule v= em.find(Vehicule.class, Vehicule_id);
+		User driver= em.find(User.class, Driver_id);
 
+		v.setDriver(driver);
+		em.merge(v);
+		em.flush();
+		return v;
+		
+	}
 
 }
