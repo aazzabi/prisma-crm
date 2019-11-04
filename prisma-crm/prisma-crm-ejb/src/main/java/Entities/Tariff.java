@@ -2,7 +2,6 @@ package Entities;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import javax.persistence.GeneratedValue;
@@ -19,13 +18,10 @@ public class Tariff  implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
 	
-	@Column(name = "cnxSpeed")
 	private int cnxSpeed;
 	
-	@Column(name = "priceT")
 	private double priceT;
 	
 

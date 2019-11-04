@@ -39,7 +39,14 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		p.setType(newProduct.getType());
 		p.setGuarantee(newProduct.getGuarantee());
 		p.setPrice(newProduct.getPrice());
-
+		p.setBrand(newProduct.getBrand());
+		p.setCamera(newProduct.getCamera());
+		p.setImageUrl(newProduct.getImageUrl());
+		p.setMemory(newProduct.getMemory());
+		p.setResolution(newProduct.getResolution());
+		
+		
+		
 		return p;
 
 	}
