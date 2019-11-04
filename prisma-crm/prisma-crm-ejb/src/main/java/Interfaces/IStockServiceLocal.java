@@ -1,10 +1,10 @@
 package Interfaces;
 
-import java.util.List;
+
 
 import javax.ejb.Local;
 
-import Entities.Product;
+
 import Entities.ProviderOrder;
 import Entities.Stock;
 import Entities.Store;

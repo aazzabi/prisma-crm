@@ -5,14 +5,11 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import Entities.Mobile;
 import Entities.Product;
 import Entities.Store;
 import Entities.Tariff;
-import Enums.ProductType;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IProductServiceRemote;
 
@@ -115,25 +112,6 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		return tarifs;
 	}
 
-	@Override
-	public Mobile addMobile(Mobile m) {
-		em.persist(m);
-		return m;
-	}
-
-	@Override
-	public Mobile updateMobile(Mobile newMobile) {
-		updateProduct(newMobile);
-		Mobile m = em.find(Mobile.class, newMobile.getId());
-		m.setBrand(newMobile.getBrand());
-		m.setCamera(newMobile.getCamera());
-		m.setMemory(newMobile.getMemory());
-		m.setResolution(newMobile.getResolution());
-		m.setSystem(newMobile.getSystem());
-		m.setRam(newMobile.getRam());
-
-		return m;
-	}
 
 	@Override
 	public void assignTarifToProduct(int idProduct, int idTarif) {
@@ -142,14 +120,6 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		p.getTarifs().add(t);
 	}
 
-	/*public void iterateEnum() {
-		for (ProductType type : ProductType.values()) { 
-			System.out.println(type); 
-		}
-
-	}*/
-
-	
 
 
 

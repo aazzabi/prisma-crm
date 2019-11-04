@@ -1,8 +1,7 @@
 package Entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,12 +13,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+
 import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 
@@ -29,34 +27,36 @@ import Enums.ProductType;
 
 @Entity
 @Table(name = "Product")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Product implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
 
-	@Column(name = "reference")
 	private String reference;
 
-	@Column(name = "name")
 	private String name;
 
-	@Column(name = "description")
 	private String description;
 
-	@Column(name = "type")
 	@Enumerated(EnumType.STRING)
 	private ProductType type;
 
-	@Column(name = "guarantee")
 	private int guarantee;
 
-	@Column(name = "price")
 	private double price;
+
+	private String brand;
+	
+	private String memory;
+	
+	private String resolution;
+
+	private String camera;
+	
+	private String imageUrl;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	Agent agent;
@@ -72,23 +72,8 @@ public class Product implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
     )
 	private Set<Tariff> tarifs ;
+
 	
-	
-
-	public Product() {
-		super();
-	}
-
-	public Product(String reference, String name, String description, ProductType type, int guarantee, double price) {
-		super();
-		this.reference = reference;
-		this.name = name;
-		this.description = description;
-		this.type = type;
-		this.guarantee = guarantee;
-		this.price = price;
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -169,6 +154,46 @@ public class Product implements Serializable {
 
 	public void setStore(Store store) {
 		this.store = store;
+	}
+
+	public String getBrand() {
+		return brand;
+	}
+
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	public String getMemory() {
+		return memory;
+	}
+
+	public void setMemory(String memory) {
+		this.memory = memory;
+	}
+
+	public String getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
+	}
+
+	public String getCamera() {
+		return camera;
+	}
+
+	public void setCamera(String camera) {
+		this.camera = camera;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 	
 	

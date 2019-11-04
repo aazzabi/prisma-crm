@@ -25,7 +25,7 @@ public class Claim implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
-	/*	@Column
+	@Column
 	private String title;
 	
 	@Column
@@ -49,13 +49,13 @@ public class Claim implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date resolvedAt;
 	
-	@OneToMany
+	//@OneToMany
 	private Client createdBy;
 	
-	@OneToMany
+	//@OneToMany
 	private Agent resolvedBy;
 	
-	@OneToMany
+	//@OneToMany
 	private Agent responsable;
 	
 	@OneToMany(mappedBy="claim")
@@ -147,5 +147,5 @@ public class Claim implements Serializable {
 	public void setResponsable(Agent responsable) {
 		this.responsable = responsable;
 	}
-	*/		
+		
 }
