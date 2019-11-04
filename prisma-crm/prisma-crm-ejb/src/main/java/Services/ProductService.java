@@ -126,6 +126,7 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		Tariff t = findTarifById(idTarif);
 		p.getTarifs().add(t);
 	}
+	
 
 
 

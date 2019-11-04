@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import Entities.Mobile;
+
 import Entities.Product;
 import Entities.Store;
 import Entities.Tariff;
@@ -141,23 +141,6 @@ public class ProductRessource {
 		return Response.status(Status.OK).entity("deleted").build();
 	}
 	
-	@POST
-	@Path("/mobile/add")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response addMobile(Mobile m) {
-		Mobile mb = ps.addMobile(m);
-		return Response.status(Status.CREATED).entity(mb).build();
-	}
-	
-	@PUT
-	@Path("/mobile")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateMobile(Mobile newMobile) {
 
-		return Response.status(Status.OK).entity(ps.updateMobile(newMobile)).build();
-
-	}
 
 }
