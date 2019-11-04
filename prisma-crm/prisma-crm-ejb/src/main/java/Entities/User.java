@@ -21,9 +21,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import Enums.Role;
-@Inheritance(strategy=InheritanceType.JOINED)
-@DiscriminatorColumn(name="userType")
-@Table(name="user")
+
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "userType")
+@Table(name = "user")
 @Entity
 public class User implements Serializable {
 	@Id
@@ -40,10 +41,6 @@ public class User implements Serializable {
 	private boolean isActive;
 	@ManyToOne
 	private Address address;
-
-	
-
-
 
 	public boolean isActive() {
 		return isActive;
@@ -81,8 +78,6 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-
-
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -106,7 +101,6 @@ public class User implements Serializable {
 	public void setPasswordLastChanged(Date passwordLastChanged) {
 		this.passwordLastChanged = passwordLastChanged;
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -159,7 +153,5 @@ public class User implements Serializable {
 			return false;
 		return true;
 	}
-
-
 
 }

@@ -2,7 +2,7 @@ package Entities;
 
 import javax.persistence.Entity;
 
-@Entity
+//@Entity
 
 public class Quotation {
 

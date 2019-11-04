@@ -25,7 +25,7 @@ public class NoteClaim implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
-	
+/*	
 	@Column
 	private String description;
 
@@ -77,6 +77,6 @@ public class NoteClaim implements Serializable {
 	public void setClaim(Claim claim) {
 		this.claim = claim;
 	}
-	
+*/	
 	
 }

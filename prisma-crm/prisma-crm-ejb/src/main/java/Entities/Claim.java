@@ -25,7 +25,7 @@ public class Claim implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
-	@Column
+	/*	@Column
 	private String title;
 	
 	@Column
@@ -146,5 +146,6 @@ public class Claim implements Serializable {
 	}
 	public void setResponsable(Agent responsable) {
 		this.responsable = responsable;
-	}		
+	}
+	*/		
 }

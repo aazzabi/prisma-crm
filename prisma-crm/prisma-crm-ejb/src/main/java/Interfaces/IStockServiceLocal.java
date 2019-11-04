@@ -1,7 +1,10 @@
 package Interfaces;
 
+import java.util.List;
+
 import javax.ejb.Local;
 
+import Entities.Product;
 import Entities.ProviderOrder;
 import Entities.Stock;
 import Entities.Store;
@@ -16,5 +19,9 @@ public interface IStockServiceLocal {
 	public ProviderOrder addProviderOrder(ProviderOrder order);
 	
 	public void sendJavaMail(ProviderOrder order) ;
+	
+	public Stock checkStock(int idStore,String ref);
+	
+	public Stock updateStock(Stock newStock);
 
 }

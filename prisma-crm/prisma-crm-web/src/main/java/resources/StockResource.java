@@ -1,5 +1,7 @@
 package resources;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -65,6 +67,20 @@ public class StockResource {
 	
 		return "products added";
 
+	}
+	
+	@GET
+	@Path("/check_stock")
+	@Produces(MediaType.APPLICATION_JSON)
+	public  Stock checkStock(@QueryParam(value="idStore")int idStore,@QueryParam(value="ref")String ref) {
+		
+		Stock stock = service.checkStock(idStore, ref);
+		
+		stock.setQuantity(stock.getQuantity()-1);
+		
+		//if(stock.getQuantityMin())
+		return stock;
+		
 	}
 
 }

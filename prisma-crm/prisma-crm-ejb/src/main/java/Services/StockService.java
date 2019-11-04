@@ -106,4 +106,35 @@ public class StockService implements IStockServiceLocal {
 		return order;
 	}
 
+	@Override
+	public Stock checkStock(int idStore,String ref) {
+		TypedQuery<Stock> query = em.createQuery(
+				"SELECT s FROM Stock s WHERE s.store = :store and s.productRef = :ref", Stock.class);
+
+		query.setParameter("store", ss.findStoreById(idStore));
+		List<Stock> list= query.setParameter("ref", ref).getResultList();
+		Stock stock = list.get(0);
+		stock.setQuantity(stock.getQuantity()-1);
+		updateStock(stock);
+		if(stock.getQuantity()==stock.getQuantityMin()) {
+			ProviderOrder order = new ProviderOrder();
+			order.setProductRef(ref);
+			order.setQuantity(5);
+			order.setState("untreated");
+			//sendJavaMail
+		}
+		return stock;
+		
+	}
+
+	@Override
+	public Stock updateStock(Stock newStock) {
+		Stock s = em.find(Stock.class, newStock.getId());
+		s.setProductRef(newStock.getProductRef());
+		s.setQuantity(newStock.getQuantity());
+		s.setQuantityMin(newStock.getQuantityMin());
+		s.setStore(newStock.getStore());
+		return s;
+	}
+
 }

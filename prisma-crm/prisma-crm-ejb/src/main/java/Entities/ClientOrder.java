@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ClientOrder")
+//@Table(name="ClientOrder")
 public class ClientOrder implements Serializable {
 @Id
 @GeneratedValue(strategy=GenerationType.TABLE)
