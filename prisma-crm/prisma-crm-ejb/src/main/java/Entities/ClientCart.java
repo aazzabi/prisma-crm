@@ -30,7 +30,7 @@ public class ClientCart implements Serializable {
 	@ManyToOne
 	private Client client;
 	@JsonIgnore
-	@OneToOne(mappedBy="cart")	
+	@OneToOne
 	private ClientOrder clientOrder;
 	public ClientOrder getOrder() {
 		return clientOrder;
@@ -39,7 +39,7 @@ public class ClientCart implements Serializable {
 		this.clientOrder = order;
 	}
 	@JsonIgnore
-	@OneToMany(mappedBy="cart",fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="cart",fetch=FetchType.EAGER)
 	private Set<CartProductRow> cartRows;
 	
 	public Set<CartProductRow> getCartRows() {

@@ -9,6 +9,7 @@ import Entities.ClientCart;
 import Entities.ClientOrder;
 import Entities.Product;
 import Enums.OrderType;
+import Utils.TimeDistance;
 
 @Local
 public interface ICartLocal {
@@ -22,7 +23,7 @@ public Product addProductToCart(int product,int cart,int quantity,int points,boo
 public Product deleteProductFromCart(int product,int cart);
 
 //Creating new order
-public ClientOrder passToCheckOut(OrderType orderType,int client,int cart);
+public TimeDistance passToCheckOut(OrderType orderType,int client,int cart,double LONG , double LAT);
 
 //Send email to client when he forgot about his cart
 public boolean sendCartReminder(ClientCart cart);

@@ -74,6 +74,7 @@ public class CartService implements ICartLocal {
 			ROW.setOriginalPrice(PRODUCT.getPrice());
 			ROW.setQuantity(quantity);
 			ROW.setProduct(PRODUCT);
+			ROW.setTotalPriceWNReduction(quantity * PRODUCT.getPrice());
 			PRODUCT.setStock(PRODUCT.getStock() - quantity);
 			ROW.setFinalPrice(quantity * PRODUCT.getPrice());
 			manager.merge(PRODUCT);
@@ -123,9 +124,10 @@ public class CartService implements ICartLocal {
 	}
 
 	@Override
-	public ClientOrder passToCheckOut(OrderType orderType, int client, int cart) {
+	public TimeDistance passToCheckOut(OrderType orderType, int client, int cart,double LONG , double LAT) {
 		Client customer = manager.find(Client.class, client);
 		ClientCart crt = manager.find(ClientCart.class, cart);
+		//Implementation de la méthode de paypal et la création des l'entité tmp invoice
 		if ((customer != null) && (crt != null)) {
 			ClientOrder order = new ClientOrder();
 			order.setClient(customer);
@@ -134,19 +136,18 @@ public class CartService implements ICartLocal {
 			order.setOrderNature(orderType);
 			order.setClient(customer);
 			order.setValid(false);
-			// Implementing the method to calculate the time needed to assemble all the
-			// products in the same store
+			order.setReductionRatio(calculateOrderReductionRation(crt.getId()));
+			
 			order.setCart(crt);
 			crt.setUpdatedAt(new Timestamp(date.getTime()));
-			crt.setOrder(order);
 			Double total = crt.getCartRows().stream().filter(o -> o.getFinalPrice() > 0)
 					.mapToDouble(o -> o.getFinalPrice()).sum();
 			order.setTotale(total.floatValue());
 			manager.persist(order);
-			manager.flush();
+			crt.setOrder(order);
 			manager.merge(crt);
 			manager.flush();
-			return order;
+			return getTimeNeededToGetOrderProducts(LONG,LAT ,crt.getId());
 		}
 
 		else
@@ -252,9 +253,9 @@ public class CartService implements ICartLocal {
 		if (nearest != null) {
 			// reverse Geocoding client
 			Address clientCurrentAddress = reverseGeoCode(LONG, LAT);
-			// Calculating time between client and store
+			// Calculating time between client and store : tested
 			TimeDistance CLIENT_STORE_DISTANCE = getDistanceTimeFromOriginToDestination(
-					nearest.getAddress().getDisplayName(), clientCurrentAddress.getDisplayName());
+					clientCurrentAddress.getDisplayName(), nearest.getAddress().getDisplayName());
 			// Calculating distance between stores ...
 			List<Store> includedStores = fetchingCartIncludedStores(cart);
 			if (includedStores.size() > 0) {
@@ -264,12 +265,16 @@ public class CartService implements ICartLocal {
 				for (Store tmp : includedStores) {
 					TimeDistance timeDistance = getDistanceTimeFromOriginToDestination(
 							nearest.getAddress().getDisplayName(), tmp.getAddress().getDisplayName());
+					writeLog("\n\n*****Time distance object between " + tmp.getAddress().getDisplayName() + " And "
+							+ nearest.getAddress().getDisplayName() + " is " + timeDistance.getDistance()
+							+ " KM and time : is " + timeDistance.getTime() + "\n");
 					if (timeDistance.getTime() > MAX_DISTANCE_STORE_STORE.getTime()) {
 						MAX_DISTANCE_STORE_STORE = timeDistance;
 					}
 				}
 				writeLog("End of the process\n\n\n------------------------------------------------");
-				return MAX_DISTANCE_STORE_STORE;
+				return MAX_DISTANCE_STORE_STORE.getTime() > CLIENT_STORE_DISTANCE.getTime() ? MAX_DISTANCE_STORE_STORE
+						: CLIENT_STORE_DISTANCE;
 			} else
 				return null;
 
@@ -280,6 +285,7 @@ public class CartService implements ICartLocal {
 
 	}
 
+// Tested
 	public Address reverseGeoCode(double LON, double LAT) {
 		javax.ws.rs.client.Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(REVERSE_GEOCODING_API).queryParam("lat", LAT).queryParam("lon", LON)
@@ -294,12 +300,15 @@ public class CartService implements ICartLocal {
 		address.setLatitude(DISPLAY_NAME.get("lat").getAsDouble());
 		address.setDisplayName(DISPLAY_NAME.get("display_name").getAsString());
 		JsonObject country = DISPLAY_NAME.get("address").getAsJsonObject();
-
 		address.setCountry(country.get("country").getAsString());
 		address.setZipCode(country.get("postcode").getAsInt());
+		writeLog("\n////Address Longtitude : " + address.getLongtitude());
+		writeLog("\n////Address Latitude : " + address.getLatitude());
+		writeLog("\n////Address displayName : " + address.getDisplayName());
 		return address;
 	}
 
+	// Tested
 	public TimeDistance getDistanceTimeFromOriginToDestination(String a, String b) {
 		javax.ws.rs.client.Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(distanceMatrixAPI).queryParam("key", distanceMatrixAPITokenKey);
@@ -325,18 +334,23 @@ public class CartService implements ICartLocal {
 		return PACKAGE_RESULT;
 	}
 
+	// Tested
 	public List<Store> fetchingCartIncludedStores(ClientCart cart) {
+		writeLog("Fetching stores which they are included in the sale : ");
 		List<Store> stores = new ArrayList<Store>();
 		// Fetching rows :
 		Set<CartProductRow> rows = cart.getCartRows();
 		for (CartProductRow row : rows) {
-			if (!stores.contains(row.getProduct().getStore()))
+			if (!stores.contains(row.getProduct().getStore())) {
+				writeLog("Store : " + row.getProduct().getStore().getName() + "\n");
 				stores.add(row.getProduct().getStore());
+			}
 		}
 		return stores;
 
 	}
 
+	// Tested
 	public static void writeLog(String info) {
 		String filename = "activity.log";
 		String FILENAME = "C:\\Users\\SSIPI\\git\\" + filename;
@@ -359,6 +373,25 @@ public class CartService implements ICartLocal {
 				ex.printStackTrace();
 			}
 		}
+	}
+
+	// Tested
+
+	public ClientCart getCart(int id) {
+		return manager.find(ClientCart.class, id);
+	}
+
+	// Tested
+	public float calculateOrderReductionRation(int cartId) {
+		ClientCart cart = manager.find(ClientCart.class, cartId);
+		if (cart != null) {
+			Double totalWNR = cart.getCartRows().stream().filter(o -> o.getTotalPriceWNReduction() > 0)
+					.mapToDouble(o -> o.getTotalPriceWNReduction()).sum();
+			Double totalWR = cart.getCartRows().stream().filter(o -> o.getFinalPrice() > 0)
+					.mapToDouble(o -> o.getFinalPrice()).sum();
+			return (float) (1 - (totalWR / totalWNR));
+		} else
+			return 0;
 	}
 
 }

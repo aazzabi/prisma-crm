@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "Store")
 
@@ -32,17 +34,17 @@ public class Store implements Serializable {
 	
 	@Column(name = "capacity")
 	private int capacity;
-	
+	@JsonIgnore
 	@ManyToOne
 	private Address address;
-	
+	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL,mappedBy="store")
 	private Set<Product> products; 
 
-	
+	@JsonIgnore
 	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
 	private Set<StoreHours> storeHoursList;
-	
+	@JsonIgnore
 	@OneToMany(mappedBy="store")
 	private Set<ClientOrder> orders;
 	

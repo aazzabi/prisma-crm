@@ -44,7 +44,7 @@ public class ClientOrder implements Serializable {
 	@ManyToOne
 	private Store store;
 	@JsonIgnore
-	@OneToOne
+	@OneToOne(mappedBy="orderInvoice")
 	private Invoice invoice;
 	@JsonIgnore
 	@OneToOne

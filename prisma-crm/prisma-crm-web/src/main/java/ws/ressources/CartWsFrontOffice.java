@@ -15,9 +15,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import Entities.Address;
 import Entities.ClientCart;
 import Entities.ClientOrder;
 import Entities.Product;
+import Entities.Store;
 import Enums.OrderType;
 import Services.CartService;
 import Utils.TimeDistance;
@@ -29,6 +32,7 @@ public class CartWsFrontOffice {
 	CartService cartService;
 
 	// Creating new cart for a given customer
+	// Works 
 	@Path("/new")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -44,6 +48,7 @@ public class CartWsFrontOffice {
 	}
 
 	// Adding a product for a given customer
+	// works
 	@Path("/add-product-to-cart")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -56,6 +61,7 @@ public class CartWsFrontOffice {
 				: Response.status(Response.Status.NOT_ACCEPTABLE).build();
 	}
 
+	//works
 	@Path("/get-cart/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -66,6 +72,7 @@ public class CartWsFrontOffice {
 
 	}
 
+	//works
 	@Path("/delete-product-from-cart")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -77,12 +84,13 @@ public class CartWsFrontOffice {
 	}
 	
 	
+	//
 	@Path("/pass-to-checkout")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response CheckOut(@FormParam("order") String ORDER_TYPE ,@FormParam("client") int client ,
-			@FormParam("cart") int cart )
+			@FormParam("cart") int cart,@FormParam("longtitude") double longtitude,@FormParam("latitude") double latitude )
 	{
 		OrderType orderT;
 		switch (ORDER_TYPE)
@@ -96,7 +104,7 @@ public class CartWsFrontOffice {
 			default:
 				return Response.status(Response.Status.NOT_ACCEPTABLE).entity(new String(Response.Status.NOT_ACCEPTABLE.toString())).build();				
 		}
-		ClientOrder result=cartService.passToCheckOut(orderT, client, cart);
+		TimeDistance result=cartService.passToCheckOut(orderT, client, cart,longtitude,latitude);
 		return result!=null?Response.ok().status(Response.Status.CREATED).entity(result).build()
 				: Response.status(Response.Status.NOT_FOUND).entity(new String(Response.Status.NOT_FOUND.toString())).build();
 	}
@@ -121,5 +129,14 @@ public class CartWsFrontOffice {
 		return Response.ok().entity(result).build();
 	}
 	
+	@Path("/stores-cart-relation/{origin}/{destination}/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getCartStores(@PathParam(value="origin") double  origin,@PathParam(value="destination") 
+	double  destination,@PathParam(value="id") int  id)
+	{
+		TimeDistance dst=cartService.getTimeNeededToGetOrderProducts(origin,destination,id);
+		return Response.ok().entity(dst).build();
+	}
 
 }
