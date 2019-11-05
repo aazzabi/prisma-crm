@@ -16,6 +16,7 @@ import Enums.Role;
 import Interfaces.IUserLocal;
 import Interfaces.IUserRemote;
 import Utils.AuthJWT;
+import Utils.JavaMailUtil;
 import Utils.MD5Hash;
 
 @Stateful
@@ -36,6 +37,12 @@ public class UserService implements IUserLocal, IUserRemote {
 		String activationHashedCode = MD5Hash.getMD5Hash(user.getPhoneNumber() + user.getEmail());
 		user.setConfirmationToken(activationHashedCode);
 		user.setCreatedAt(new Date());
+		try {
+			JavaMailUtil.sendMail(user.getEmail(), "Confirmation code", "Your confirmation code"+activationHashedCode);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		entityManager.persist(user);
 	}
 
@@ -97,12 +104,12 @@ public class UserService implements IUserLocal, IUserRemote {
 
 		String hashedPwd = MD5Hash.getMD5Hash(pwd);
 		Query query = entityManager.createQuery(
-		
+
 				"SELECT u FROM User u WHERE (u.email=:uname AND u.password=:upwd) ");
 		User user = (User) query.setParameter("uname", email).setParameter("upwd", hashedPwd).getSingleResult();
 		Role a = user.getRole();
 		this.UserLogged = user;
-	
+
 		return user;
 
 	}
@@ -155,4 +162,6 @@ public class UserService implements IUserLocal, IUserRemote {
 
 		return true;
 	}
+
+
 }

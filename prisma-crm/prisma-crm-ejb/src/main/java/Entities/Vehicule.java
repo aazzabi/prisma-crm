@@ -22,7 +22,7 @@ public class Vehicule implements Serializable {
 	@GeneratedValue(strategy=GenerationType.TABLE)
 	private int id;
 	private String plate;
-	private float odometer;
+	private int odometer;
 	private FuelType fuelType;
 	@OneToOne
 	private User driver;
@@ -36,10 +36,10 @@ public class Vehicule implements Serializable {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public float getOdometer() {
+	public int getOdometer() {
 		return odometer;
 	}
-	public void setOdometer(float odometer) {
+	public void setOdometer(int odometer) {
 		this.odometer = odometer;
 	}
 	public FuelType getFuelType() {
@@ -61,7 +61,7 @@ public class Vehicule implements Serializable {
 		this.location = location;
 	}
 
-	public Vehicule(int id, float odometer, FuelType fuelType, User driver, float location) {
+	public Vehicule(int id, int odometer, FuelType fuelType, User driver, float location) {
 		super();
 		this.id = id;
 		this.odometer = odometer;
@@ -70,7 +70,7 @@ public class Vehicule implements Serializable {
 		this.location = location;
 	}
 	
-	public Vehicule(int id, String plate, float odometer, FuelType fuelType, float location) {
+	public Vehicule(int id, String plate, int odometer, FuelType fuelType, float location) {
 		super();
 		this.id = id;
 		this.plate = plate;

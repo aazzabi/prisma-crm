@@ -35,6 +35,7 @@ import Entities.User;
 import Enums.AccountState;
 import Enums.Role;
 import Interfaces.IUserLocal;
+import Services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -50,7 +51,6 @@ public class UserResource {
 
 	@Context
 	private UriInfo uriInfo;
-
 
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
@@ -229,8 +229,6 @@ public class UserResource {
 
 	}
 
-
-
 	// @Secured
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -257,4 +255,14 @@ public class UserResource {
 
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("logout")
+	public Response logout() {
+
+		UserService.UserLogged = null;
+		issueToken(null, null);
+		return Response.status(Status.NOT_FOUND).entity(false).build();
+
+	}
 }

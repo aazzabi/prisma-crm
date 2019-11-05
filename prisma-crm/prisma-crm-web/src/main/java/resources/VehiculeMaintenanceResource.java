@@ -24,6 +24,7 @@ import Entities.Product;
 import Entities.RepairRequest;
 import Entities.Vehicule;
 import Entities.VehiculeMaintenance;
+import Enums.RepairStatus;
 import Interfaces.IVehiculeMtRemote;
 
 @Path("maintenance")
@@ -41,6 +42,7 @@ public class VehiculeMaintenanceResource {
 		Vehicule xx = vehiculeMtRemote.getVehiculeById(id);
 
 		if (xx != null) {
+			maintenance.setRepairStatus(RepairStatus.OnHold);
 			maintenance.setVehicule(xx);
 			vehiculeMtRemote.addMaintanceRequest(maintenance);
 		}
@@ -56,7 +58,22 @@ public class VehiculeMaintenanceResource {
 		return vehiculeMtRemote.findMaintancebyVehicule(id);
 
 	}
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("approve/{id}")
+	public Response approveMaintance(@PathParam("id") int id) {
+		vehiculeMtRemote.ApproveMaintance(id);
+		return Response.status(Status.CREATED).entity("ok").build();
 
+	}
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("reject/{id}")
+	public Response RejectMaintance(@PathParam("id") int id) {
+		vehiculeMtRemote.RejectMaintance(id);
+		return Response.status(Status.CREATED).entity("ok").build();
+
+	}
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("findMostMaintained")
@@ -69,7 +86,7 @@ public class VehiculeMaintenanceResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("NearEntreiens")
-	public List<VehiculeMaintenance> findAllNearEntreiens() {
+	public List<VehiculeMaintenance> findAllNearEntreiens() throws Exception {
 
 		return vehiculeMtRemote.alertEntreiens();
 

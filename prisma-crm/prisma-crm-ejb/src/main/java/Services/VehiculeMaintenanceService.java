@@ -27,7 +27,7 @@ import Entities.VehiculeMaintenance;
 import Enums.RepairStatus;
 import Enums.ServiceType;
 import Interfaces.IVehiculeMtRemote;
-import Utils.Emailer;
+import Utils.JavaMailUtil;
 import Utils.Mailer;
 
 @Stateless
@@ -69,25 +69,36 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 
 	@Override
 	public int addMaintanceRequest(VehiculeMaintenance vehiculeMaintenance) {
-
-		em.merge(vehiculeMaintenance);
-
+		if (vehiculeMaintenance.getOdometer() >= vehiculeMaintenance.getVehicule().getOdometer() )
+		{
+			em.merge(vehiculeMaintenance);
+		}
 		return vehiculeMaintenance.getId();
 	}
 
+
 	@Override
-	public void traitMaintance(int id, RepairStatus r) {
+	public void ApproveMaintance(int id) {
 		VehiculeMaintenance s = em.find(VehiculeMaintenance.class, id);
-		s.setRepairStatus(r);
+		s.setMaintainceDate(new Date());
+		s.setRepairStatus(RepairStatus.Completed);
+		s.getVehicule().setOdometer(s.getOdometer());
+		em.merge(s.getVehicule());
 		em.merge(s);
 	}
-
+	@Override
+	public void RejectMaintance(int id) {
+		VehiculeMaintenance s = em.find(VehiculeMaintenance.class, id);
+		
+		s.setRepairStatus(RepairStatus.Rejected);
+		em.merge(s);
+	}
 	@Override
 	public Vehicule findMostMaintainedVehicule() {
 
 		Query query = em
 				.createQuery("SELECT v " + "FROM VehiculeMaintenance As r , Vehicule as v " + "Where r.vehicule = v  "
-						+ "AND r.serviceType = :s " + "ORDER BY Count(r.vehicule) DESC", Vehicule.class)
+						+ "AND r.serviceType = :s " + "group by v ORDER BY Count(v) DESC", Vehicule.class)
 				.setParameter("s", ServiceType.Reparation);
 		Vehicule ob = (Vehicule) query.getResultList().get(0);
 		System.out.println("size " + ob.getVehiculeMaintenancesType(ServiceType.Reparation).size());
@@ -103,9 +114,9 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 	}
 
 	@Override
-//	@Schedule(hour = "8", minute = "0", second = "0", persistent = false)
-	// @Schedule(second = "*", minute = "*/5", hour = "*", persistent = false)
-	public List<VehiculeMaintenance> alertEntreiens() {
+	//@Schedule(hour = "8", minute = "0", second = "0", persistent = false)
+	//@Schedule(second = "*", minute = "*/5", hour = "*", persistent = false)
+	public List<VehiculeMaintenance> alertEntreiens() throws Exception {
 		List<VehiculeMaintenance> realEv = new ArrayList<>();
 		List<VehiculeMaintenance> ev = em
 				.createQuery("select ev from VehiculeMaintenance ev where ev.repairStatus = 2  ").getResultList();
@@ -121,7 +132,7 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 					System.out.println(
 							"daysssssssssssssssssssssssssssssss !" + days + " id : " + entretienVoiture.getId());
 
-					Emailer.SendEmail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
+					JavaMailUtil.sendMail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
 							"Hey, you have depassed the car maintenance deadline with : " + days + "days");
 				}
 			}
@@ -134,7 +145,7 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 					System.out.println("intervaleKilometres+++++++++++++++ !" + KmLastEntretien + " id : "
 							+ entretienVoiture.getId());
 					realEv.add(entretienVoiture);
-					Emailer.SendEmail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
+					JavaMailUtil.sendMail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
 							"Hey, you have depassed the car maintenance Km: " + KmLastEntretien);
 
 				}

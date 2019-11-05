@@ -20,9 +20,10 @@ public interface IVehiculeMtRemote {
 	public List<Vehicule> findAllVehicule() ;
 	public void deleteVehicule(int id);
 	public int addMaintanceRequest(VehiculeMaintenance vehiculeMaintenance) ;
-	public void traitMaintance(int id, RepairStatus r);
 	public Vehicule findMostMaintainedVehicule();
 	public List<VehiculeMaintenance> findMaintancebyVehicule(int id);
-	public List<VehiculeMaintenance> alertEntreiens();
+	public List<VehiculeMaintenance> alertEntreiens() throws Exception;
+	void RejectMaintance(int id);
+	void ApproveMaintance(int id);
 
 }
