@@ -111,18 +111,7 @@ public class StoreService implements IStoreServiceLocal {
 		sh.setStore(str);
 	}
 
-	@Override
-	public Store assignProductToStore(int idStore, int idProduct) {
-		Store s = findStoreById(idStore);
-		Product p = em.find(Product.class, idProduct);
 
-		s.getProducts().add(p);
-		p.setStore(s);
-
-
-		return s;
-
-	}
 
 
 	public float calculateDistanceBetweenTwoStores(double ORG_LON, double ORG_LAT, double DEST_LON, double DEST_LAT) {

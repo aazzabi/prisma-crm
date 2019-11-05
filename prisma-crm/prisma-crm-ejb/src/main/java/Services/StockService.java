@@ -3,7 +3,6 @@ package Services;
 import java.util.List;
 
 import javax.ejb.EJB;
-import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,7 +34,7 @@ public class StockService implements IStockServiceLocal {
 		return ps.findProductsByStore(store).size();
 	}
 
-	@Override
+	/*@Override
 	public String addStock(Stock stock,Store store) {
 		int q =stock.getRecentQuantity();
 
@@ -81,16 +80,39 @@ public class StockService implements IStockServiceLocal {
 		}
 
 		
-	}
+	}*/
+	
+	
 	@Override
-	public void sendJavaMail(ProviderOrder order) {
+	public String addStock(int idStore,int idProduct,Stock stock) {
+		Store store=ss.findStoreById(idStore);
+		Product product= ps.findProductById(idProduct);
+		stock.setProduct(product);
+		stock.setStore(store);
+		if(stock.getQuantity()>store.getCapacity()) {
+			return "Error: Product quantity must be less than the store capacity";
+		}
+		em.persist(stock);
+		return "added";
+	}
+	
+	
+	@Override
+	public Stock addStockFromProvider(int idStore, int idProduct, Stock stock) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	@Override
+	public void sendJavaMail(ProviderOrder order, Stock stock) {
 		try {
 			JavaMailUtil.sendMail("provider.prisma@gmail.com", "Products Order",
 					"<h3>Products Order</h3>"
 					+"<p>Store Name :"+order.getStore().getName()+"</p>"
-					+"<p>Product Reference :"+order.getProductRef()+"</p>"
+					+"<p>Product Reference :"+order.getProduct().getId()+"</p>"
 					+"<p>Quantity :"+order.getQuantity()+"</p>"
-					+"<a href='http://localhost:9080/prisma-crm-web/stock/add_products?idStore="+order.getStore().getId()+"&&ref="+order.getProductRef()+"&&quantity="+order.getQuantity()+"'>Accept the order</a>"
+					+"<a href='http://localhost:9080/prisma-crm-web/stock/update_stock_provider?idStock="+stock.getId()+"&&addedQuantity="+order.getQuantity()+"'>Accept the order</a>"
 					);
 		} catch (Exception e) {
 			
@@ -107,21 +129,25 @@ public class StockService implements IStockServiceLocal {
 	}
 
 	@Override
-	public Stock checkStock(int idStore,String ref) {
+	public Stock checkStock(int idStore,int idProduct) {
+		Store store=ss.findStoreById(idStore);
+		Product product= ps.findProductById(idProduct);
 		TypedQuery<Stock> query = em.createQuery(
-				"SELECT s FROM Stock s WHERE s.store = :store and s.productRef = :ref", Stock.class);
+				"SELECT s FROM Stock s WHERE s.store = :store and s.product = :product", Stock.class);
 
-		query.setParameter("store", ss.findStoreById(idStore));
-		List<Stock> list= query.setParameter("ref", ref).getResultList();
+		query.setParameter("store", store);
+		List<Stock> list= query.setParameter("product", product).getResultList();
 		Stock stock = list.get(0);
-		stock.setQuantity(stock.getQuantity()-1);
+		stock.setRecentQuantity(stock.getRecentQuantity()-1);
 		updateStock(stock);
-		if(stock.getQuantity()==stock.getQuantityMin()) {
+		if(stock.getRecentQuantity()==stock.getQuantityMin()) {
+			int addedQuantity= stock.getQuantity()-stock.getRecentQuantity();
 			ProviderOrder order = new ProviderOrder();
-			order.setProductRef(ref);
-			order.setQuantity(5);
+			order.setProduct(product);
+			order.setStore(store);
+			order.setQuantity(addedQuantity);
 			order.setState("untreated");
-			//sendJavaMail
+			sendJavaMail(order,stock);
 		}
 		return stock;
 		
@@ -130,12 +156,27 @@ public class StockService implements IStockServiceLocal {
 	@Override
 	public Stock updateStock(Stock newStock) {
 		Stock s = em.find(Stock.class, newStock.getId());
-		s.setProductRef(newStock.getProductRef());
+		s.setProduct(newStock.getProduct());
 		s.setQuantity(newStock.getQuantity());
 		s.setQuantityMin(newStock.getQuantityMin());
 		s.setRecentQuantity(newStock.getRecentQuantity());
 		s.setStore(newStock.getStore());
 		return s;
 	}
+
+	@Override
+	public Stock updateStockProvider(int idStock, int addedQuantity) {
+		Stock stock = findStockById(idStock);
+		stock.setRecentQuantity(stock.getRecentQuantity()+addedQuantity);
+		return stock;
+	}
+
+	@Override
+	public Stock findStockById(int idStock) {
+		Stock s = em.find(Stock.class, idStock);
+		return s;
+	}
+
+
 
 }

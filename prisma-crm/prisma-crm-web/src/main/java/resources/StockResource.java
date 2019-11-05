@@ -39,15 +39,13 @@ public class StockResource {
 	@Path("/add")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addStock(@QueryParam(value="idStore")int idStore,Stock stock) {
-		Store store = storeServ.findStoreById(idStore);
-		stock.setStore(store);
-
-		return Response.status(Status.CREATED).entity(service.addStock(stock,store)).build();
+	public Response addStock(@QueryParam(value="idStore")int idStore,@QueryParam(value="idProduct")int idProduct,Stock stock) {
+		
+		return Response.status(Status.CREATED).entity(service.addStock(idStore,idProduct,stock)).build();
 
 	}
 
-	@GET
+	/*@GET
 	@Path("/add_products")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String addProducts(@QueryParam(value="idStore")int idStore,@QueryParam(value="ref")String ref ,@QueryParam(value="quantity")int q) {
@@ -57,29 +55,30 @@ public class StockResource {
 		p.setStore(store);
 		//Product product = new Product(p.getReference(),p.getName(),p.getDescription(),p.getType(),p.getGuarantee(),p.getPrice());
 		
-		/*for(int i=1;i<=q;i++) {
+		for(int i=1;i<=q;i++) {
 			
 			System.out.println("quantity=="+q+" i======"+i);
 			System.out.println(prodServ.addProduct(p));
 			store.getProducts().add(p);
 			
-		}*/
+		}
 	
 		return "products added";
 
+	}*/
+	
+	@GET
+	@Path("/update_stock_provider")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateStockProvider(@QueryParam(value="idStock")int idStock,@QueryParam(value="addedQuantity")int addedQuantity) {
+		return Response.status(Status.OK).entity(service.updateStockProvider(idStock, addedQuantity)).build();
 	}
 	
 	@GET
 	@Path("/check_stock")
 	@Produces(MediaType.APPLICATION_JSON)
-	public  Stock checkStock(@QueryParam(value="idStore")int idStore,@QueryParam(value="ref")String ref) {
-		
-		Stock stock = service.checkStock(idStore, ref);
-		
-		stock.setQuantity(stock.getQuantity()-1);
-		
-		//if(stock.getQuantityMin())
-		return stock;
+	public  Response checkStock(@QueryParam(value="idStore")int idStore,@QueryParam(value="idProduct")int idProduct) {
+		return Response.status(Status.OK).entity(service.checkStock(idStore, idProduct)).build();
 		
 	}
 

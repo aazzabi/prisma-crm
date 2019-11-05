@@ -45,7 +45,7 @@ public class Product implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private ProductType type;
 
-	private int guarantee;
+	private int guarantee=0;
 
 	private double price;
 	@Column(name = "new_price")
@@ -69,11 +69,8 @@ public class Product implements Serializable {
 	@ManyToOne(cascade = CascadeType.ALL)
 	Agent agent;
 
-	@JsonIgnore
-	@ManyToOne
-	Store store; 
 	
-	@OneToMany(mappedBy="product")
+	@OneToMany(mappedBy="product", fetch= FetchType.EAGER)
 	private Set<CartProductRow> cartRows;
 		
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
@@ -83,12 +80,10 @@ public class Product implements Serializable {
 			inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
 			)
 	private Set<Tariff> tarifs ;
-	
-	@Column(name="stock")
-	private int stock;
+
 
 	@JsonIgnore
-	@ManyToMany(mappedBy = "products", fetch = FetchType.EAGER)
+	@ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
 	private List<Pack> packs;
 	
 
@@ -96,7 +91,7 @@ public class Product implements Serializable {
 	private Promotion promotion;
 
 	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
-			double price/* List<TarifProduct> tafifProductList */, Promotion promotion, double new_price) {
+			double price, Promotion promotion, double new_price) {
 		super();
 		this.id = id;
 		this.reference = reference;
@@ -105,8 +100,6 @@ public class Product implements Serializable {
 		this.type = type;
 		this.guarantee = guarantee;
 		this.price = price;
-		// this.stockList = stockList;
-		// this.tafifProductList = tafifProductList;
 		this.promotion = promotion;
 		this.new_price = new_price;
 	}
@@ -129,34 +122,6 @@ public class Product implements Serializable {
 		this.promotion = promotion;
 		this.new_price = new_price;
 	}
-
-	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
-			double price) {
-		super();
-		this.id = id;
-		this.reference = reference;
-		this.name = name;
-		this.description = description;
-		this.type = type;
-		this.guarantee = guarantee;
-		this.price = price;
-	}
-
-	public Product(String reference, String name, String description, ProductType type, int guarantee, double price) {
-		super();
-		this.reference = reference;
-		this.name = name;
-		this.description = description;
-		this.type = type;
-		this.guarantee = guarantee;
-		this.price = price;
-
-	}
-
-	// @OneToMany(mappedBy = "tariff" ,cascade =
-	// {CascadeType.ALL},fetch=FetchType.EAGER)
-	// private List<TarifProduct> tafifProductList = new ArrayList<>();
-
 
 	public List<Pack> getPacks() {
 		return packs;
@@ -255,13 +220,7 @@ public class Product implements Serializable {
 		this.tarifs = tarifs;
 	}
 
-	public Store getStore() {
-		return store;
-	}
 
-	public void setStore(Store store) {
-		this.store = store;
-	}
 
 	public String getBrand() {
 		return brand;
@@ -311,42 +270,6 @@ public class Product implements Serializable {
 		this.cartRows = cartRows;
 	}
 
-	public int getStock() {
-		return stock;
-	}
 
-	public void setStock(int stock) {
-		this.stock = stock;
-	}
-	
-	
-//	public List<TarifProduct> getTarifProductList() {
-//		return tafifProductList;
-//	}
-
-	/*
-	 * public void setTarifProductList(List<TarifProduct> tafifProductList) {
-	 * this.tafifProductList = tafifProductList; }
-	 * 
-	 * public List<Stock> getStockList() { return stockList; }
-	 */
-
-	/*
-	 * public void setStockList(List<Stock> stockList) { this.stockList = stockList;
-	 * }
-	 * 
-	 * public List<TarifProduct> getTafifProductList() { return tafifProductList; }
-	 * 
-	 * public void setTafifProductList(List<TarifProduct> tafifProductList) {
-	 * this.tafifProductList = tafifProductList; }
-	 */
-
-	/*
-	 * @Override public String toString() { return "Product [id=" + id +
-	 * ", reference=" + reference + ", name=" + name + ", description=" +
-	 * description + ", type=" + type + ", guarantee=" + guarantee + ", price=" +
-	 * price + ", stockList=" + stockList + ", tafifProductList=" + tafifProductList
-	 * + "]"; }
-	 */
 }
 

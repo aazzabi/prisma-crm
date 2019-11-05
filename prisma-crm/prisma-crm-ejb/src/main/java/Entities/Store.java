@@ -36,9 +36,7 @@ public class Store implements Serializable{
 	
 	@ManyToOne
 	private Address address;
-	
-	@OneToMany(mappedBy="store",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
-	private Set<Product> products; 
+
 	
 	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
 	private Set<StoreHours> storeHoursList;
@@ -94,14 +92,6 @@ public class Store implements Serializable{
 
 	public void setAddress(Address address) {
 		this.address = address;
-	}
-
-	public Set<Product> getProducts() {
-		return products;
-	}
-
-	public void setProducts(Set<Product> products) {
-		this.products = products;
 	}
 
 	public Set<ClientOrder> getOrders() {

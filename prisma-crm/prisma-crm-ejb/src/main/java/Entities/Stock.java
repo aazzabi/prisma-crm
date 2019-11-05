@@ -24,7 +24,8 @@ public class Stock  implements Serializable{
 	@ManyToOne
 	private Store store;
 	
-	private String productRef;
+	@ManyToOne
+	private Product product;
 	
 	private int quantity;
 	
@@ -51,14 +52,6 @@ public class Stock  implements Serializable{
 		this.store = store;
 	}
 
-	public String getProductRef() {
-		return productRef;
-	}
-
-	public void setProductRef(String productRef) {
-		this.productRef = productRef;
-	}
-
 	public int getQuantity() {
 		return quantity;
 	}
@@ -82,4 +75,22 @@ public class Stock  implements Serializable{
 	public void setRecentQuantity(int recentQuantity) {
 		this.recentQuantity = recentQuantity;
 	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+	
+	
 }

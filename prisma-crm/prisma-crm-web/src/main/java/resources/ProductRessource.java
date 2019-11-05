@@ -19,8 +19,10 @@ import javax.ws.rs.core.Response.Status;
 import Entities.Product;
 import Entities.Store;
 import Entities.Tariff;
+import Enums.Role;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IStoreServiceLocal;
+import utilities.RolesAllowed;
 
 
 
@@ -43,6 +45,7 @@ public class ProductRessource {
 
 	@GET
 	@Path("/all")
+	@RolesAllowed(Permissions = {Role.Client})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response allProducts() {
 		return Response.status(Status.CREATED).entity(ps.findAllProducts()).build();
@@ -51,6 +54,7 @@ public class ProductRessource {
 
 	@GET
 	@Path("{id}")
+	@RolesAllowed(Permissions = {Role.financial})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findProductById(@PathParam(value = "id") int id) {
 		return Response.status(Status.CREATED).entity(ps.findProductById(id)).build();
