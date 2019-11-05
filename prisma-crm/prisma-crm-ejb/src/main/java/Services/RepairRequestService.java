@@ -1,6 +1,7 @@
 package Services;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -74,7 +75,8 @@ public class RepairRequestService implements IRepaiRequest {
 		RepairRequest s = entityManager.find(RepairRequest.class, id);
 		s.setNotes(s.getNotes());
 		s.setStatusRep(t.getStatusRep());
-		s.setEndDate(s.getEndDate());
+		if(t.getStatusRep()==RepairStatus.Completed||t.getStatusRep()==RepairStatus.Rejected )
+		{		 s.setEndDate(new Date());}
 		entityManager.merge(s);
 		String sms = Sms.SendSMS(s.getClient().getPhoneNumber(),
 				"Hello , Your repair Request status has been changed to :" + t.getStatusRep().name()
@@ -121,13 +123,13 @@ public class RepairRequestService implements IRepaiRequest {
 		}
 		SommeScore = SommeScore / listRep.size();
 		if (SommeScore <= 0.25) {
-			return "They are MAD";
+			return "They are MAD - Sentiments Score :"+SommeScore;
 		} else if (SommeScore <= 0.50) {
-			return "They are Moderately mad";
+			return "They are Moderately mad- Sentiments Score :"+SommeScore;
 		} else if (SommeScore <= 0.75) {
-			return "They are not very mad but be careful";
+			return "They are not very mad but be careful - Sentiments Score :"+SommeScore;
 		} else {
-			return "They are not mad";
+			return "They are not mad - Sentiments Score :"+SommeScore;
 		}
 
 	}

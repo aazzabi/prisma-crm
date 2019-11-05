@@ -8,7 +8,7 @@ import Entities.User;
 
 @Remote
 public interface IUserRemote {
-	public void createUser(User user);
+	public int createUser(User user);
 	public boolean activateAccount(String confirmationToken);
 	public User findUserById(int id);
 	public List<User> findAllUsers();
@@ -17,7 +17,7 @@ public interface IUserRemote {
 	public User loginUser(String username, String pwd);
 	public boolean uploadProfileImage(String imgToUpload);
 	public boolean changePwd(User user, String oldPwd, String newPwd);
-	boolean AssignAdmin(int id);
-	boolean AssignClient(int id);
-	boolean AssignClients(int id);
+	public int AssignAdmin(int id);
+	public int AssignClient(int id);
+	public int AssignAgents(int id);
 }

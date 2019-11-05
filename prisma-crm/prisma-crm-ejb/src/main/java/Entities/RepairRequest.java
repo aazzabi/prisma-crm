@@ -27,10 +27,10 @@ public class RepairRequest implements Serializable {
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int id;
 	private Date warentyExp;
-	@ManyToOne(cascade = CascadeType.REMOVE)
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JsonIgnore
 	private User client;
-	@OneToOne(cascade = CascadeType.REMOVE)
+	@OneToOne
 	@JsonIgnore
 	private Invoice invoice;
 	@Enumerated(EnumType.STRING)

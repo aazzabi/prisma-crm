@@ -58,6 +58,7 @@ public class VehiculeMaintenanceResource {
 		return vehiculeMtRemote.findMaintancebyVehicule(id);
 
 	}
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("approve/{id}")
@@ -66,6 +67,7 @@ public class VehiculeMaintenanceResource {
 		return Response.status(Status.CREATED).entity("ok").build();
 
 	}
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("reject/{id}")
@@ -74,10 +76,11 @@ public class VehiculeMaintenanceResource {
 		return Response.status(Status.CREATED).entity("ok").build();
 
 	}
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("findMostMaintained")
-	public Response MostMaintainedVehicule() {
+	public Response MostMaintainedVehicule() throws Exception {
 
 		return Response.status(Status.CREATED).entity(vehiculeMtRemote.findMostMaintainedVehicule()).build();
 
@@ -96,10 +99,9 @@ public class VehiculeMaintenanceResource {
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String deleteRepRequest(@PathParam(value = "id") int id) {
-		vehiculeMtRemote.deleteVehicule(id);
+	public String deleteVehiculeMaint(@PathParam(value = "id") int id) {
+		vehiculeMtRemote.deleteVehiculeMt(id);
 		return "deleted";
 	}
-	
 
 }

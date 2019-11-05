@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,8 +36,11 @@ public class Invoice implements Serializable {
 	private Set<CurrencyUnit> currencies;
 	@OneToMany
 	@JsonIgnore
-	private Set<Product> products;
 
+	private Set<Product> products;
+	@OneToOne(cascade = CascadeType.REMOVE)
+	@JsonIgnore
+	private RepairRequest repairRequest;
 	public ClientOrder getOrderInvoice() {
 		return orderInvoice;
 	}

@@ -81,7 +81,7 @@ public class RepairResource {
 	}
 
 	@GET
-	@Path("/check/{id}")
+	@Path("/checkbyid/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response checkRepairRequest(@PathParam(value = "id") int id) {
 		return Response.status(Status.CREATED).entity(repaiRequest.findRepairRequest(id)).build();
@@ -100,6 +100,8 @@ public class RepairResource {
 
 	@PUT
 	@Path("/status/{id}")
+	@utilities.RolesAllowed(Permissions = {Role.technical})
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response RepRequestStatus(@PathParam(value = "id") int id, RepairRequest xx) {
 
 		return Response.status(Status.OK).entity(repaiRequest.RepairRequestStatus(id, xx)).build();
@@ -124,6 +126,7 @@ public class RepairResource {
 	}
 	@GET
 	@Path("findSentiment")
+	@utilities.RolesAllowed(Permissions = {Role.technical})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findrep() throws Exception {
 
@@ -132,6 +135,7 @@ public class RepairResource {
 	@PUT
 	@Path("/check/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response Comment(@PathParam(value = "id") int id, RepairRequest s) {
 
 		return Response.status(Status.OK).entity(repaiRequest.ReviewAdd(s.getReview(), id)).build();

@@ -10,6 +10,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpSession;
 
+import Entities.Agent;
+import Entities.Client;
 import Entities.User;
 import Enums.AccountState;
 import Enums.Role;
@@ -32,18 +34,20 @@ public class UserService implements IUserLocal, IUserRemote {
 	}
 
 	@Override
-	public void createUser(User user) {
+	public int createUser(User user) {
 		user.setPassword(MD5Hash.getMD5Hash(user.getPassword()));
 		String activationHashedCode = MD5Hash.getMD5Hash(user.getPhoneNumber() + user.getEmail());
 		user.setConfirmationToken(activationHashedCode);
 		user.setCreatedAt(new Date());
 		try {
-			JavaMailUtil.sendMail(user.getEmail(), "Confirmation code", "Your confirmation code"+activationHashedCode);
+			JavaMailUtil.sendMail(user.getEmail(), "Confirmation code",
+					"Your confirmation code : " + activationHashedCode);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		entityManager.persist(user);
+		return user.getId();
 	}
 
 	@Override
@@ -136,32 +140,50 @@ public class UserService implements IUserLocal, IUserRemote {
 	}
 
 	@Override
-	public boolean AssignAdmin(int id) {
+	public int AssignAdmin(int id) {
 		User user = findUserById(id);
 		user.setRole(Role.Admin);
 		entityManager.merge(user);
 
-		return true;
+		return user.getId();
 	}
 
 	@Override
-	public boolean AssignClient(int id) {
+	public int AssignClient(int id) {
 		User user = findUserById(id);
-		user.setRole(Role.Client);
-		entityManager.merge(user);
 
-		return true;
+		Client c = new Client();
+		System.out.println("Khra ///////////////////:"+c.getId());
+		c.setPassword(user.getPassword());
+		c.setEmail(user.getEmail());
+		c.setFirstName(user.getFirstName());
+		c.setLastName(user.getLastName());
+		c.setAccountState(user.getAccountState());
+		c.setCreatedAt(user.getCreatedAt());
+		c.setConfirmationToken(user.getConfirmationToken());
+		c.setFidelityScore(0);
+		entityManager.remove(entityManager.contains(user) ? user : entityManager.merge(user));
+		entityManager.persist(c);
+		entityManager.flush();
+		return c.getId();
 	}
 
 	@Override
-
-	public boolean AssignClients(int id) {
+	public int AssignAgents(int id) {
 		User user = findUserById(id);
-		user.setRole(Role.Driver);
-		entityManager.merge(user);
 
-		return true;
+		Agent c = new Agent();
+		c.setPassword(user.getPassword());
+		c.setEmail(user.getEmail());
+		c.setFirstName(user.getFirstName());
+		c.setLastName(user.getLastName());
+		c.setAccountState(user.getAccountState());
+		c.setCreatedAt(user.getCreatedAt());
+		c.setConfirmationToken(user.getConfirmationToken());
+		c.setSalary(0);
+		entityManager.remove(entityManager.contains(user) ? user : entityManager.merge(user));
+		entityManager.merge(c);
+		return c.getId();
 	}
-
 
 }

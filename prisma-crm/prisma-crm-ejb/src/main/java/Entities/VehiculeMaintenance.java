@@ -20,7 +20,7 @@ public class VehiculeMaintenance implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Vehicule vehicule;
 
 	private ServiceType serviceType;

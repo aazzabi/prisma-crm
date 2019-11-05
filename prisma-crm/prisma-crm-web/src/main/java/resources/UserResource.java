@@ -131,10 +131,11 @@ public class UserResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("register")
-	public void createUser(User user) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response createUser(User user) {
 
-		userBusiness.createUser(user);
-
+		return Response.status(Status.OK).entity(userBusiness.createUser(user)).build();
+	 
 	}
 
 	@GET
@@ -247,14 +248,20 @@ public class UserResource {
 	@Path("assignClient/{id}")
 	public Response AddClient(@PathParam("id") int id) {
 
-		if (userBusiness.AssignClients(id)) {
-			return Response.status(Status.FORBIDDEN).entity(false).build();
-
-		}
-		return Response.status(Status.NOT_FOUND).entity(false).build();
+	
+		return Response.status(Status.FOUND).entity(userBusiness.AssignClient(id)).build();
 
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("assignAgent/{id}")
+	public Response AddAgent(@PathParam("id") int id) {
+
+	
+		return Response.status(Status.FOUND).entity(userBusiness.AssignAgents(id)).build();
+
+	}
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("logout")

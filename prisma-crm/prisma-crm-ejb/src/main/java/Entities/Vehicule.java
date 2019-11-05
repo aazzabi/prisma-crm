@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jws.soap.SOAPBinding.Use;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,7 +29,7 @@ public class Vehicule implements Serializable {
 	private User driver;
 	private float location;
 	@JsonIgnore
-	@OneToMany(mappedBy="vehicule")
+	@OneToMany(mappedBy="vehicule" ,cascade = CascadeType.REMOVE)
 	private List<VehiculeMaintenance> vehiculeMaintenances;
 	public int getId() {
 		return id;
