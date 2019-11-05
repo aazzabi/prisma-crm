@@ -38,6 +38,15 @@ public class RepairRequest implements Serializable {
 	private Date createdDate;
 	private String notes;
 	private Date endDate;
+    private String Review;
+    
+	public String getReview() {
+		return Review;
+	}
+
+	public void setReview(String review) {
+		Review = review;
+	}
 
 	public int getId() {
 		return id;

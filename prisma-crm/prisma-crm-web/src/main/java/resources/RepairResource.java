@@ -120,5 +120,20 @@ public class RepairResource {
 
 		return Response.status(Status.OK).entity(repaiRequest.findRepairRequest(id)).build();
 	}
+	@GET
+	@Path("findSentiment")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findrep() throws Exception {
+
+		return Response.status(Status.OK).entity(repaiRequest.findSentiment()).build();
+	}
+	@PUT
+	@Path("/check/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response Comment(@PathParam(value = "id") int id, RepairRequest s) {
+
+		return Response.status(Status.OK).entity(repaiRequest.ReviewAdd(s.getReview(), id)).build();
+
+	}
 
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -64,6 +65,7 @@ public class VehiculeMaintenanceResource {
 		return Response.status(Status.CREATED).entity(vehiculeMtRemote.findMostMaintainedVehicule()).build();
 
 	}
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("NearEntreiens")
@@ -73,5 +75,14 @@ public class VehiculeMaintenanceResource {
 
 	}
 
+	@DELETE
+	@Path("/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String deleteRepRequest(@PathParam(value = "id") int id) {
+		vehiculeMtRemote.deleteVehicule(id);
+		return "deleted";
+	}
+	
 
 }

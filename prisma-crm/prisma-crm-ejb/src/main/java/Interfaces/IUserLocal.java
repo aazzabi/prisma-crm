@@ -17,4 +17,7 @@ public interface IUserLocal {
 	public User loginUser(String username, String pwd);
 	public boolean uploadProfileImage(String imgToUpload);
 	public boolean changePwd(User user, String oldPwd, String newPwd);
+	boolean AssignAdmin(int id);
+	boolean AssignClient(int id);
+	boolean AssignClients(int id);
 }

@@ -85,16 +85,13 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 	@Override
 	public Vehicule findMostMaintainedVehicule() {
 
-		Query query =  em.createQuery(
-				"SELECT v "
-				+ "FROM VehiculeMaintenance As r , Vehicule as v "
-				+ "Where r.vehicule = v  "
-				+ "AND r.serviceType = :s "
-				+ "ORDER BY Count(r.vehicule) DESC", Vehicule.class)
+		Query query = em
+				.createQuery("SELECT v " + "FROM VehiculeMaintenance As r , Vehicule as v " + "Where r.vehicule = v  "
+						+ "AND r.serviceType = :s " + "ORDER BY Count(r.vehicule) DESC", Vehicule.class)
 				.setParameter("s", ServiceType.Reparation);
 		Vehicule ob = (Vehicule) query.getResultList().get(0);
 		System.out.println("size " + ob.getVehiculeMaintenancesType(ServiceType.Reparation).size());
-	   return ob;
+		return ob;
 	}
 
 	@Override
@@ -104,34 +101,41 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 		return s.getVehiculeMaintenances();
 
 	}
+
 	@Override
 //	@Schedule(hour = "8", minute = "0", second = "0", persistent = false)
-  //  @Schedule(second = "*/5", minute = "*", hour = "*", persistent = false)
+	// @Schedule(second = "*", minute = "*/5", hour = "*", persistent = false)
 	public List<VehiculeMaintenance> alertEntreiens() {
 		List<VehiculeMaintenance> realEv = new ArrayList<>();
-		List<VehiculeMaintenance> ev = em.createQuery("select ev from VehiculeMaintenance ev where ev.repairStatus = 2  ").getResultList();
+		List<VehiculeMaintenance> ev = em
+				.createQuery("select ev from VehiculeMaintenance ev where ev.repairStatus = 2  ").getResultList();
 
 		for (VehiculeMaintenance entretienVoiture : ev) {
 			if (entretienVoiture.getMaintainceDate() != null) {
 				int intervalle = 180;
-				int days = Days.daysBetween(new DateTime(entretienVoiture.getMaintainceDate() ),new DateTime(new Date())).getDays();
+				int days = Days
+						.daysBetween(new DateTime(entretienVoiture.getMaintainceDate()), new DateTime(new Date()))
+						.getDays();
 				if (days >= intervalle) {
 					realEv.add(entretienVoiture);
-					System.out.println("daysssssssssssssssssssssssssssssss !" +days+" id : "+entretienVoiture.getId());
-					
-			Emailer.SendEmail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance" ,"Hey, you have depassed the car maintenance deadline with : "+ days +"days");
+					System.out.println(
+							"daysssssssssssssssssssssssssssssss !" + days + " id : " + entretienVoiture.getId());
+
+					Emailer.SendEmail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
+							"Hey, you have depassed the car maintenance deadline with : " + days + "days");
 				}
 			}
 			if (entretienVoiture.getOdometer() != 0) {
 				float kilos = 10000;
-				
-				float KmLastEntretien = entretienVoiture.getOdometer()
-						- entretienVoiture.getVehicule().getOdometer();
+
+				float KmLastEntretien = entretienVoiture.getOdometer() - entretienVoiture.getVehicule().getOdometer();
 
 				if (KmLastEntretien >= kilos) {
-					System.out.println("intervaleKilometres+++++++++++++++ !" +KmLastEntretien +" id : "+entretienVoiture.getId());
+					System.out.println("intervaleKilometres+++++++++++++++ !" + KmLastEntretien + " id : "
+							+ entretienVoiture.getId());
 					realEv.add(entretienVoiture);
-					Emailer.SendEmail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance" ,"Hey, you have depassed the car maintenance Km: "+ KmLastEntretien);
+					Emailer.SendEmail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
+							"Hey, you have depassed the car maintenance Km: " + KmLastEntretien);
 
 				}
 			}
@@ -142,4 +146,3 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 	}
 
 }
-

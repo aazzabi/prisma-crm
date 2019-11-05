@@ -168,6 +168,18 @@ public class UserResource {
 	}
 
 	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("assignClient/{id}")
+	public Response AddClient(@PathParam("id") int id) {
+
+		if(userBusiness.AssignClients(id))
+		{
+		return Response.status(Status.FORBIDDEN).entity(false).build();
+
+	}			return Response.status(Status.NOT_FOUND).entity(false).build();
+
+		}
 
 
 }

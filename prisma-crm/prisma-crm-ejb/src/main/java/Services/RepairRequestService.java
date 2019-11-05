@@ -1,30 +1,26 @@
 package Services;
 
-import java.security.Permissions;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import Entities.Invoice;
 import Entities.Product;
 import Entities.RepairRequest;
-import Entities.Store;
-import Entities.Vehicule;
 import Enums.RepairStatus;
-import Enums.Role;
 import Interfaces.IRepaiRequest;
 import Utils.Sms;
+import Utils.microsoftSentiments;
 
 @Stateless
 public class RepairRequestService implements IRepaiRequest {
 
+	microsoftSentiments ms;
 	@PersistenceContext
 	EntityManager entityManager;
 
@@ -111,4 +107,40 @@ public class RepairRequestService implements IRepaiRequest {
 		return null;
 	}
 
+	@Override
+	public String findSentiment() throws JsonParseException, JsonMappingException, IOException {
+		List<RepairRequest> listRep = getAllRepairRequest();
+		Double SommeScore = 0.0 ;
+		for (RepairRequest rep : listRep) {
+			String Sentiment = microsoftSentiments.GetSentimentAnalytics(rep.getReview());
+
+			Double score = microsoftSentiments.getSentiment(Sentiment);
+			System.out.println("sentimeeeeeeeeent" + score);
+			SommeScore = SommeScore+ score;
+			
+		}
+		SommeScore = SommeScore / listRep.size();
+		if (SommeScore <= 0.25) {
+			return "They are MAD";
+		} else if (SommeScore <= 0.50) {
+			return "They are Moderately mad";
+		} else if (SommeScore <= 0.75) {
+			return "They are not very mad but be careful";
+		} else {
+			return "They are not mad";
+		}
+
+	}
+
+	@Override
+	public String ReviewAdd(String r, int idRepReq) {
+		RepairRequest s = entityManager.find(RepairRequest.class, idRepReq);
+		if (s.getStatusRep() == RepairStatus.Completed || s.getStatusRep() == RepairStatus.Rejected) {
+			s.setReview(r);
+			entityManager.merge(s);
+			return "Done";
+		} else
+			return "Repair Request not treated yet";
+
+	}
 }

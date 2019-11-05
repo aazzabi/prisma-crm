@@ -18,7 +18,6 @@ public class Emailer {
 
 	{
 		
-
 		final String username = "bims.pasteur@gmail.com";
 
 		final String password = "21626747";
