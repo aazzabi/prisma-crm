@@ -1,7 +1,7 @@
 package Entities;
 
 import java.io.Serializable;
-
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import Enums.ProductType;
@@ -49,14 +50,19 @@ public class Product implements Serializable {
 	private double price;
 
 	private String brand;
-	
+
 	private String memory;
-	
+
 	private String resolution;
 
 	private String camera;
-	
+
 	private String imageUrl;
+
+
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	private Date createdAt = new Date(System.currentTimeMillis());
+
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	Agent agent;
@@ -66,14 +72,14 @@ public class Product implements Serializable {
 	Store store; 
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "tarifProduct",
-            joinColumns = {@JoinColumn(name = "product_id")},
-            inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
-    )
+	@JoinTable(
+			name = "tarifProduct",
+			joinColumns = {@JoinColumn(name = "product_id")},
+			inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
+			)
 	private Set<Tariff> tarifs ;
 
-	
+
 	public int getId() {
 		return id;
 	}
@@ -130,7 +136,7 @@ public class Product implements Serializable {
 		this.price = price;
 	}
 
-	
+
 
 	public Agent getAgent() {
 		return agent;
@@ -195,10 +201,10 @@ public class Product implements Serializable {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-	
-	
 
 
-	
+
+
+
 
 }

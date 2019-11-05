@@ -127,15 +127,15 @@ public class StoreResource {
 
 	}
 	
-	/*@Path("/getNearesAddress/{lon}/{lat}")
+	@Path("/getNearesAddress/{lon}/{lat}")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String testAddressDistance(@PathParam(value="lon") double lon,@PathParam(value="lat") double lat)
 	{
 		
-		//return cartService.getNearestStoreAddress(lon,lat).getName();
-		return cartService.reverseGeoCode(lon, lat);
-	}*/
+		return serv.getNearestStoreAddress(lon,lat).getName();
+		//return cartService.reverseGeoCode(lon, lat);
+	}
 
 	
 }

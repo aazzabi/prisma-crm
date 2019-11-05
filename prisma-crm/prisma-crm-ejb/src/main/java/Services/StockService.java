@@ -37,7 +37,7 @@ public class StockService implements IStockServiceLocal {
 
 	@Override
 	public String addStock(Stock stock,Store store) {
-		int q =calculRecentQuantity(store);
+		int q =stock.getRecentQuantity();
 
 		int sommeQuantite = q + stock.getQuantity();
 		if (sommeQuantite > stock.getStore().getCapacity()) {
@@ -133,6 +133,7 @@ public class StockService implements IStockServiceLocal {
 		s.setProductRef(newStock.getProductRef());
 		s.setQuantity(newStock.getQuantity());
 		s.setQuantityMin(newStock.getQuantityMin());
+		s.setRecentQuantity(newStock.getRecentQuantity());
 		s.setStore(newStock.getStore());
 		return s;
 	}

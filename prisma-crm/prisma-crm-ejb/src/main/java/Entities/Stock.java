@@ -1,6 +1,7 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "Stock")
@@ -26,6 +29,11 @@ public class Stock  implements Serializable{
 	private int quantity;
 	
 	private int quantityMin;
+	
+	private int recentQuantity;
+	
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	private Date createdAt = new Date(System.currentTimeMillis());
 
 	public int getId() {
 		return id;
@@ -66,6 +74,17 @@ public class Stock  implements Serializable{
 	public void setQuantityMin(int quantityMin) {
 		this.quantityMin = quantityMin;
 	}
+
+	public int getRecentQuantity() {
+		return recentQuantity;
+	}
+
+	public void setRecentQuantity(int recentQuantity) {
+		this.recentQuantity = recentQuantity;
+	}
+
+	
+	
 	
 	
 }
