@@ -12,7 +12,7 @@ import Entities.Store;
 @Local
 public interface IStockServiceLocal {
 	
-	public int calculRecentQuantity(Store store);
+	public int calculRecentQuantityByStore(Store store);
 	
 	public String addStock(int idStore,int idProduct,Stock stock) ;
 	
@@ -24,9 +24,11 @@ public interface IStockServiceLocal {
 	
 	public Stock checkStock(int idStore,int idProduct);
 	
+	public void checkStockDateQuantity(int idStock);
+	
 	public Stock updateStock(Stock newStock);
 	
-	public Stock updateStockProvider(int idStock, int addedQuantity);
+	public void updateStockProvider(int idStock, int addedQuantity);
 	
 	public Stock findStockById(int idStock);
 

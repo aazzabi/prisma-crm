@@ -1,5 +1,6 @@
 package Services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -8,6 +9,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import Entities.Product;
+import Entities.Stock;
 import Entities.Store;
 import Entities.Tariff;
 import Interfaces.IProductServiceLocal;
@@ -59,10 +61,14 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 	}
 	@Override
 	public List<Product> findProductsByStore(Store s ) {
-		TypedQuery<Product> query = em.createQuery(
-				"SELECT c FROM Product c WHERE c.store = :store", Product.class);
+		TypedQuery<Stock> query = em.createQuery(
+				"SELECT s FROM Stock s WHERE s.store = :store", Stock.class);
 
-		return query.setParameter("store", s).getResultList();
+		List<Product> products= new ArrayList<>();
+		for(Stock st:query.setParameter("store", s).getResultList()) {
+			products.add(st.getProduct());
+		}
+		return products;
 	}
 
 

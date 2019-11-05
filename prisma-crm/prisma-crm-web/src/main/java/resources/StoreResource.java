@@ -117,15 +117,7 @@ public class StoreResource {
 
 		return Response.status(Status.OK).entity("deleted").build();
 	}
-	
-	@GET
-	@Path("/assign_product")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response assignProducttoStore(@QueryParam(value = "idStore") int idStore,@QueryParam(value = "idProduct") int idProduct) {
-		Store s = serv.assignProductToStore(idStore, idProduct);
-		return Response.status(Status.CREATED).entity(s).build();
 
-	}
 	
 	@Path("/getNearesAddress/{lon}/{lat}")
 	@GET

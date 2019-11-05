@@ -1,6 +1,8 @@
 package Services;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -24,14 +26,24 @@ public class StockService implements IStockServiceLocal {
 
 	@EJB
 	IProductServiceLocal ps;
-	
+
 	@EJB
 	IStoreServiceLocal ss;
 
 	@Override
-	public int calculRecentQuantity(Store store) {
+	public int calculRecentQuantityByStore(Store store) {
+		TypedQuery<Stock> query = em.createQuery(
+				"SELECT s FROM Stock s WHERE s.store = :store", Stock.class);
 
-		return ps.findProductsByStore(store).size();
+		List<Stock> list= query.setParameter("store", store).getResultList();
+
+		int nb=0;
+		for(Stock s:list) {
+			nb=nb+s.getRecentQuantity();
+		}
+
+		System.out.println("recent quantity in store=== "+nb);
+		return nb;
 	}
 
 	/*@Override
@@ -40,7 +52,7 @@ public class StockService implements IStockServiceLocal {
 
 		int sommeQuantite = q + stock.getQuantity();
 		if (sommeQuantite > stock.getStore().getCapacity()) {
-			
+
 			return "invalide quantity, capacity="+store.getCapacity()+" recent quantity="+q;
 		}
 
@@ -50,19 +62,19 @@ public class StockService implements IStockServiceLocal {
 
 			List<Product> list= query.setParameter("ref", stock.getProductRef()).getResultList();
 			System.out.println("size:===" +list.size());
-			
+
 			if (list.size()>= stock.getQuantity()) {
 				em.persist(stock);
 				for(int i=1;i<=stock.getQuantity();i++) {
 					ss.assignProductToStore(store.getId(), list.get(i).getId());
 				}
-				
+
 			}
 			else {
 				for(Product p: list) {
 					ss.assignProductToStore(store.getId(), p.getId());
 				}
-				
+
 				int nbrComand = stock.getQuantity() - list.size();
 				ProviderOrder order = new ProviderOrder();
 				order.setProductRef(stock.getProductRef());
@@ -71,51 +83,56 @@ public class StockService implements IStockServiceLocal {
 				order.setState("untreated");
 				addProviderOrder(order);
 				sendJavaMail(order);
-				
+
 			}
-			
+
 
 			em.persist(stock);
 			return "order sended";
 		}
 
-		
+
 	}*/
-	
-	
+
+
 	@Override
 	public String addStock(int idStore,int idProduct,Stock stock) {
+		if(stock.getQuantityMin()>=stock.getQuantity()) {
+			return "QuantityMin must be less than Quantity";
+		}
 		Store store=ss.findStoreById(idStore);
 		Product product= ps.findProductById(idProduct);
 		stock.setProduct(product);
 		stock.setStore(store);
-		if(stock.getQuantity()>store.getCapacity()) {
-			return "Error: Product quantity must be less than the store capacity";
+		stock.setRecentQuantity(stock.getQuantity());
+		if(stock.getQuantity()+calculRecentQuantityByStore(store)>store.getCapacity()) {
+			return "Product quantity must be less than the store capacity";
 		}
 		em.persist(stock);
 		return "added";
 	}
-	
-	
+
+
 	@Override
 	public Stock addStockFromProvider(int idStore, int idProduct, Stock stock) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
+
 	@Override
 	public void sendJavaMail(ProviderOrder order, Stock stock) {
 		try {
 			JavaMailUtil.sendMail("provider.prisma@gmail.com", "Products Order",
 					"<h3>Products Order</h3>"
-					+"<p>Store Name :"+order.getStore().getName()+"</p>"
-					+"<p>Product Reference :"+order.getProduct().getId()+"</p>"
-					+"<p>Quantity :"+order.getQuantity()+"</p>"
-					+"<a href='http://localhost:9080/prisma-crm-web/stock/update_stock_provider?idStock="+stock.getId()+"&&addedQuantity="+order.getQuantity()+"'>Accept the order</a>"
+							+"<p>Store Name :"+order.getStore().getName()+"</p>"
+							+"<p>Product Name :"+order.getProduct().getName()+"</p>"
+							+"<p>Product Reference :"+order.getProduct().getReference()+"</p>"
+							+"<p>Quantity :"+order.getQuantity()+"</p>"
+							+"<a href='http://localhost:9080/prisma-crm-web/stock/update_stock_provider?idStock="+stock.getId()+"&&addedQuantity="+order.getQuantity()+"'>Accept the order</a>"
 					);
 		} catch (Exception e) {
-			
+
 			e.printStackTrace();
 		}
 	}
@@ -148,9 +165,10 @@ public class StockService implements IStockServiceLocal {
 			order.setQuantity(addedQuantity);
 			order.setState("untreated");
 			sendJavaMail(order,stock);
+
 		}
 		return stock;
-		
+
 	}
 
 	@Override
@@ -165,16 +183,31 @@ public class StockService implements IStockServiceLocal {
 	}
 
 	@Override
-	public Stock updateStockProvider(int idStock, int addedQuantity) {
+	public void updateStockProvider(int idStock, int addedQuantity) {
 		Stock stock = findStockById(idStock);
 		stock.setRecentQuantity(stock.getRecentQuantity()+addedQuantity);
-		return stock;
+		stock.setCreatedAt(new Date(System.currentTimeMillis()));
+
 	}
 
 	@Override
 	public Stock findStockById(int idStock) {
 		Stock s = em.find(Stock.class, idStock);
 		return s;
+	}
+
+	@Override
+	public void checkStockDateQuantity(int idStock) {
+		Stock stock = findStockById(idStock);
+		Date dateStock = stock.getCreatedAt();
+		Date dateSys=new Date(System.currentTimeMillis());
+		System.out.println("date stock = "+dateStock);
+		System.out.println("date systeme = "+dateSys);
+		long diffInMillies = Math.abs(dateSys.getTime() - dateStock.getTime());
+		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+		System.out.println("diff= "+diff);
+
+
 	}
 
 

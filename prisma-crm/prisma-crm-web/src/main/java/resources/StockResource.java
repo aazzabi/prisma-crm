@@ -70,8 +70,9 @@ public class StockResource {
 	@GET
 	@Path("/update_stock_provider")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateStockProvider(@QueryParam(value="idStock")int idStock,@QueryParam(value="addedQuantity")int addedQuantity) {
-		return Response.status(Status.OK).entity(service.updateStockProvider(idStock, addedQuantity)).build();
+	public String updateStockProvider(@QueryParam(value="idStock")int idStock,@QueryParam(value="addedQuantity")int addedQuantity) {
+		service.updateStockProvider(idStock, addedQuantity);
+		return "The addition of the products is completed successfully... Thank you";
 	}
 	
 	@GET
@@ -81,5 +82,15 @@ public class StockResource {
 		return Response.status(Status.OK).entity(service.checkStock(idStore, idProduct)).build();
 		
 	}
+	
+	@GET
+	@Path("/checkStockDateQuantity")
+	@Produces(MediaType.APPLICATION_JSON)
+	public  Response checkStockDateQuantity(@QueryParam(value="idStock")int idStock) {
+		service.checkStockDateQuantity(idStock);
+		return Response.status(Status.OK).build();
+		
+	}
+
 
 }

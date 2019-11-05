@@ -45,7 +45,7 @@ public class ProductRessource {
 
 	@GET
 	@Path("/all")
-	@RolesAllowed(Permissions = {Role.Client})
+	//@RolesAllowed(Permissions = {Role.Client})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response allProducts() {
 		return Response.status(Status.CREATED).entity(ps.findAllProducts()).build();
@@ -71,7 +71,7 @@ public class ProductRessource {
 	@GET
 	@Path("/store/{idStore}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findProductByStore(@PathParam(value = "idStore") int idStore) {
+	public Response getProductsByStore(@PathParam(value = "idStore") int idStore) {
 		Store st= ss.findStoreById(idStore);
 		return Response.status(Status.CREATED).entity(ps.findProductsByStore(st)).build();
 	}

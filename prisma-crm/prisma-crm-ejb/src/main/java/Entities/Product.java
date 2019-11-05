@@ -36,6 +36,7 @@ public class Product implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	@Column(name="reference", unique=true)
 	private String reference;
 
 	private String name;
@@ -80,7 +81,9 @@ public class Product implements Serializable {
 			inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
 			)
 	private Set<Tariff> tarifs ;
-
+	
+	@Column(name="stock")
+	private int stock=0;
 
 	@JsonIgnore
 	@ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
@@ -269,6 +272,15 @@ public class Product implements Serializable {
 	public void setCartRows(Set<CartProductRow> cartRows) {
 		this.cartRows = cartRows;
 	}
+	
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
 
 
 }
