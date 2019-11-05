@@ -24,8 +24,6 @@ public interface IStockServiceLocal {
 	
 	public Stock checkStock(int idStore,int idProduct);
 	
-	public void checkStockDateQuantity(int idStock);
-	
 	public Stock updateStock(Stock newStock);
 	
 	public void updateStockProvider(int idStock, int addedQuantity);

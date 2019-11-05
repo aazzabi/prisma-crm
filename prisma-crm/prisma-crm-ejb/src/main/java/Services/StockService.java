@@ -155,20 +155,41 @@ public class StockService implements IStockServiceLocal {
 		query.setParameter("store", store);
 		List<Stock> list= query.setParameter("product", product).getResultList();
 		Stock stock = list.get(0);
-		stock.setRecentQuantity(stock.getRecentQuantity()-1);
-		updateStock(stock);
-		if(stock.getRecentQuantity()==stock.getQuantityMin()) {
-			int addedQuantity= stock.getQuantity()-stock.getRecentQuantity();
-			ProviderOrder order = new ProviderOrder();
-			order.setProduct(product);
-			order.setStore(store);
-			order.setQuantity(addedQuantity);
-			order.setState("untreated");
-			sendJavaMail(order,stock);
-
+		
+		checkStockDateQuantity(stock);
+		if(stock.getRecentQuantity()>0) {
+			stock.setRecentQuantity(stock.getRecentQuantity()-1);
+			updateStock(stock);
 		}
+		
+		if(stock.getQuantityMin()!=0) {
+			if(stock.getRecentQuantity()==stock.getQuantityMin()) {
+				int addedQuantity= stock.getQuantity()-stock.getRecentQuantity();
+				ProviderOrder order = new ProviderOrder();
+				order.setProduct(product);
+				order.setStore(store);
+				order.setQuantity(addedQuantity);
+				order.setState("untreated");
+				sendJavaMail(order,stock);
+			}
+		}
+
 		return stock;
 
+	}
+	
+	public void checkStockDateQuantity(Stock stock) {
+		Date dateStock = stock.getCreatedAt();
+		Date dateSys=new Date(System.currentTimeMillis());
+		System.out.println("date stock = "+dateStock);
+		System.out.println("date systeme = "+dateSys);
+		long diffInMillies = Math.abs(dateSys.getTime() - dateStock.getTime());
+		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+		System.out.println("diff= "+diff);
+
+		if(diff>30) {
+			stock.setQuantityMin(0);
+		}
 	}
 
 	@Override
@@ -196,19 +217,8 @@ public class StockService implements IStockServiceLocal {
 		return s;
 	}
 
-	@Override
-	public void checkStockDateQuantity(int idStock) {
-		Stock stock = findStockById(idStock);
-		Date dateStock = stock.getCreatedAt();
-		Date dateSys=new Date(System.currentTimeMillis());
-		System.out.println("date stock = "+dateStock);
-		System.out.println("date systeme = "+dateSys);
-		long diffInMillies = Math.abs(dateSys.getTime() - dateStock.getTime());
-		long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-		System.out.println("diff= "+diff);
 
 
-	}
 
 
 

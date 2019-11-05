@@ -83,14 +83,7 @@ public class StockResource {
 		
 	}
 	
-	@GET
-	@Path("/checkStockDateQuantity")
-	@Produces(MediaType.APPLICATION_JSON)
-	public  Response checkStockDateQuantity(@QueryParam(value="idStock")int idStock) {
-		service.checkStockDateQuantity(idStock);
-		return Response.status(Status.OK).build();
-		
-	}
+
 
 
 }
