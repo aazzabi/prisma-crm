@@ -50,8 +50,4 @@ public class Tariff  implements Serializable {
 		this.priceT = priceT;
 	}
 
-
-
-
-
 }

@@ -1,12 +1,9 @@
 package Interfaces;
 
 import java.util.List;
-
 import javax.ejb.Local;
-
 import Entities.Store;
 import Entities.StoreHours;
-
 
 @Local
 public interface IStoreServiceLocal {
@@ -20,7 +17,7 @@ public interface IStoreServiceLocal {
 	public Store findStoreById(int id);
 
 	public List<Store> findAllStores();
-	
+
 	public StoreHours addStoreTime(StoreHours sh);
 
 	public void removeStoreTime(int id);
@@ -37,5 +34,4 @@ public interface IStoreServiceLocal {
 	
 	public Store getNearestStoreAddress(double LON, double LAT);
 	
-
 }

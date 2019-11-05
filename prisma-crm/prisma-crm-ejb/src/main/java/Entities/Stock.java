@@ -82,9 +82,4 @@ public class Stock  implements Serializable{
 	public void setRecentQuantity(int recentQuantity) {
 		this.recentQuantity = recentQuantity;
 	}
-
-	
-	
-	
-	
 }

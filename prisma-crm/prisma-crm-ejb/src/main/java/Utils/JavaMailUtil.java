@@ -13,8 +13,8 @@ import javax.mail.internet.MimeMessage;
 
 import org.jboss.logging.Logger;
 
-
 public class JavaMailUtil {
+	
 	public static void sendMail(String recipient, String subject, String content) throws Exception {
 		System.out.println("preparing to send email");
 		

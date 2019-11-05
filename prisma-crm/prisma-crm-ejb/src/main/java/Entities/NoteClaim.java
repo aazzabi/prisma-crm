@@ -15,6 +15,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import Enums.*;
 
 @Entity
@@ -29,14 +32,20 @@ public class NoteClaim implements Serializable {
 	@Column
 	private String description;
 
-	//@OneToMany
+	@ManyToOne
 	private User createdBy;
 	
 	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date createdAt;
 	
 	@ManyToOne
+	@JsonIgnore
 	private Claim claim;
+	
+	public NoteClaim() {
+		this.createdAt = new Date(System.currentTimeMillis());
+	}
 	
 	public int getId() {
 		return id;

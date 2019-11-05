@@ -39,12 +39,12 @@ public class Store implements Serializable{
 	
 	@OneToMany(mappedBy="store",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	private Set<Product> products; 
-
 	
 	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
 	private Set<StoreHours> storeHoursList;
 	
-
+	@OneToMany(mappedBy="store")
+	private Set<ClientOrder> orders;
 
 	public int getId() {
 		return id;
@@ -104,6 +104,13 @@ public class Store implements Serializable{
 		this.products = products;
 	}
 
-	
+	public Set<ClientOrder> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(Set<ClientOrder> orders) {
+		this.orders = orders;
+	}
+
 	
 }
