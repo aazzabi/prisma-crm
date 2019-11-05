@@ -18,7 +18,6 @@ public interface IOrderLocal {
 
 	public ClientOrder getOrder(int id);
 
-	public ClientOrder updateClientOrder(ClientOrder order);
 
 	public boolean deleteClientOrder(int id);
 

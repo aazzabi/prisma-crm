@@ -1,7 +1,7 @@
 package Services;
 
-
 import java.util.ArrayList;
+
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -35,6 +35,7 @@ public class OrderService implements IOrderLocal {
 	EntityManager manager;
 	private final String distanceMatrixAPI = "http://www.mapquestapi.com/directions/v2/routematrix";
 	private final String distanceMatrixAPITokenKey = "qgluQem4iTGKYyMxdp1MdsyGHnwwFdva";
+	private final String payPalClientId = "AT2A3K3LpexZ8DK_LLEd0ozXd4i7AFh9kTEHWRF3puoW-gIjJFH_yt8rSax0fwphlkPNaIxeRV7bT_Bh";
 	private JsonObject distanceMatrixParams = new JsonObject();
 
 	public JsonObject getDistanceMatrixAPIParams() {
@@ -63,15 +64,8 @@ public class OrderService implements IOrderLocal {
 	public ClientOrder getOrder(int id) {
 		return manager.find(ClientOrder.class, id);
 	}
-
-	@Override
-	public ClientOrder updateClientOrder(ClientOrder order) {
-		if (getOrder(order.getId()) != null) {
-			manager.merge(order);
-			return order;
-		} else
-			return null;
-	}
+	// Instead of implementing update order , we need to make cron job to delete
+	// orders who's been forgotten after temporaryInvoice deadline
 
 	@Override
 	public boolean deleteClientOrder(int id) {
@@ -90,11 +84,12 @@ public class OrderService implements IOrderLocal {
 				.getResultList();
 	}
 
+	// Paypal needs to be debugged
 	@Override
 	public void checkOutOrder(ClientOrder order) {
-		String crunchifyID="";
-		String crunchifySecret="";
-		String executionMode="sandbox";
+		String crunchifyID = "";
+		String crunchifySecret = "";
+		String executionMode = "sandbox";
 		RedirectUrls crunchifyRedirectUrls = new RedirectUrls();
 		crunchifyRedirectUrls.setCancelUrl("http://localhost:3000/crunchifyCancel");
 		crunchifyRedirectUrls.setReturnUrl("http://localhost:3000/crunchifyReturn");
@@ -114,44 +109,43 @@ public class OrderService implements IOrderLocal {
 		List<Transaction> crunchifyTransactions = new ArrayList<Transaction>();
 		crunchifyTransactions.add(crunchifyTransaction);
 		// Add Payment details
-				Payment crunchifyPayment = new Payment();
-				
-				// Set Payment intent to authorize
-				crunchifyPayment.setIntent("authorize");
-				crunchifyPayment.setPayer(crunchifyPayer);
-				crunchifyPayment.setTransactions(crunchifyTransactions);
-				crunchifyPayment.setRedirectUrls(crunchifyRedirectUrls);
-		 
-				// Pass the clientID, secret and mode. The easiest, and most widely used option.
-				APIContext crunchifyapiContext = new APIContext(crunchifyID, crunchifySecret, executionMode);
-		 
-				try {
-		 
-					Payment myPayment = crunchifyPayment.create(crunchifyapiContext);
-		 
-					System.out.println("createdPayment Obejct Details ==> " + myPayment.toString());
-		 
-					// Identifier of the payment resource created 
-					crunchifyPayment.setId(myPayment.getId());
-		 
-					PaymentExecution crunchifyPaymentExecution = new PaymentExecution();
-		 
-					// Set your PayerID. The ID of the Payer, passed in the `return_url` by PayPal.
-					crunchifyPaymentExecution.setPayerId("<!---- Add your PayerID here ---->");
-		 
-					// This call will fail as user has to access Payment on UI. Programmatically
-					// there is no way you can get Payer's consent.
-					Payment createdAuthPayment = crunchifyPayment.execute(crunchifyapiContext, crunchifyPaymentExecution);
-		 
-					Authorization crunchifyAuthorization = createdAuthPayment.getTransactions().get(0).getRelatedResources().get(0).getAuthorization();
-		 
-		 
-				} catch (PayPalRESTException e) {
-		 
-					// The "standard" error output stream. This stream is already open and ready to
-					// accept output data.
-					System.err.println(e.getDetails());
-				}
+		Payment crunchifyPayment = new Payment();
+		// Set Payment intent to authorize
+		crunchifyPayment.setIntent("authorize");
+		crunchifyPayment.setPayer(crunchifyPayer);
+		crunchifyPayment.setTransactions(crunchifyTransactions);
+		crunchifyPayment.setRedirectUrls(crunchifyRedirectUrls);
+
+		// Pass the clientID, secret and mode. The easiest, and most widely used option.
+		APIContext crunchifyapiContext = new APIContext(crunchifyID, crunchifySecret, executionMode);
+
+		try {
+
+			Payment myPayment = crunchifyPayment.create(crunchifyapiContext);
+
+			System.out.println("createdPayment Obejct Details ==> " + myPayment.toString());
+
+			// Identifier of the payment resource created
+			crunchifyPayment.setId(myPayment.getId());
+
+			PaymentExecution crunchifyPaymentExecution = new PaymentExecution();
+
+			// Set your PayerID. The ID of the Payer, passed in the `return_url` by PayPal.
+			crunchifyPaymentExecution.setPayerId("<!---- Add your PayerID here ---->");
+
+			// This call will fail as user has to access Payment on UI. Programmatically
+			// there is no way you can get Payer's consent.
+			Payment createdAuthPayment = crunchifyPayment.execute(crunchifyapiContext, crunchifyPaymentExecution);
+
+			Authorization crunchifyAuthorization = createdAuthPayment.getTransactions().get(0).getRelatedResources()
+					.get(0).getAuthorization();
+
+		} catch (PayPalRESTException e) {
+
+			// The "standard" error output stream. This stream is already open and ready to
+			// accept output data.
+			System.err.println(e.getDetails());
+		}
 
 	}
 
@@ -183,19 +177,20 @@ public class OrderService implements IOrderLocal {
 
 	@Override
 	public Client getClientWithTheHighestOrdersOccurency() {
-		
-		return (Client) manager.createQuery("SELECT c.client  from ClientOrder c group by max(c.client) "
-										  + "order by max(c.client) ").getResultList().get(0);
+
+		return (Client) manager
+				.createQuery("SELECT c.client  from ClientOrder c group by max(c.client) " + "order by max(c.client) ")
+				.getResultList().get(0);
 	}
 
 	@Override
 	public Client getClientWithTheHighestOrdersSpendings() {
-		return (Client) manager.createQuery("SELECT c.client from ClientOrder c   group by max(c.totale)" + 
-											"order by max(c.totale) ").getResultList().get(0);
-
+		return (Client) manager
+				.createQuery("SELECT c.client from ClientOrder c   group by max(c.totale)" + "order by max(c.totale) ")
+				.getResultList().get(0);
 	}
-	
-	
 
+// For admin : validate localOrders , need to implement statistics for orders  {group orders of them by clients , group orders by type,reduction ratio and status ,
+//  most bought products.}
 
 }

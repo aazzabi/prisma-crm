@@ -63,6 +63,7 @@ public class CartService implements ICartLocal {
 			return null;
 	}
 
+	// Tested (Adding product to row)
 	@Override
 	public Product addProductToCart(int product, int cart, int quantity, int points, boolean withReduction) {
 		Product PRODUCT = manager.find(Product.class, product);
@@ -102,6 +103,7 @@ public class CartService implements ICartLocal {
 
 	}
 
+	// Tested
 	@Override
 	public Product deleteProductFromCart(int product, int cart) {
 		ClientCart CART = manager.find(ClientCart.class, cart);
@@ -123,23 +125,22 @@ public class CartService implements ICartLocal {
 			return null;
 	}
 
+	// Tested
 	@Override
-	public TimeDistance passToCheckOut(OrderType orderType, int client, int cart,double LONG , double LAT) {
+	public TimeDistance passToCheckOut(OrderType orderType, int client, int cart, double LONG, double LAT) {
 		Client customer = manager.find(Client.class, client);
 		ClientCart crt = manager.find(ClientCart.class, cart);
-		//Implementation de la méthode de paypal et la création des l'entité tmp invoice
 		if ((customer != null) && (crt != null)) {
 			ClientOrder order = new ClientOrder();
 			order.setClient(customer);
 			java.util.Date date = new java.util.Date();
 			order.setCreatedAt(new Date(date.getTime()));
-			order.setOrderNature(orderType);
 			order.setClient(customer);
 			order.setValid(false);
 			order.setReductionRatio(calculateOrderReductionRation(crt.getId()));
-			
 			order.setCart(crt);
 			crt.setUpdatedAt(new Timestamp(date.getTime()));
+			order.setOrderNature(orderType);
 			Double total = crt.getCartRows().stream().filter(o -> o.getFinalPrice() > 0)
 					.mapToDouble(o -> o.getFinalPrice()).sum();
 			order.setTotale(total.floatValue());
@@ -147,13 +148,14 @@ public class CartService implements ICartLocal {
 			crt.setOrder(order);
 			manager.merge(crt);
 			manager.flush();
-			return getTimeNeededToGetOrderProducts(LONG,LAT ,crt.getId());
+			return getTimeNeededToGetOrderProducts(LONG, LAT, crt.getId());
 		}
 
 		else
 			return null;
 	}
 
+	// Cron job (not tested)
 	@Override
 	public boolean sendCartReminder(ClientCart cart) {
 		try {
@@ -165,6 +167,7 @@ public class CartService implements ICartLocal {
 		}
 	}
 
+	// Tested
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ClientCart> fetchCarts() {
@@ -172,6 +175,7 @@ public class CartService implements ICartLocal {
 		return manager.createQuery("SELECT C FROM ClientCart C ").getResultList();
 	}
 
+	// Tested
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ClientCart> getClientCarts(int clientid) {
@@ -183,6 +187,7 @@ public class CartService implements ICartLocal {
 
 	}
 
+	// Tested
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ClientCart> searchForClientCarts(String value, String criteria) {
@@ -191,6 +196,7 @@ public class CartService implements ICartLocal {
 
 	}
 
+	// Tested (applied for each ClientProductRow)
 	public boolean applyCartReduction(CartProductRow cart, int desiredFidelityPoints) {
 		if (cart.getCart().getClient().getFidelityScore() >= desiredFidelityPoints) {
 			cart.setUsedFidelityPoints(desiredFidelityPoints);
@@ -234,6 +240,7 @@ public class CartService implements ICartLocal {
 		return nearStore;
 	}
 
+	// Tested
 	public float calculateDistanceBetweenTwoStores(double ORG_LON, double ORG_LAT, double DEST_LON, double DEST_LAT) {
 		double earthRadius = 6371000;
 		double dLat = Math.toRadians(DEST_LAT - ORG_LAT);
@@ -246,6 +253,7 @@ public class CartService implements ICartLocal {
 
 	}
 
+//Still in a whole mess ...
 	public TimeDistance getTimeNeededToGetOrderProducts(double LONG, double LAT, int cartId) {
 		// Getting the nearest store to client
 		ClientCart cart = manager.find(ClientCart.class, cartId);
@@ -353,7 +361,7 @@ public class CartService implements ICartLocal {
 	// Tested
 	public static void writeLog(String info) {
 		String filename = "activity.log";
-		String FILENAME = "C:\\Users\\SSIPI\\git\\" + filename;
+		String FILENAME = "C:\\Users\\samali\\git\\" + filename;
 		BufferedWriter bw = null;
 		FileWriter fw = null;
 		try {
@@ -376,7 +384,6 @@ public class CartService implements ICartLocal {
 	}
 
 	// Tested
-
 	public ClientCart getCart(int id) {
 		return manager.find(ClientCart.class, id);
 	}
@@ -393,5 +400,9 @@ public class CartService implements ICartLocal {
 		} else
 			return 0;
 	}
+	// Needs the update of the cart update and cancel services .
+	// For admin : need to implement statistics for carts  {group carts of them by clients , group carts by type and status ,
+	//  most added products to cart.}
+	
 
 }
