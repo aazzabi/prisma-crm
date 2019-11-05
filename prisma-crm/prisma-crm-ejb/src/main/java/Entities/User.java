@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -47,17 +46,7 @@ public class User implements Serializable {
 	private AccountState accountState;
 	@ManyToOne
 	private Address address;
-	@Column(name="userType")
-	protected String userType;
-
-	public String getUserType() {
-	    return userType;
-	}
 	
-	public void setUserType(String userType) {
-		this.userType = userType;
-	}
-
 	@Enumerated(EnumType.STRING)
 	private Role role;
 

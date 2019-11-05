@@ -110,14 +110,14 @@ public class RepairRequestService implements IRepaiRequest {
 	@Override
 	public String findSentiment() throws JsonParseException, JsonMappingException, IOException {
 		List<RepairRequest> listRep = getAllRepairRequest();
-		Double SommeScore = 0.0 ;
+		Double SommeScore = 0.0;
 		for (RepairRequest rep : listRep) {
 			String Sentiment = microsoftSentiments.GetSentimentAnalytics(rep.getReview());
 
 			Double score = microsoftSentiments.getSentiment(Sentiment);
 			System.out.println("sentimeeeeeeeeent" + score);
-			SommeScore = SommeScore+ score;
-			
+			SommeScore = SommeScore + score;
+
 		}
 		SommeScore = SommeScore / listRep.size();
 		if (SommeScore <= 0.25) {

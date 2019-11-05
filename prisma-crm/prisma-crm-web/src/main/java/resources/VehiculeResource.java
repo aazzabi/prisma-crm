@@ -23,8 +23,8 @@ import Entities.User;
 import Entities.Vehicule;
 import Interfaces.IResourcesRemote;
 import Interfaces.IVehiculeMtRemote;
+import Services.UserService;
 import utilities.Secured;
-import utilities.SessionUtils;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -52,8 +52,7 @@ public class VehiculeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}")
 	public Vehicule vehiculeById(@PathParam("id") int id) {
-		System.out.println(
-				"#######*************##" + UserResource.getUserConnected().getId() + "####************#######");
+
 
 		return resourcesRemote.getVehiculeById(id);
 
@@ -79,9 +78,7 @@ public class VehiculeResource {
 	public Response update(@PathParam("id") int id, Vehicule vehicule) {
 		Vehicule x = resourcesRemote.getVehiculeById(id);
 		x.setFuelType(vehicule.getFuelType());
-		x.setDriver(UserResource.getUserConnected());
-		System.out.println(
-				"#######*************##" + UserResource.getUserConnected().getEmail() + "####************#######");
+		x.setDriver(UserService.UserLogged);
 		x.setLocation(vehicule.getLocation());
 		x.setOdometer(vehicule.getOdometer());
 		x.setPlate(vehicule.getPlate());

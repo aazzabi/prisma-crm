@@ -31,6 +31,8 @@ import Enums.Role;
 import Interfaces.IInvoiceRemote;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IRepaiRequest;
+import Interfaces.IUserRemote;
+import Services.UserService;
 
 @Path("Repair")
 @RequestScoped
@@ -40,11 +42,11 @@ public class RepairResource {
 	@EJB
 	IProductServiceLocal ps;
 
+		
 	@PUT
 	@Path("/add/{idinv}/{idprod}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-
 	public Response addRepair(@PathParam(value = "idinv") int idinv, @PathParam(value = "idprod") int idprod,
 			RepairRequest x) {
 		Invoice check = repaiRequest.findInvoiceById(idinv);
@@ -52,8 +54,7 @@ public class RepairResource {
 		if (check != null & p != null) {
 			Date WarrentyExp = DateUtils.addYears(check.getCreatedAt(), p.getGuarantee());
 			if (WarrentyExp.after(new Date())) {
-				System.out.println("Expirationnnnnnnnn" + UserResource.getUserConnected().getEmail());
-				x.setClient(UserResource.getUserConnected());
+				x.setClient(UserService.UserLogged);
 				x.setCreatedDate(new Date());
 				x.setStatusRep(Enums.RepairStatus.OnHold);
 				x.setWarentyExp(WarrentyExp);
@@ -72,6 +73,7 @@ public class RepairResource {
 
 	@GET
 	@Path("/all")
+	@utilities.RolesAllowed(Permissions = {Role.technical})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response allRepairRequest() {
 		return Response.status(Status.CREATED).entity(repaiRequest.getAllRepairRequest()).build();
