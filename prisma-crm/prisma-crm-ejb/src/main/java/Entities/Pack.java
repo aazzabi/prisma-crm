@@ -37,7 +37,7 @@ public class Pack implements Serializable {
 	private String name;
 
 	@JsonIgnore
-	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	private List<Product> products;
 
 	public List<Product> getProducts() {
