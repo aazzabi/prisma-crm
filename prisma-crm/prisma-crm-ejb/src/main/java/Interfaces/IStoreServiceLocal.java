@@ -35,5 +35,7 @@ public interface IStoreServiceLocal {
 	
 	public Store assignProductToStore(int idStore,int idProduct);
 	
+	public Store getNearestStoreAddress(double LON, double LAT);
+	
 
 }
