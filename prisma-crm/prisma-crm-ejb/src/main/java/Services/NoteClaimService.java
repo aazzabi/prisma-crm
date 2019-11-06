@@ -84,6 +84,11 @@ public class NoteClaimService implements INoteClaimRemote {
 		int i = em.createQuery("delete from NoteClaim c where c.id=:identifiant").setParameter("identifiant", id).executeUpdate();
 		return i;
 	}
+	
+	public int deleteNote(NoteClaim nc) {
+		int i = em.createQuery("delete from NoteClaim c where c.id=:identifiant").setParameter("identifiant", nc.getId()).executeUpdate();
+		return i;	
+	}
 
 	@Override
 	public NoteClaim getNoteClaimByCode(int id) {
