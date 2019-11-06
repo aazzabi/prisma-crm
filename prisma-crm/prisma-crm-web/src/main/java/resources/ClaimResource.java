@@ -57,7 +57,7 @@ public class ClaimResource {
 	@Path("new")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addClaim(Claim c) {
+	public Response addClaim(Claim c) throws Exception {
 		c.setId(cs.addClaim(c));
 		return Response.status(Status.CREATED).entity(c).build();
 	}
@@ -96,8 +96,11 @@ public class ClaimResource {
 	@Path("/id/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getClaimByID(@PathParam(value = "id") int id) {
-		Claim c = cs.getById(id);
-		return Response.status(Status.CREATED).entity(cs.getById(id)).build();
+		if (id !=0) {
+			return Response.status(Status.CREATED).entity(cs.getById(id)).build();
+		} else {
+			return Response.status(Status.NOT_FOUND).build();
+		}
 	}
 
 	@GET
@@ -227,6 +230,7 @@ public class ClaimResource {
 		return Response.status(Status.OK).entity(cs.resolve(c)).build();
 	}
 
+	/*
 	@GET
 	@Path("/freqWord/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -235,6 +239,7 @@ public class ClaimResource {
 		//return Response.status(Status.OK).entity(cs.extractKeyWords(c)).build();
 		return Response.status(Status.OK).entity(cs.getKeyWords()).build();
 	}
+	*/
 	
 	/*
 	 * AFFICHAGE DE DATE

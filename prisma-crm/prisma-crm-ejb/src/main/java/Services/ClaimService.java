@@ -1,9 +1,13 @@
 package Services;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +52,7 @@ public class ClaimService implements IClaimServiceRemote {
 	EntityManager em;
 
 	@Override
-	public int addClaim(Claim c) {
+	public int addClaim(Claim c) throws Exception {
 		c.toString();
 		c.setCreatedBy(em.find(Client.class, 2));
 		System.out.print(c.getType());
@@ -91,16 +95,21 @@ public class ClaimService implements IClaimServiceRemote {
 	@Override
 	public Claim getById(int id) {
 		Claim c = (Claim) em.find(Claim.class, id);
-		return c;
+		if (c!= null) {
+			return c;
+		} else {
+			return null;	
+		}
 	}
 
 	@Override
 	public Claim getByCode(String code) {
-		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.code=:cd ORDER BY c.id", Claim.class)
-				.setParameter("cd", code);
-		Claim c = query.getResultList().get(0);
-		System.out.println(c);
-		return c;
+		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.code=:cd ORDER BY c.id", Claim.class).setParameter("cd", code);
+		if (query.getResultList().size() !=0) {
+			Claim c = query.getResultList().get(0);
+			System.out.println(c);
+			return c;
+		} return null;
 	}
 
 	@Override
@@ -138,7 +147,7 @@ public class ClaimService implements IClaimServiceRemote {
 
 	@Override
 	public List<Claim> getClaimsByClient(Client c) {
-		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.createdBy=:c", Claim.class);
+		TypedQuery<Claim> query = em.createQuery("SELECT c from Claim c where c.createdBy=:c", Claim.class).setParameter("c", c);
 		List<Claim> cf = query.getResultList();
 		System.out.println(cf);
 		return cf;
@@ -195,7 +204,7 @@ public class ClaimService implements IClaimServiceRemote {
 	}
 
 	@Override
-	public Agent findAnAgentFreeAndActif(ClaimType t) {
+	public Agent findAnAgentFreeAndActif(ClaimType t) throws Exception {
 		Agent a;
 		Role type = null;
 
@@ -215,13 +224,16 @@ public class ClaimService implements IClaimServiceRemote {
 		if (agents.size() == 1) {
 			a = (Agent) query.getResultList().get(0);
 			a.setDispoClaim("indisponible");
+			JavaMailUtil.sendMail(a.getEmail(), "Nouvelle réclamation", "Bonjour " + a.getLastName()
+			+ ", <br> Une nouvelle réclamation vous a etais affecté, veuillez nous aider à la résoudre au plus vite ! . <br> Cordialement .");
 			System.out.println(a.getRole());
 		} else { // on prend l'agent ayant le moins de Réclamation traités
 			TypedQuery<Agent> query2 = em
-					.createQuery("SELECT a from Agent a WHERE a.roleAgent=:t ORDER BY nbrClaimsResolved DESC",
-							Agent.class)
+					.createQuery("SELECT a from Agent a WHERE a.role=:t ORDER BY nbrClaimsResolved DESC", Agent.class)
 					.setParameter("t", type);
 			a = query2.getResultList().get(0);
+			JavaMailUtil.sendMail(a.getEmail(), "Nouvelle réclamation", "Bonjour " + a.getLastName()
+			+ ", <br> Une nouvelle réclamation vous a étais affecté, veuillez nous aider à la résoudre au plus vite ! <br> . <br> Cordialement .");
 		}
 		return a;
 	}
@@ -242,7 +254,7 @@ public class ClaimService implements IClaimServiceRemote {
 		}
 		System.out.println(type);
 
-		String qlString = "SELECT a from Agent a WHERE a.roleAgent=:t AND a.id<>:idOld ORDER BY nbrClaimsResolved";
+		String qlString = "SELECT a from Agent a WHERE a.role=:t AND a.id<>:idOld ORDER BY nbrClaimsResolved";
 		Query query = em.createQuery(qlString, Agent.class).setParameter("idOld", old.getId()).setParameter("t", type);
 		List<Agent> agents = query.getResultList();
 		System.out.println(agents);
@@ -256,15 +268,6 @@ public class ClaimService implements IClaimServiceRemote {
 				e.printStackTrace();
 			}
 		}
-		/*
-		 * if (agents.size() == 1) { a = (Agent)query.getResultList().get(0);
-		 * a.setDispoClaim("indisponible"); System.out.println(a.getRoleAgent()); } else
-		 * { // on prend l'agent ayant le moins de Réclamation traités TypedQuery<Agent>
-		 * query2 = em.
-		 * createQuery("SELECT a from Agent a WHERE a.roleAgent=:t AND a.id<>:idOld ORDER BY nbrClaimsResolved DESC"
-		 * , Agent.class) .setParameter("t", type) .setParameter("idOld",old.getId()); a
-		 * = query2.getResultList().get(0); }
-		 */
 		return a;
 	}
 
@@ -421,15 +424,32 @@ public class ClaimService implements IClaimServiceRemote {
 		return list;
 	}
 	
-	public List<FreqWordAllClaims> getKeyWords() {
-	//public FreqWordAllClaims getKeyWords() {
-	//public Map<String , List<FreqWordClaim>> getKeyWords() {
+	public void updateFAQ() {
+		List<FreqWordAllClaims> listFwac = this.getFwac();
+		List<Claim> listC = listFwac.get(0).getListClaims();
+		
+		for (int i=0 ; i< listC.size() ; i++) {
+			if (listC.get(i).getStatus() == ClaimStatus.RESOLU) {
+				listC.get(i).setIsFaq(true);
+				this.merge(listC.get(i));
+				break;
+			}
+		}
+		
+		
+		/*Claim c = listFwac.get(0).getListClaims().get(0);
+		c.setIsFaq(true);
+		Boolean b = c.getIsFaq();
+		this.merge(c);*/
+	}
+	
+	public List<FreqWordAllClaims> getFwac() {
 		List<Claim> allClaims = this.getAll();
 		List<FreqWordClaim> allFwc = new ArrayList<>();
 		List<FreqWordAllClaims> listFwac = new ArrayList<>();
 
 		for (Claim c:allClaims) {
-			allFwc.addAll(this.extractKeyWords(c));
+			allFwc.addAll(this.getKeyWords(c));
 		}
 		allFwc.sort(Comparator.comparing(FreqWordClaim::getFrequence).reversed());
 		
@@ -464,52 +484,43 @@ public class ClaimService implements IClaimServiceRemote {
 			listFwac.add(fwac);
 		}
 		listFwac.sort(Comparator.comparing(FreqWordAllClaims::getFreqTotal).reversed());
-		
-		
-		//allFwc.sort(Comparator.comparing(FreqWordClaim::getFrequence).reversed());
-
-		//FreqWordAllClaims fwaaaac = new FreqWordAllClaims();
-		//fwaaaac.setListFwc(allFwc);
-		
-		
-		/*
-		 * for (FreqWordAllClaims fwac : allFwac)
-		for (FreqWordClaim fwc: allFwc) {
-			FreqWordAllClaims fwac = new FreqWordAllClaims();
-			//if (fwac.getListFwc().contains(fwc) == false) {
-				fwac.addToListFwc(fwc);
-				fwac.setFreqTotal(fwac.getFreqTotal() + fwc.getFrequence());
-			//}
-			
-			int index = allFwc.indexOf(fwc);
-			for (FreqWordClaim fwc2: allFwc) {
-				if ((allFwc.indexOf(fwc2) != index) &&  (fwc.getWord().equals(fwc2.getWord())) ) {
-					fwac.addToListFwc(fwc2);
-					fwac.setFreqTotal(fwac.getFreqTotal() + fwc2.getFrequence());
-				}
-			}
-		}*/
-		
-		/*
-		for (FreqWordClaim fwc: allFwc) {
-			fwac.addToListFwc(fwc);
-			for (FreqWordClaim fwc2: allFwc) {
-				if ( fwc.getWord().equals(fwc2.getWord()) ) {
-					fwac.setFreqTotal(fwac.getFreqTotal() + fwc2.getFrequence());
-					fwac.addToListFwc(fwc2);
-				}
-			}
-			listFwac.add(fwac);
-		}
-		*/
 		return listFwac;
 	}
 	
-	public List<FreqWordClaim> extractKeyWords(Claim c) {
+	public List<FreqWordClaim> getFwc() {
+		List<Claim> allClaims = this.getAll();
+		List<FreqWordClaim> allFwc = new ArrayList<>();
+		List<FreqWordAllClaims> listFwac = new ArrayList<>();
+
+		for (Claim c:allClaims) {
+			allFwc.addAll(this.getKeyWords(c));
+		}
+		allFwc.sort(Comparator.comparing(FreqWordClaim::getFrequence).reversed());
+		return allFwc;
+	}
+	
+	public List<FreqWordClaim> getKeyWords(Claim c)  {
 		List<FreqWordClaim> list = new ArrayList<>();
 		String text = c.getDescription().replaceAll("[\\p{Punct}]","");
 		
 		String[] words = text.split(" ");
+
+		 
+		/*
+		try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\arafe\\git\\prisma-crm\\prisma-crm\\prisma-crm-ejb\\src\\main\\java\\Utils\\ENGLISH.txt"))) {
+		    while (br.ready()) {
+		    	toExtract.add(br.readLine());
+		    }
+		}
+		System.out.println(words);
+		for (String a:toExtract) {
+			if (words.contains(a)) {
+				words.remove(words.get(a));
+			}
+		}
+		System.out.println(words);
+		*/
+
 		Map<String, Integer> map = new TreeMap<>();
 		 
 	    for (String w : words) {

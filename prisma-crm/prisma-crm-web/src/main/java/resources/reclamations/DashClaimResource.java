@@ -29,8 +29,10 @@ import javax.ws.rs.core.Response.Status;
 import Entities.Agent;
 import Entities.Client;
 import Entities.NoteClaim;
+import Entities.User;
 import Entities.Claim;
 import Enums.ClaimStatus;
+import Enums.ClaimType;
 import Enums.Role;
 import Interfaces.IClaimServiceRemote;
 import Interfaces.INoteClaimRemote;
@@ -49,35 +51,122 @@ public class DashClaimResource {
 	@EJB
 	public static ClaimService cs = new ClaimService();
 	
-	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllClaim() {	
-		if (UserService.UserLogged.getRole()== Role.Client) {
-			return Response.status(Status.CREATED).entity(cs.getAll()).build();
-		} else if ( (UserService.UserLogged.getRole()== Role.financial) 
-				|| (UserService.UserLogged.getRole()== Role.technical) 
-				|| (UserService.UserLogged.getRole()== Role.relational) ) {
-			return Response.status(Status.CREATED).entity(cs.getClaimsByResponsable((Agent)UserService.UserLogged)).build();
+		if (UserService.UserLogged!= null) {	
+			Role r = UserService.UserLogged.getRole();
+			if (r == Role.Admin) {
+				return Response.status(Status.CREATED).entity(cs.getAll()).build();
+			}else if (r== Role.Client) {
+				return Response.status(Status.CREATED).entity(cs.getClaimsByClient((Client) UserService.UserLogged)).build();
+			} else if ( (r== Role.financial) || (r== Role.technical) || (r== Role.relational) ) {
+				return Response.status(Status.CREATED).entity(cs.getClaimsByResponsable((Agent)UserService.UserLogged)).build();
+			} else {
+				return Response.status(Status.NOT_FOUND).build();
+			}
 		} else {
-			return Response.status(Status.NOT_FOUND).build();
+			return Response.status(Status.CREATED).entity("You are not connected !").build();
 		}
-	}
-	
+	}	
 	
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getClaim(@PathParam(value = "id") int id) {	
 		Claim c = cs.getById(id);
-		if ((c.getResponsable()!= UserService.UserLogged) || (c.getCreatedBy()!= UserService.UserLogged)  || (c.getFirstResponsable()!= UserService.UserLogged) ) {
-			return Response.status(Status.NOT_FOUND).entity("You are not allowed").build();
+		
+		if ((UserService.UserLogged.getId() == c.getResponsable().getId()) || (UserService.UserLogged.getId() == c.getFirstResponsable().getId())) {
+			System.out.println("open(c)");
+			return Response.status(Status.CREATED).entity(cs.open(c)).build();
+		} else if (  (UserService.UserLogged.getRole() == Role.Admin)  ) {
+			return Response.status(Status.CREATED).entity(c).build();
+		} else if ( ( UserService.UserLogged.getId() == c.getCreatedBy().getId()) ) {
+			return Response.status(Status.CREATED).entity(c).build();
 		} else {
-			return Response.status(Status.CREATED).entity(c).build();	
+			return Response.status(Status.NOT_FOUND).entity("Oupss !! Vous ne pouvez pas accéder à cette réclamation !").build();	
+		}
+	}	
+	
+	@PUT
+	@Path("/archiver/{id}")
+	@RolesAllowed(Permissions = {Role.financial, Role.relational, Role.technical})
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response archiverCalim(@PathParam(value = "id") int id) {
+		Claim c = cs.getById(id);
+		cs.changeStatus(c, ClaimStatus.FERME_SANS_SOLUTION);
+		return Response.status(Status.OK).entity(c).build();
+	}
+	
+	@DELETE
+	@Path("/delete/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteClaim(@PathParam(value = "id") int id) {
+		if ((id!=0) & (cs.getById(id)!=null)) {
+			Claim c = cs.getById(id);
+			if ((UserService.UserLogged.getId() == c.getResponsable().getId()) || (UserService.UserLogged.getId() == c.getFirstResponsable().getId() ) || (UserService.UserLogged.getId() == c.getCreatedBy().getId()) || (UserService.UserLogged.getRole() == Role.Admin) ) { 
+				noteService.deleteNotesByClaimId(id);
+				return Response.status(Status.OK).entity(cs.deleteClaimById(id)).build();
+			}else {
+				return Response.status(Status.NOT_FOUND).entity("Oupss !! Vous ne pouvez pas supprimer à cette réclamation !").build();	
+			}
+		} else {
+			return Response.status(Status.NOT_FOUND).entity("Réclamation non existante").build();	
 		}
 	}
 	
+	@GET
+	@Path("/type/{t}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getClaimByType(@PathParam(value = "t") ClaimType t) {
+		if ((t==ClaimType.FINANCIERE) || (t==ClaimType.RELATIONNELLE) || (t==ClaimType.TECHNIQUE) ) {
+			return Response.status(Status.OK).entity(cs.getByType(t)).build();
+		}
+		return Response.status(Status.NOT_FOUND).entity("Type non reconu").build();	
+	}
 	
+	@PUT
+	@Path("/resolve/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed(Permissions = {Role.financial, Role.relational, Role.technical})
+	public Response resolveClaim(@PathParam(value = "id") int id) throws Exception {
+		if ((id!=0) & (cs.getById(id)!=null)) {
+			Claim c = cs.getById(id);
+			User u = UserService.UserLogged;
+			if ((u.getId() == c.getResponsable().getId()) || (u.getId() == c.getFirstResponsable().getId()))	{
+				return Response.status(Status.OK).entity(cs.resolve(c)).build();
+			}else {
+				return Response.status(Status.NOT_FOUND).entity("Cette reclamation n'est pas affécté à vous !").build();		
+			}
+		} else {
+			return Response.status(Status.NOT_FOUND).entity("Réclamation non existante").build();	
+		}
+	}
+	
+	@GET
+	@Path("/deleguer/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed(Permissions = {Role.financial, Role.relational, Role.technical})
+	public Response deleguerClaim(@PathParam(value = "id") int id) throws Exception {
+		if ((id!=0) & (cs.getById(id)!=null)) {
+			Claim c = cs.getById(id);
+			return Response.status(Status.OK).entity(cs.deleguer(c)).build();
+		} else {
+			return Response.status(Status.NOT_FOUND).entity("Claim does'nt exist").build();	
+		}
+	}
+
+	@GET
+	@Path("/agent/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed(Permissions = {Role.financial, Role.relational, Role.technical, Role.Admin})
+	public Response getAllClaimByAgent(@PathParam(value="id") int id) {
+		if (UserService.UserLogged != null ) {
+			Agent a = cs.getResponsableById(id);
+			return Response.status(Status.CREATED).entity(cs.getClaimsByResponsable(a)).build();
+		}
+		return Response.status(Status.CREATED).entity("Please Login !").build();
+	}
 	
 
 }

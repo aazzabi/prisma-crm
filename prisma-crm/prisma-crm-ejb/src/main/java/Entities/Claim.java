@@ -253,7 +253,7 @@ public class Claim implements Serializable {
 				+ ", priority=" + priority + ", status=" + status + ", type=" + type + ", createdAt=" + createdAt
 				+ ", openedAt=" + openedAt + ", delegatedAt=" + delegatedAt + ", resolvedAt=" + resolvedAt
 				+ ", createdBy=" + createdBy + ", resolvedBy=" + resolvedBy + ", firstResponsable=" + firstResponsable
-				+ ", responsable=" + responsable + "]";
+				+ ", responsable=" + responsable + ", isFaq"+ isFaq+"]";
 	}
 
 	

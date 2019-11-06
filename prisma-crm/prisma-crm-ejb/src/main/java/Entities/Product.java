@@ -106,6 +106,7 @@ public class Product implements Serializable {
 
 	public Product() {
 		super();
+		this.new_price = 0;
 	}
 
 	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,

@@ -34,24 +34,26 @@ public class AuthTokenFilter implements ContainerRequestFilter {
 		try {
 			String keyString = "simplekey";
 			Key key = new SecretKeySpec(keyString.getBytes(), 0, keyString.getBytes().length, "DES");
-			String token = authorizationHeader.substring("Bearer".length()).trim();
-			Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
-
-			Method method = resourceInfo.getResourceMethod();
-			if (method != null) {
-				RolesAllowed JWTContext = method.getAnnotation(RolesAllowed.class);
-				Role[] permission = JWTContext.Permissions();
-
-				if (!permission.equals(Role.NoRights)) {
-					String roles = claims.get("Role", String.class);
-					Role roleUser = Role.valueOf(roles);
-					System.out.println("User Role : " + roleUser.toString());
-					System.out.println("Roles permitted (st): " + permission.toString());
-					boolean contains = Arrays.stream(permission).anyMatch(role -> role.equals(roleUser));
-					if (!contains)
-						requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+			if (authorizationHeader!="") {
+				String token = authorizationHeader.substring("Bearer".length()).trim();
+				Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
+	
+				Method method = resourceInfo.getResourceMethod();
+				if (method != null) {
+					RolesAllowed JWTContext = method.getAnnotation(RolesAllowed.class);
+					Role[] permission = JWTContext.Permissions();
+	
+					if (!permission.equals(Role.NoRights)) {
+						String roles = claims.get("Role", String.class);
+						Role roleUser = Role.valueOf(roles);
+						System.out.println("User Role : " + roleUser.toString());
+						System.out.println("Roles permitted (st): " + permission.toString());
+						boolean contains = Arrays.stream(permission).anyMatch(role -> role.equals(roleUser));
+						if (!contains)
+							requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+					}
 				}
-			}
+			} else { requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());}
 
 		} catch (Exception e) {
 			e.printStackTrace();

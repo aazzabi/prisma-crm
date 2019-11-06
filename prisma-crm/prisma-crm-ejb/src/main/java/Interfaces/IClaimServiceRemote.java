@@ -17,7 +17,7 @@ import Enums.ClaimType;
 @LocalBean
 public interface IClaimServiceRemote {
 
-	public int addClaim(Claim c);
+	public int addClaim(Claim c) throws Exception;
 	public List<Claim> getAll();
 	
 	public List<Claim> getAllFaq();
@@ -43,7 +43,7 @@ public interface IClaimServiceRemote {
 	public List<Claim> getByPrioirty(ClaimPriority priority);
 	public List<Claim> getByStatus(ClaimStatus status);
 	public List<Claim> getByType(ClaimType type);
-	public Agent findAnAgentFreeAndActif(ClaimType t) ;
+	public Agent findAnAgentFreeAndActif(ClaimType t) throws Exception ;
 	public void affectClaimToAgent(Claim c, Agent a);
 
 	public Agent getResponsableById(int id);

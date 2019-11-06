@@ -51,7 +51,7 @@ public class AuthenticationEndPoint {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response authenticateUser(@FormParam("email") String email, @FormParam("password") String password) {
-
+		
 		try {
 			User u = authenticate(email, password);
 			Role aRole = u.getRole();
