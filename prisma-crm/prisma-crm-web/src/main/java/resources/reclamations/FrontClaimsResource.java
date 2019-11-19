@@ -92,7 +92,7 @@ public class FrontClaimsResource {
 	@Path("FAQ/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getFaqById(@PathParam(value = "id") int id) {
-		return Response.status(Status.CREATED).entity(cs.getAllFaq().get(id)).build();
+		return Response.status(Status.CREATED).entity(cs.getAllFaq().get(id-1)).build();
 	}
 		
 	@GET
