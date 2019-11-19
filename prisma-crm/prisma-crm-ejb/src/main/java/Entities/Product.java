@@ -68,7 +68,7 @@ public class Product implements Serializable {
 
 
 	@ManyToOne(cascade = CascadeType.ALL)
-	Agent agent;
+	User agent;
 
 	
 	@OneToMany(mappedBy="product", fetch= FetchType.EAGER)
@@ -207,11 +207,20 @@ public class Product implements Serializable {
 		this.price = price;
 	}	
 
-	public Agent getAgent() {
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public User getAgent() {
 		return agent;
 	}
 
-	public void setAgent(Agent agent) {
+	public void setAgent(User agent) {
 		this.agent = agent;
 	}
 

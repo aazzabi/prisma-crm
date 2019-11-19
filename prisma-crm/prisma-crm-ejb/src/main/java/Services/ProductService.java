@@ -8,10 +8,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import Entities.Agent;
 import Entities.Product;
 import Entities.Stock;
 import Entities.Store;
+import Entities.TarifProduct;
 import Entities.Tariff;
+import Entities.User;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IProductServiceRemote;
 
@@ -22,13 +25,18 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 
 	@Override
 	public Product addProduct(Product p) {
+		System.out.println(UserService.UserLogged.getFirstName());
+		User u=em.find(User.class, UserService.UserLogged.getId());
+		p.setAgent(u);
 		em.persist(p);
 		return p;
 	}
 
 	@Override
 	public void removeProduct(int id) {
-		em.remove(em.find(Product.class, id));
+		Product p =em.find(Product.class, id);
+		p.setAgent(null);
+		em.remove(p);
 	}
 
 	@Override
@@ -131,6 +139,10 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		Product p = findProductById(idProduct);
 		Tariff t = findTarifById(idTarif);
 		p.getTarifs().add(t);
+		/*TarifProduct tp = new TarifProduct();
+		tp.setProduct(p);
+		tp.setTariff(t);
+		em.persist(tp);*/
 	}
 	
 

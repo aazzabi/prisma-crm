@@ -169,7 +169,6 @@ public class StockService implements IStockServiceLocal {
 				order.setProduct(product);
 				order.setStore(store);
 				order.setQuantity(addedQuantity);
-				order.setState("untreated");
 				sendJavaMail(order,stock);
 			}
 		}

@@ -11,13 +11,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "TarifProduct")
+//@Entity
+//@Table(name = "TarifProduct")
 public class TarifProduct implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@Id
+	/*@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
@@ -56,6 +56,6 @@ public class TarifProduct implements Serializable{
 	}
 	public void setProduct(Product product) {
 		this.product = product;
-	}
+	}*/
 
 }

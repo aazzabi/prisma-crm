@@ -31,12 +31,6 @@ public class StoreService implements IStoreServiceLocal {
 	@PersistenceContext(unitName = "prisma-crm-ejb")
 	EntityManager em;
 
-	private final String distanceMatrixAPI = "http://www.mapquestapi.com/directions/v2/routematrix";
-	private final String distanceMatrixAPITokenKey = "qgluQem4iTGKYyMxdp1MdsyGHnwwFdva";
-	private final String REVERSE_GEOCODING_API = "https://nominatim.openstreetmap.org/reverse.php";
-	private JsonObject distanceMatrixParams = new JsonObject();
-
-
 
 	@Override
 	public Store addStore(Store s) {
@@ -47,7 +41,9 @@ public class StoreService implements IStoreServiceLocal {
 
 	@Override
 	public void removeStore(int id) {
-		em.remove(em.find(Store.class, id));
+		Store s= em.find(Store.class, id);
+		s.setAddress(null);
+		em.remove(s);
 
 	}
 
@@ -56,6 +52,7 @@ public class StoreService implements IStoreServiceLocal {
 		Store s = em.find(Store.class, newStore.getId());
 		s.setName(newStore.getName());
 		s.setTelephone(newStore.getTelephone());
+		s.setAddress(newStore.getAddress());
 		return s;
 	}
 
@@ -129,13 +126,14 @@ public class StoreService implements IStoreServiceLocal {
 
 	@Override
 	public Store getNearestStoreAddress(double LON, double LAT) {
-		// Fetching nearest store to the user
+
 		List<Store> stores = em.createQuery("SELECT S FROM Store S", Store.class).getResultList();
 		Store nearStore = stores.get(0);
 		float min = calculateDistanceBetweenTwoStores(nearStore.getAddress().getLongtitude(),
 				nearStore.getAddress().getLongtitude(), LON, LAT);
 		if (stores.size() > 0) {
-			for (Store s : stores) {
+			for (int i=1;i<stores.size();i++) {
+				Store s = stores.get(i);
 				float result = calculateDistanceBetweenTwoStores(s.getAddress().getLongtitude(),
 						s.getAddress().getLatitude(), LON, LAT);
 				if (result < min) {
@@ -145,6 +143,12 @@ public class StoreService implements IStoreServiceLocal {
 			}
 		}
 		return nearStore;
+	}
+
+	@Override
+	public Address findAdrById(int idAdr) {
+		
+		return em.find(Address.class, idAdr);
 	}
 
 

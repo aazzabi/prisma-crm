@@ -19,9 +19,11 @@ import javax.ws.rs.core.Response.Status;
 import Entities.Product;
 import Entities.Store;
 import Entities.Tariff;
+import Enums.ProductType;
 import Enums.Role;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IStoreServiceLocal;
+import Services.UserService;
 import utilities.RolesAllowed;
 
 
@@ -36,6 +38,7 @@ public class ProductRessource {
 
 	@POST
 	@Path("/add")
+	@RolesAllowed(Permissions = {Role.relational})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addProduct(Product p) {
@@ -45,16 +48,15 @@ public class ProductRessource {
 
 	@GET
 	@Path("/all")
-	//@RolesAllowed(Permissions = {Role.Client})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response allProducts() {
+		//System.out.println(UserService.UserLogged.getFirstName());
 		return Response.status(Status.CREATED).entity(ps.findAllProducts()).build();
 
 	}
 
 	@GET
 	@Path("{id}")
-	@RolesAllowed(Permissions = {Role.financial})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findProductById(@PathParam(value = "id") int id) {
 		return Response.status(Status.CREATED).entity(ps.findProductById(id)).build();
@@ -83,8 +85,14 @@ public class ProductRessource {
 	public Response updateProduct(Product newProduct, @QueryParam(value="idProduct")int idProduct, @QueryParam(value="idTarif")int idTarif) {
 
 		if(idProduct!=0 && idTarif!=0) {
-			ps.assignTarifToProduct(idProduct, idTarif);
-			return Response.status(Status.CREATED).entity(ps.findProductById(idProduct)).build();
+			if(ps.findProductById(idProduct).getType()==ProductType.ADSL||ps.findProductById(idProduct).getType()==ProductType.Key3G) {
+				ps.assignTarifToProduct(idProduct, idTarif);
+				return Response.status(Status.CREATED).entity(ps.findProductById(idProduct)).build();
+			}
+			else {
+				return Response.status(Status.CREATED).entity("product must be Key3G or ADSL type").build();
+			}
+			
 		}
 		return Response.status(Status.OK).entity(ps.updateProduct(newProduct)).build();
 
