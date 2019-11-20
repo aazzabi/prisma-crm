@@ -11,22 +11,23 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "ProviderOrder")
-public class ProviderOrder  implements Serializable{
+public class ProviderOrder implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	private String productRef;
-
 	private int quantity;
-	
+
 	private String state;
-	
+
 	@ManyToOne
 	private Store store;
-	
+
+	@ManyToOne
+	private Product product;
+
 	@ManyToOne
 	private Agent agent;
 
@@ -36,14 +37,6 @@ public class ProviderOrder  implements Serializable{
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public String getProductRef() {
-		return productRef;
-	}
-
-	public void setProductRef(String productRef) {
-		this.productRef = productRef;
 	}
 
 	public int getQuantity() {
@@ -77,9 +70,13 @@ public class ProviderOrder  implements Serializable{
 	public void setAgent(Agent agent) {
 		this.agent = agent;
 	}
-	
-	
-	
 
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 
 }

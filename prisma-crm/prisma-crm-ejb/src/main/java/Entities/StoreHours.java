@@ -2,6 +2,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,17 +22,13 @@ public class StoreHours implements Serializable{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
 	
-	@Column(name = "day")
 	private String day;
 	
-	@Column(name = "openAt")
 	@JsonFormat(pattern="HH:mm",timezone = "GMT+1")
 	private Timestamp openAt;
 	
-	@Column(name = "closeAt")
 	@JsonFormat(pattern="HH:mm",timezone = "GMT+1")
 	private Timestamp closeAt;
 	

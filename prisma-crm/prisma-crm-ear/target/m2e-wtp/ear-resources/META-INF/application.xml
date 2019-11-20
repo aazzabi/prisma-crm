@@ -2,13 +2,13 @@
 <application xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/application_7.xsd" version="7">
   <display-name>prisma-crm-ear</display-name>
   <module>
-    <ejb>prisma-crm-ejb.jar</ejb>
-  </module>
-  <module>
     <web>
       <web-uri>prisma-crm-web.war</web-uri>
       <context-root>/prisma-crm-web</context-root>
     </web>
+  </module>
+  <module>
+    <ejb>prisma-crm-ejb.jar</ejb>
   </module>
   <library-directory>lib</library-directory>
 </application>

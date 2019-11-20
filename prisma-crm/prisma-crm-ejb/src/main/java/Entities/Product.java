@@ -1,7 +1,7 @@
 package Entities;
 
 import java.io.Serializable;
-
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -14,71 +14,76 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.JoinColumn;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import Enums.ProductType;
 
 @Entity
 @Table(name = "Product")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Product implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
 
-	@Column(name = "reference")
+	@Column(name="reference", unique=true)
 	private String reference;
 
-	@Column(name = "name")
 	private String name;
 
-	@Column(name = "description")
 	private String description;
 
-	@Column(name = "type")
 	@Enumerated(EnumType.STRING)
 	private ProductType type;
 
-	@Column(name = "guarantee")
-	private int guarantee;
+	private int guarantee=0;
 
-	@Column(name = "price")
 	private double price;
 	@Column(name = "new_price")
 	private double new_price;
 
-	@ManyToOne(cascade = CascadeType.ALL)
-	Agent agent;
+	private String brand;
 
-	@JsonIgnore
-	@ManyToOne
-	Store store; 
+	private String memory;
+
+	private String resolution;
+
+	private String camera;
+
+	private String imageUrl;
+
+
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	private Date createdAt = new Date(System.currentTimeMillis());
+
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	User agent;
+
 	
-	@OneToMany(mappedBy="product")
+	@OneToMany(mappedBy="product", fetch= FetchType.EAGER)
 	private Set<CartProductRow> cartRows;
 		
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "tarifProduct",
-            joinColumns = {@JoinColumn(name = "product_id")},
-            inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
-    )
+	@JoinTable(
+			name = "tarifProduct",
+			joinColumns = {@JoinColumn(name = "product_id")},
+			inverseJoinColumns = {@JoinColumn(name = "tarif_id")}
+			)
 	private Set<Tariff> tarifs ;
 	
 	@Column(name="stock")
-	private int stock;
+	private int stock=0;
 
 	@JsonIgnore
 	@ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
@@ -89,7 +94,7 @@ public class Product implements Serializable {
 	private Promotion promotion;
 
 	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
-			double price/* List<TarifProduct> tafifProductList */, Promotion promotion, double new_price) {
+			double price, Promotion promotion, double new_price) {
 		super();
 		this.id = id;
 		this.reference = reference;
@@ -98,15 +103,12 @@ public class Product implements Serializable {
 		this.type = type;
 		this.guarantee = guarantee;
 		this.price = price;
-		// this.stockList = stockList;
-		// this.tafifProductList = tafifProductList;
 		this.promotion = promotion;
 		this.new_price = new_price;
 	}
 
 	public Product() {
 		super();
-		this.new_price = 0;
 	}
 
 	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
@@ -123,34 +125,6 @@ public class Product implements Serializable {
 		this.promotion = promotion;
 		this.new_price = new_price;
 	}
-
-	public Product(int id, String reference, String name, String description, ProductType type, int guarantee,
-			double price) {
-		super();
-		this.id = id;
-		this.reference = reference;
-		this.name = name;
-		this.description = description;
-		this.type = type;
-		this.guarantee = guarantee;
-		this.price = price;
-	}
-
-	public Product(String reference, String name, String description, ProductType type, int guarantee, double price) {
-		super();
-		this.reference = reference;
-		this.name = name;
-		this.description = description;
-		this.type = type;
-		this.guarantee = guarantee;
-		this.price = price;
-
-	}
-
-	// @OneToMany(mappedBy = "tariff" ,cascade =
-	// {CascadeType.ALL},fetch=FetchType.EAGER)
-	// private List<TarifProduct> tafifProductList = new ArrayList<>();
-
 
 	public List<Pack> getPacks() {
 		return packs;
@@ -175,6 +149,7 @@ public class Product implements Serializable {
 	public void setNew_price(double new_price) {
 		this.new_price = new_price;
 	}
+
 
 	public int getId() {
 		return id;
@@ -232,11 +207,20 @@ public class Product implements Serializable {
 		this.price = price;
 	}	
 
-	public Agent getAgent() {
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public User getAgent() {
 		return agent;
 	}
 
-	public void setAgent(Agent agent) {
+	public void setAgent(User agent) {
 		this.agent = agent;
 	}
 
@@ -248,12 +232,46 @@ public class Product implements Serializable {
 		this.tarifs = tarifs;
 	}
 
-	public Store getStore() {
-		return store;
+
+
+	public String getBrand() {
+		return brand;
 	}
 
-	public void setStore(Store store) {
-		this.store = store;
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	public String getMemory() {
+		return memory;
+	}
+
+	public void setMemory(String memory) {
+		this.memory = memory;
+	}
+
+	public String getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
+	}
+
+	public String getCamera() {
+		return camera;
+	}
+
+	public void setCamera(String camera) {
+		this.camera = camera;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	public Set<CartProductRow> getCartRows() {
@@ -263,7 +281,7 @@ public class Product implements Serializable {
 	public void setCartRows(Set<CartProductRow> cartRows) {
 		this.cartRows = cartRows;
 	}
-
+	
 	public int getStock() {
 		return stock;
 	}
@@ -271,36 +289,8 @@ public class Product implements Serializable {
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
-	
-	
-//	public List<TarifProduct> getTarifProductList() {
-//		return tafifProductList;
-//	}
 
-	/*
-	 * public void setTarifProductList(List<TarifProduct> tafifProductList) {
-	 * this.tafifProductList = tafifProductList; }
-	 * 
-	 * public List<Stock> getStockList() { return stockList; }
-	 */
 
-	/*
-	 * public void setStockList(List<Stock> stockList) { this.stockList = stockList;
-	 * }
-	 * 
-	 * public List<TarifProduct> getTafifProductList() { return tafifProductList; }
-	 * 
-	 * public void setTafifProductList(List<TarifProduct> tafifProductList) {
-	 * this.tafifProductList = tafifProductList; }
-	 */
-
-	/*
-	 * @Override public String toString() { return "Product [id=" + id +
-	 * ", reference=" + reference + ", name=" + name + ", description=" +
-	 * description + ", type=" + type + ", guarantee=" + guarantee + ", price=" +
-	 * price + ", stockList=" + stockList + ", tafifProductList=" + tafifProductList
-	 * + "]"; }
-	 */
 
 }
 

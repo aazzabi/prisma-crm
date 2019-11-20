@@ -22,12 +22,12 @@ import Enums.*;
 @DiscriminatorValue("Agent")
 @Table(name = "agent")
 public class Agent extends User implements Serializable {
-//	@Enumerated(EnumType.STRING)
-//	private Role roleAgent;
+
 	private String contractType;
 	private Date startDate;
 	private Date endDate;
 	private double salary;
+
 	
 	@Column
 	private int nbrClaimsOpenedAndResolved;
@@ -48,15 +48,7 @@ public class Agent extends User implements Serializable {
 		this.moyAssiduite = 0 ; 
 		this.moyReponse = 0 ; 
 	}
-/*
-	public Role getRoleAgent() {
-		return roleAgent;
-	}
-
-	public void setRoleAgent(Role roleAgent) {
-		this.roleAgent = roleAgent;
-	}
-*/
+	
 	public String getContractType() {
 		return contractType;
 	}
@@ -88,7 +80,6 @@ public class Agent extends User implements Serializable {
 	public void setSalary(double salary) {
 		this.salary = salary;
 	}
-
 
 	
 	public int getNbrClaimsOpenedAndResolved() {

@@ -1,18 +1,20 @@
 package Services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import Entities.Mobile;
+import Entities.Agent;
 import Entities.Product;
+import Entities.Stock;
 import Entities.Store;
+import Entities.TarifProduct;
 import Entities.Tariff;
-import Enums.ProductType;
+import Entities.User;
 import Interfaces.IProductServiceLocal;
 import Interfaces.IProductServiceRemote;
 
@@ -23,13 +25,18 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 
 	@Override
 	public Product addProduct(Product p) {
+		System.out.println(UserService.UserLogged.getFirstName());
+		User u=em.find(User.class, UserService.UserLogged.getId());
+		p.setAgent(u);
 		em.persist(p);
 		return p;
 	}
 
 	@Override
 	public void removeProduct(int id) {
-		em.remove(em.find(Product.class, id));
+		Product p =em.find(Product.class, id);
+		p.setAgent(null);
+		em.remove(p);
 	}
 
 	@Override
@@ -42,7 +49,14 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		p.setType(newProduct.getType());
 		p.setGuarantee(newProduct.getGuarantee());
 		p.setPrice(newProduct.getPrice());
-
+		p.setBrand(newProduct.getBrand());
+		p.setCamera(newProduct.getCamera());
+		p.setImageUrl(newProduct.getImageUrl());
+		p.setMemory(newProduct.getMemory());
+		p.setResolution(newProduct.getResolution());
+		
+		
+		
 		return p;
 
 	}
@@ -53,11 +67,23 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		return p;
 		
 	}
-	
+	@Override
+	public List<Product> findProductsByStore(Store s ) {
+		TypedQuery<Stock> query = em.createQuery(
+				"SELECT s FROM Stock s WHERE s.store = :store", Stock.class);
+
+		List<Product> products= new ArrayList<>();
+		for(Stock st:query.setParameter("store", s).getResultList()) {
+			products.add(st.getProduct());
+		}
+		return products;
+	}
+
+
 	
 
 	@Override
-	public List<Product> findProductByReference(String ref) {
+	public List<Product> findProductsByReference(String ref) {
 		
 		TypedQuery<Product> query = em.createQuery(
 				"SELECT c FROM Product c WHERE c.reference = :ref", Product.class);
@@ -107,46 +133,20 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		return tarifs;
 	}
 
-	@Override
-	public Mobile addMobile(Mobile m) {
-		em.persist(m);
-		return m;
-	}
-
-	@Override
-	public Mobile updateMobile(Mobile newMobile) {
-		updateProduct(newMobile);
-		Mobile m = em.find(Mobile.class, newMobile.getId());
-		m.setBrand(newMobile.getBrand());
-		m.setCamera(newMobile.getCamera());
-		m.setMemory(newMobile.getMemory());
-		m.setResolution(newMobile.getResolution());
-		m.setSystem(newMobile.getSystem());
-		m.setRam(newMobile.getRam());
-
-		return m;
-	}
 
 	@Override
 	public void assignTarifToProduct(int idProduct, int idTarif) {
 		Product p = findProductById(idProduct);
 		Tariff t = findTarifById(idTarif);
 		p.getTarifs().add(t);
+		/*TarifProduct tp = new TarifProduct();
+		tp.setProduct(p);
+		tp.setTariff(t);
+		em.persist(tp);*/
 	}
+	
 
-	public void iterateEnum() {
-		for (ProductType type : ProductType.values()) { 
-			System.out.println(type); 
-		}
 
-	}
 
-	@Override
-	public List<Product> findProductsByStore(Store s ) {
-		TypedQuery<Product> query = em.createQuery(
-				"SELECT c FROM Product c WHERE c.store = :store", Product.class);
-
-		return query.setParameter("store", s).getResultList();
-	}
 
 }

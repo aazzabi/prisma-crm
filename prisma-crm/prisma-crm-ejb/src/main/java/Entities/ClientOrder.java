@@ -49,9 +49,6 @@ public class ClientOrder implements Serializable {
 	@JsonIgnore
 	@OneToOne
 	private ClientCart cart;
-	
-	
-
 
 	public ClientCart getCart() {
 		return cart;

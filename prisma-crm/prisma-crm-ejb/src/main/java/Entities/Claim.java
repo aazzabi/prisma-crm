@@ -80,7 +80,7 @@ public class Claim implements Serializable {
 
 	@ManyToOne
 	private Agent firstResponsable;
-	
+
 	@ManyToOne
 	private Agent responsable;//---Ok---
 /*
@@ -256,5 +256,4 @@ public class Claim implements Serializable {
 				+ ", responsable=" + responsable + ", isFaq"+ isFaq+"]";
 	}
 
-	
 }

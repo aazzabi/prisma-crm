@@ -53,8 +53,9 @@ public class StoreResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateStore(Store newStore) {
+	public Response updateStore(Store newStore,@QueryParam(value="idAddress")int idAddress) {
 
+		newStore.setAddress(serv.findAdrById(idAddress));
 		return Response.status(Status.OK).entity(serv.updateStore(newStore)).build();
 
 	}
@@ -117,14 +118,16 @@ public class StoreResource {
 
 		return Response.status(Status.OK).entity("deleted").build();
 	}
-	
-	@GET
-	@Path("/assign_product")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response assignProducttoStore(@QueryParam(value = "idStore") int idStore,@QueryParam(value = "idProduct") int idProduct) {
-		Store s = serv.assignProductToStore(idStore, idProduct);
-		return Response.status(Status.CREATED).entity(s).build();
 
+	
+	@Path("/getNearesAddress/{lon}/{lat}")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getNearestAddress(@PathParam(value="lon") double lon,@PathParam(value="lat") double lat)
+	{
+		
+		return serv.getNearestStoreAddress(lon,lat).getName();
+		//return cartService.reverseGeoCode(lon, lat);
 	}
 
 	

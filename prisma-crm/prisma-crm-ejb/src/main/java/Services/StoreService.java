@@ -8,19 +8,29 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import com.fasterxml.jackson.core.JsonParser;
 
+import Entities.Address;
 import Entities.Product;
 import Entities.Store;
 import Entities.StoreHours;
-import Interfaces.IProductServiceLocal;
+
 import Interfaces.IStoreServiceLocal;
+
+import javax.ws.rs.client.ClientBuilder;
+
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 
 @Stateless
 public class StoreService implements IStoreServiceLocal {
 	@PersistenceContext(unitName = "prisma-crm-ejb")
 	EntityManager em;
-	
+
 
 	@Override
 	public Store addStore(Store s) {
@@ -31,7 +41,9 @@ public class StoreService implements IStoreServiceLocal {
 
 	@Override
 	public void removeStore(int id) {
-		em.remove(em.find(Store.class, id));
+		Store s= em.find(Store.class, id);
+		s.setAddress(null);
+		em.remove(s);
 
 	}
 
@@ -40,6 +52,7 @@ public class StoreService implements IStoreServiceLocal {
 		Store s = em.find(Store.class, newStore.getId());
 		s.setName(newStore.getName());
 		s.setTelephone(newStore.getTelephone());
+		s.setAddress(newStore.getAddress());
 		return s;
 	}
 
@@ -95,17 +108,50 @@ public class StoreService implements IStoreServiceLocal {
 		sh.setStore(str);
 	}
 
-	@Override
-	public Store assignProductToStore(int idStore, int idProduct) {
-		Store s = findStoreById(idStore);
-		Product p = em.find(Product.class, idProduct);
-		
-		s.getProducts().add(p);
-		p.setStore(s);
-		
-		
-		return s;
-		
+
+
+
+	public float calculateDistanceBetweenTwoStores(double ORG_LON, double ORG_LAT, double DEST_LON, double DEST_LAT) {
+		double earthRadius = 6371000;
+		double dLat = Math.toRadians(DEST_LAT - ORG_LAT);
+		double dLng = Math.toRadians(DEST_LON - ORG_LON);
+		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(DEST_LAT))
+		* Math.cos(Math.toRadians(ORG_LAT)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		float dist = (float) (earthRadius * c);
+		return dist;
+
 	}
+
+
+	@Override
+	public Store getNearestStoreAddress(double LON, double LAT) {
+
+		List<Store> stores = em.createQuery("SELECT S FROM Store S", Store.class).getResultList();
+		Store nearStore = stores.get(0);
+		float min = calculateDistanceBetweenTwoStores(nearStore.getAddress().getLongtitude(),
+				nearStore.getAddress().getLongtitude(), LON, LAT);
+		if (stores.size() > 0) {
+			for (int i=1;i<stores.size();i++) {
+				Store s = stores.get(i);
+				float result = calculateDistanceBetweenTwoStores(s.getAddress().getLongtitude(),
+						s.getAddress().getLatitude(), LON, LAT);
+				if (result < min) {
+					min = result;
+					nearStore = s;
+				}
+			}
+		}
+		return nearStore;
+	}
+
+	@Override
+	public Address findAdrById(int idAdr) {
+		
+		return em.find(Address.class, idAdr);
+	}
+
+
+
 
 }

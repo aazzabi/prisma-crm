@@ -1,25 +1,22 @@
 package Entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "Store")
@@ -29,28 +26,22 @@ public class Store implements Serializable{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
-	
-	@Column(name = "name")
+
 	private String name;
-	
-	@Column(name = "telephone")
+
 	private String telephone;
 	
-	@Column(name = "capacity")
 	private int capacity;
 	
 	@ManyToOne
 	private Address address;
-	
-	@OneToMany(mappedBy="store",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
-	private Set<Product> products; 
+
 	
 	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
 	private Set<StoreHours> storeHoursList;
 	
-	@OneToMany(mappedBy="store")
+	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
 	private Set<ClientOrder> orders;
 
 	public int getId() {
@@ -101,14 +92,6 @@ public class Store implements Serializable{
 
 	public void setAddress(Address address) {
 		this.address = address;
-	}
-
-	public Set<Product> getProducts() {
-		return products;
-	}
-
-	public void setProducts(Set<Product> products) {
-		this.products = products;
 	}
 
 	public Set<ClientOrder> getOrders() {

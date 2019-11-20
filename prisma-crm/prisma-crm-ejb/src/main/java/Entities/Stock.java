@@ -1,6 +1,7 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "Stock")
@@ -21,11 +24,17 @@ public class Stock  implements Serializable{
 	@ManyToOne
 	private Store store;
 	
-	private String productRef;
+	@ManyToOne
+	private Product product;
 	
 	private int quantity;
 	
 	private int quantityMin;
+	
+	private int recentQuantity;
+	
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	private Date createdAt = new Date(System.currentTimeMillis());
 
 	public int getId() {
 		return id;
@@ -43,14 +52,6 @@ public class Stock  implements Serializable{
 		this.store = store;
 	}
 
-	public String getProductRef() {
-		return productRef;
-	}
-
-	public void setProductRef(String productRef) {
-		this.productRef = productRef;
-	}
-
 	public int getQuantity() {
 		return quantity;
 	}
@@ -66,5 +67,30 @@ public class Stock  implements Serializable{
 	public void setQuantityMin(int quantityMin) {
 		this.quantityMin = quantityMin;
 	}
-		
+
+	public int getRecentQuantity() {
+		return recentQuantity;
+	}
+
+	public void setRecentQuantity(int recentQuantity) {
+		this.recentQuantity = recentQuantity;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+	
+	
 }
