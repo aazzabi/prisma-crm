@@ -89,7 +89,12 @@ public class UserResource {
 					}
 					String token = issueToken(Integer.toString(u.getId()), role);
 					System.out.println("token : " + token);
-					return Response.ok(token).build();
+					org.json.JSONObject obj = new org.json.JSONObject();
+					obj.put("status", true);
+					obj.put("token", token);
+					obj.put("user", u);
+					obj.put("role", role);
+					return Response.status(Response.Status.ACCEPTED).entity(obj).build();
 				}
 
 			}
