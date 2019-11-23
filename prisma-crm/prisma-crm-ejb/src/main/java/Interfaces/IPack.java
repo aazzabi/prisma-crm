@@ -16,5 +16,6 @@ public interface IPack {
 	public Pack updatepack(Pack pack);
 	public void addproductpack(int idp,int idpa);
 	public List<Product> getAllProductPerPack(int id) ;
+	public void deleteproductpack(int idp,int idpa);
 
 }

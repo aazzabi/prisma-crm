@@ -66,7 +66,7 @@ public class Product implements Serializable {
 	@ManyToOne
 	Store store; 
 	
-	@OneToMany(mappedBy="product")
+	@OneToMany(mappedBy="product", fetch = FetchType.EAGER)
 	private Set<CartProductRow> cartRows;
 		
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
@@ -81,7 +81,7 @@ public class Product implements Serializable {
 	private int stock;
 
 	@JsonIgnore
-	@ManyToMany(mappedBy = "products", fetch = FetchType.EAGER)
+	@ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
 	private List<Pack> packs;
 	
 

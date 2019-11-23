@@ -35,14 +35,14 @@ public class PromotionResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public String addPromotion(Promotion pr) {
-		if (UserService.UserLogged !=null) {	
+		//if (UserService.UserLogged !=null) {	
 			if(UserService.UserLogged.getRole() == Role.Admin) {
 				promo.addPromotion(pr);
 				return "added";
 			} else {
 				return "you are not allowed !";
 			}
-		} return "Aucun user";
+		//} return "Aucun user";
 	}
 
 	@POST
