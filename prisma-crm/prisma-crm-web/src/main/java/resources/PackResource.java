@@ -15,8 +15,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import Entities.Offer;
 import Entities.Pack;
 import Interfaces.IPack;
 
@@ -77,4 +75,11 @@ public class PackResource {
 		return Response.status(Status.CREATED).entity(list).build();
 	}
 
+	@DELETE
+	@Path("/deleteproductpack/{idp}/{idpa}")
+	@Produces(MediaType.APPLICATION_JSON)
+    public Response deleteproductpack(@PathParam(value="idp")int idp,@PathParam(value="idpa")int idpa) {
+	 pac.deleteproductpack(idp, idpa);
+	return Response.status(Status.OK).build();
+	}
 }
