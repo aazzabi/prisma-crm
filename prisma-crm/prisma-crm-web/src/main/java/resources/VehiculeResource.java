@@ -22,8 +22,9 @@ import Entities.Agent;
 import Entities.User;
 import Entities.Vehicule;
 import Interfaces.IResourcesRemote;
+import Interfaces.IVehiculeMtRemote;
+import Services.UserService;
 import utilities.Secured;
-import utilities.SessionUtils;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -34,8 +35,9 @@ public class VehiculeResource {
 	private Agent user;
 
 	@EJB
-	IResourcesRemote resourcesRemote;
-
+	IVehiculeMtRemote resourcesRemote;
+	@EJB
+	IResourcesRemote vh;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -45,23 +47,22 @@ public class VehiculeResource {
 		resourcesRemote.addVehicule(vehicule);
 
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}")
 	public Vehicule vehiculeById(@PathParam("id") int id) {
-        System.out.println("#######*************##"+UserResource.getUserConnected().getId()+  "####************#######");
+
 
 		return resourcesRemote.getVehiculeById(id);
-		
+
 	}
-	
-	
+
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("{id}")
-	public Response updateAnswer(Vehicule vehicule,@PathParam(value="id")int id){
-        Vehicule x = resourcesRemote.getVehiculeById(id);
+	public Response updateVehicule(Vehicule vehicule, @PathParam(value = "id") int id) {
+		Vehicule x = resourcesRemote.getVehiculeById(id);
 
 		try {
 			resourcesRemote.updateVehicule(x);
@@ -71,39 +72,48 @@ public class VehiculeResource {
 		}
 
 	}
-	
- 
 
-		@PUT
-	    @Path("update/{id}")
-	    public Response update(@PathParam("id") int id, Vehicule vehicule) {
-            Vehicule x = resourcesRemote.getVehiculeById(id);
-	        x.setFuelType(vehicule.getFuelType());
-	        x.setDriver(UserResource.getUserConnected());
-	        System.out.println("#######*************##"+UserResource.getUserConnected().getEmail()+  "####************#######");
-	        x.setLocation(vehicule.getLocation());
-	        x.setOdometer(vehicule.getOdometer());
-	        x.setPlate(vehicule.getPlate());
-	        resourcesRemote.updateVehicule(x);
+	@PUT
+	@Path("update/{id}")
+	public Response update(@PathParam("id") int id, Vehicule vehicule) {
+		Vehicule x = resourcesRemote.getVehiculeById(id);
+		x.setFuelType(vehicule.getFuelType());
+		x.setDriver(UserService.UserLogged);
+		x.setLocation(vehicule.getLocation());
+		x.setOdometer(vehicule.getOdometer());
+		x.setPlate(vehicule.getPlate());
+		resourcesRemote.updateVehicule(x);
 
+		return Response.status(Status.OK).build();
+	}
 
-	        return Response.ok().build();
-	    }
+	@Secured
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("All")
+	public List<Vehicule> findAllVehicules() {
 
-		@Secured
-		@GET
-		@Produces(MediaType.APPLICATION_JSON)
-		@Path("All")
-		public List<Vehicule> findAllVehicules() {
+		return resourcesRemote.findAllVehicule();
+	}
 
-			return resourcesRemote.findAllVehicule();
-		}
+	@DELETE
+	@Path("{id}")
+	public Response deleteVehicule(@PathParam("id") int id) {
 
-		@DELETE
-		@Path("{id}")
-		public void deleteVehicule(@PathParam("id") int id) {
+		resourcesRemote.deleteVehicule(id);
+		return Response.status(Status.OK).build();
 
-			resourcesRemote.deleteVehicule(id);
+	}
 
-		}
+	@PUT
+	@Path("assign/{dId}/{vId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response assignDriverToVehicule(@PathParam("dId") int id, @PathParam("vId") int Vehicule_id) {
+
+		vh.assignDriverToVehicule(id, Vehicule_id);
+		return Response.status(Response.Status.CREATED)
+				.entity("Driver Id:" + id + " assigned to VehiculeID: " + Vehicule_id).build();
+
+	}
 }

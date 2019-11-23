@@ -15,5 +15,6 @@ public interface IResourcesRemote {
 	public void updateVehicule(Vehicule veh) ;
 	public List<Vehicule> findAllVehicule() ;
 	public void deleteVehicule(int id);
+	public Vehicule assignDriverToVehicule(int Driver_id, int Vehicule_id) ;
 
 }

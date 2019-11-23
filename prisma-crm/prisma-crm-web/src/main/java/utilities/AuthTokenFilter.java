@@ -61,23 +61,5 @@ public class AuthTokenFilter implements ContainerRequestFilter {
 		}
 
 	}
-/*
-	private String issueToken(User user) {
-		// Issue a token (can be a random String persisted to a database or a JWT token)
-		// The issued token must be associated to a user
-		// Return the issued token
-		String keyString = "simplekey";
-		Key key = new SecretKeySpec(keyString.getBytes(), 0, keyString.getBytes().length, "DES");
-		System.out.println("the key is : " + key.hashCode());
-		System.out.println("uriInfo.getAbsolutePath().toString() : " + uriInfo.getAbsolutePath().toString());
-		System.out.println("Expiration date: " + toDate(LocalDateTime.now().plusMinutes(15L)));
-		System.out.println("role: "+ user.getClass().getSimpleName());
-		String jwtToken = Jwts.builder().setSubject(user.getEmail()).claim("role", user.getRole()).setIssuer(uriInfo.getAbsolutePath().toString())
-				.setIssuedAt(new Date()).setExpiration(toDate(LocalDateTime.now().plusMinutes(15L)))
-				.signWith(SignatureAlgorithm.HS512, key).compact();
-		System.out.println("the returned token is : " + jwtToken);
-		return jwtToken;
-	}
 
-*/	
 }
