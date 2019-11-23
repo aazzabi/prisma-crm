@@ -13,7 +13,7 @@ public interface IPromotion {
 	public void deletePromotion(int id);
 	public Promotion findPromotion(int id);
 	public Promotion updatePromotion(Promotion promotion);
-	public void addPromotiontoproduct(int p , int pr);
+	public void passerenpromotion(int p , int pr);
 	public List<Product> listedesProduitpromotion();
 	public List<Promotion> listepromotions();
 	public List<Promotion> getOldPromotions();

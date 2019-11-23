@@ -15,7 +15,10 @@ import javax.ws.rs.core.Response.Status;
 
 import Entities.Product;
 import Entities.Promotion;
+import Enums.Role;
 import Interfaces.IPromotion;
+import Services.UserService;
+import utilities.RolesAllowed;
 
 import java.util.List;
 
@@ -32,15 +35,21 @@ public class PromotionResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public String addPromotion(Promotion pr) {
-	 promo.addPromotion(pr);
-		return "added";
+		if (UserService.UserLogged !=null) {	
+			if(UserService.UserLogged.getRole() == Role.Admin) {
+				promo.addPromotion(pr);
+				return "added";
+			} else {
+				return "you are not allowed !";
+			}
+		} return "Aucun user";
 	}
 
 	@POST
-	@Path("/addpromotionproduct/{idp}/{idpr}")
+	@Path("/passerenpromotion/{idp}/{idpr}")
 	@Produces(MediaType.APPLICATION_JSON)
-    public Response addPromotiontoproduct(@PathParam(value="idp")int idp,@PathParam(value="idpr")int idpr) {
-	 promo.addPromotiontoproduct(idp,idpr);
+    public Response passerenpromotion(@PathParam(value="idp")int idp,@PathParam(value="idpr")int idpr) {
+	 promo.passerenpromotion(idp,idpr);
 	return Response.status(Status.OK).build();
 	}
 
