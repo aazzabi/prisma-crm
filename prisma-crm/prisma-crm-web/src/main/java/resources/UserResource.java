@@ -56,6 +56,7 @@ public class UserResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("login")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    //@CrossOrigin(origins = "http://localhost:4200")
 	public Response authenticateUser(@FormParam("email") String email, @FormParam("password") String password) {
 
 		try {
@@ -92,9 +93,9 @@ public class UserResource {
 					org.json.JSONObject obj = new org.json.JSONObject();
 					obj.put("status", true);
 					obj.put("token", token);
-					obj.put("user", u);
+					obj.put("userId", u.getId());
 					obj.put("role", role);
-					return Response.status(Response.Status.ACCEPTED).entity(obj).build();
+					return Response.status(Response.Status.ACCEPTED).header("", "*").entity(obj).build();
 				}
 
 			}
