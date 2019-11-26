@@ -11,10 +11,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.IOException;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import javax.transaction.Transactional;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Consumes;
@@ -66,7 +73,7 @@ public class FrontClaimsResource {
 	@GET
 	@Path("/code/{c}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getClaimByCode(@PathParam(value = "c") String c) {
+	public Response getClaimByCode(@PathParam(value = "c") String c) throws ParseException {
 		if ((c!="") && ( cs.getByCode(c)!=null )){ 
 			Claim claim = cs.getByCode(c);
 			String status="";
@@ -74,10 +81,9 @@ public class FrontClaimsResource {
 			else if (claim.getStatus()== ClaimStatus.EN_COURS) { status = "Votre réclamation est en cours de résolution";}
 			else if (claim.getStatus()== ClaimStatus.RESOLU) { status = "Votre réclamation est bien traité, veuillez se connecter pour plus de détails ";}
 			else if (claim.getStatus()== ClaimStatus.FERME_SANS_SOLUTION) { status = "Ouuppss !! on a besoin de plus de détails ,veuillez se connecter pour nous fournir plus de détails ! ";}
-
-			return Response.status(Status.OK).entity(status).build();
+			return Response.status(Status.OK).entity("{\"claimStatus\":\" " +status+ "\"}").build();
 		}
-		return Response.status(Status.NOT_FOUND).entity("Code invalide").build();		
+		return Response.status(Status.NOT_FOUND).entity("{\"claimStatus\":\" cette réclamation n'existe pas \"}").build();		
 	}	
 	
 	@GET

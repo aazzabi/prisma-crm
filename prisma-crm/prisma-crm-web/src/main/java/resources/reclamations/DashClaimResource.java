@@ -67,7 +67,7 @@ public class DashClaimResource {
 				return Response.status(Status.NOT_FOUND).build();
 			}
 		} else {
-			return Response.status(Status.CREATED).entity("You are not connected !").build();
+			return Response.status(Status.CREATED).entity("{\"error\": \" You are not connected ! \"}").build();
 		}
 	}
 
@@ -86,8 +86,7 @@ public class DashClaimResource {
 		} else if ((UserService.UserLogged.getId() == c.getCreatedBy().getId())) {
 			return Response.status(Status.CREATED).entity(c).build();
 		} else {
-			return Response.status(Status.NOT_FOUND).entity("Oupss !! Vous ne pouvez pas accéder à cette réclamation !")
-					.build();
+			return Response.status(Status.NOT_FOUND).entity("{\"error\": \"Oupss !! Vous ne pouvez pas accéder à cette réclamation ! \"}" ).build();
 		}
 	}
 
@@ -114,11 +113,10 @@ public class DashClaimResource {
 				noteService.deleteNotesByClaimId(id);
 				return Response.status(Status.OK).entity(cs.deleteClaimById(id)).build();
 			} else {
-				return Response.status(Status.NOT_FOUND)
-						.entity("Oupss !! Vous ne pouvez pas supprimer à cette réclamation !").build();
+				return Response.status(Status.NOT_FOUND).entity("{\"error\": \"Oupss !! Vous ne pouvez pas supprimer à cette réclamation ! \"}" ).build();
 			}
 		} else {
-			return Response.status(Status.NOT_FOUND).entity("Réclamation non existante").build();
+			return Response.status(Status.NOT_FOUND).entity("{\"error\":\" Réclamation non existante \"}").build();
 		}
 	}
 
@@ -129,7 +127,7 @@ public class DashClaimResource {
 		if ((t == ClaimType.FINANCIERE) || (t == ClaimType.RELATIONNELLE) || (t == ClaimType.TECHNIQUE)) {
 			return Response.status(Status.OK).entity(cs.getByType(t)).build();
 		}
-		return Response.status(Status.NOT_FOUND).entity("Type non reconu").build();
+		return Response.status(Status.NOT_FOUND).entity("{\"error\":\" Type non reconu \"}").build();
 	}
 
 	@PUT
@@ -146,7 +144,7 @@ public class DashClaimResource {
 				return Response.status(Status.NOT_FOUND).entity("Cette reclamation n'est pas affécté à vous !").build();
 			}
 		} else {
-			return Response.status(Status.NOT_FOUND).entity("Réclamation non existante").build();
+			return Response.status(Status.NOT_FOUND).entity("{\"error\": \" Réclamation non existante \"}"  ).build();
 		}
 	}
 
@@ -172,7 +170,7 @@ public class DashClaimResource {
 			Agent a = cs.getResponsableById(id);
 			return Response.status(Status.CREATED).entity(cs.getClaimsByResponsable(a)).build();
 		}
-		return Response.status(Status.CREATED).entity("Please Login !").build();
+		return Response.status(Status.CREATED).entity("{\"error\": \" You are not connected ! \"}"  ).build();
 	}
 
 	// ******************
