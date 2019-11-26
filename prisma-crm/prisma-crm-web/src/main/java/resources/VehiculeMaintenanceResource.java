@@ -47,7 +47,7 @@ public class VehiculeMaintenanceResource {
 			vehiculeMtRemote.addMaintanceRequest(maintenance);
 		}
 
-		return Response.status(Status.CREATED).build();
+		return Response.status(Status.CREATED).entity("Add").build();
 	}
 
 	@GET
@@ -101,7 +101,7 @@ public class VehiculeMaintenanceResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String deleteVehiculeMaint(@PathParam(value = "id") int id) {
 		vehiculeMtRemote.deleteVehiculeMt(id);
-		return "deleted";
+		return "ok";
 	}
 
 }

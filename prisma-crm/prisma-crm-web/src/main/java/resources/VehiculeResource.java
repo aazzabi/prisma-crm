@@ -41,10 +41,12 @@ public class VehiculeResource {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("add")
-	public void addVehicule(Vehicule vehicule) {
+	public Response addVehicule(Vehicule vehicule) {
 
 		resourcesRemote.addVehicule(vehicule);
+		return Response.status(Status.CREATED).entity(vehicule.getId()).build();
 
 	}
 
@@ -101,7 +103,7 @@ public class VehiculeResource {
 	public Response deleteVehicule(@PathParam("id") int id) {
 
 		resourcesRemote.deleteVehicule(id);
-		return Response.status(Status.OK).build();
+		return Response.status(Status.OK).entity("deleted").build();
 
 	}
 
