@@ -1,34 +1,24 @@
 package Services;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.joda.time.DateTime;
-import org.joda.time.Days;
 
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
-import com.fasterxml.jackson.databind.InjectableValues;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 
-import Entities.User;
 import Entities.Vehicule;
 import Entities.VehiculeMaintenance;
 import Enums.RepairStatus;
 import Enums.ServiceType;
 import Interfaces.IVehiculeMtRemote;
 import Utils.JavaMailUtil;
-import Utils.Mailer;
 
 @Stateless
 public class VehiculeMaintenanceService implements IVehiculeMtRemote {
@@ -66,11 +56,13 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 		em.remove(em.find(Vehicule.class, id));
 
 	}
+
 	@Override
 	public void deleteVehiculeMt(int id) {
 		em.remove(em.find(VehiculeMaintenance.class, id));
 
 	}
+
 	@Override
 	public int addMaintanceRequest(VehiculeMaintenance vehiculeMaintenance) {
 		if (vehiculeMaintenance.getOdometer() >= vehiculeMaintenance.getVehicule().getOdometer()) {
@@ -107,7 +99,9 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 		Vehicule ob = (Vehicule) query.getResultList().get(0);
 		System.out.println("size " + ob.getVehiculeMaintenancesType(ServiceType.Reparation).size());
 		JavaMailUtil.sendMail(ob.getDriver().getEmail(), "Most Repared Vehicule",
-		"Hey, your vehicule is the most repared one (like "+ob.getVehiculeMaintenancesType(ServiceType.Reparation).size()+" times in this period) so please be cautious for the road safety");
+				"Hey, your vehicule is the most repared one (like "
+						+ ob.getVehiculeMaintenancesType(ServiceType.Reparation).size()
+						+ " times in this period) so please be cautious for the road safety");
 
 		return ob;
 	}
@@ -122,7 +116,7 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 
 	@Override
 	// @Schedule(hour = "8", minute = "0", second = "0", persistent = false)
-	// @Schedule(second = "*", minute = "*/5", hour = "*", persistent = false)
+	//@Schedule(second = "*", minute = "*/5", hour = "*", persistent = false)
 	public List<VehiculeMaintenance> alertEntreiens() throws Exception {
 		List<VehiculeMaintenance> realEv = new ArrayList<>();
 		List<VehiculeMaintenance> ev = em.createQuery(
@@ -130,17 +124,15 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 				.getResultList();
 		List<VehiculeMaintenance> evparVeh = new ArrayList<VehiculeMaintenance>();
 		for (VehiculeMaintenance main : ev) {
-			boolean exist =false;
+			boolean exist = false;
 			for (VehiculeMaintenance mainex : evparVeh) {
-				if (main.getVehicule().getId() == mainex.getVehicule().getId()) 
-				{
-					exist=true;
+				if (main.getVehicule().getId() == mainex.getVehicule().getId()) {
+					exist = true;
 				}
 
-			}	
+			}
 			if (!exist)
 				evparVeh.add(main);
-
 
 		}
 
@@ -155,8 +147,8 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 					System.out.println(
 							"daysssssssssssssssssssssssssssssss !" + days + " id : " + entretienVoiture.getId());
 
-//					JavaMailUtil.sendMail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
-//							"Hey, you have depassed the car maintenance deadline with : " + days + "days");
+					JavaMailUtil.sendMail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
+							"Hey, you have depassed the car maintenance deadline with : " + days + "days");
 				}
 			}
 			if (entretienVoiture.getOdometer() != 0) {
@@ -168,9 +160,8 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 					System.out.println("intervaleKilometres+++++++++++++++ !" + KmLastEntretien + " id : "
 							+ entretienVoiture.getId());
 					realEv.add(entretienVoiture);
-					// JavaMailUtil.sendMail(entretienVoiture.getVehicule().getDriver().getEmail(),
-					// "vehicle maintenance",
-					// "Hey, you have depassed the car maintenance Km: " + KmLastEntretien);
+					JavaMailUtil.sendMail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
+							"Hey, you have depassed the car maintenance Km: " + KmLastEntretien);
 
 				}
 			}

@@ -60,6 +60,7 @@ public class RepairResource {
 				x.setWarentyExp(WarrentyExp);
 				x.setInvoice(check);
 				repaiRequest.createRepairRequest(x);
+				System.out.println(repaiRequest.createRepairRequest(x).getId());
 				return Response.status(Status.CREATED).build();
 
 			} else {
