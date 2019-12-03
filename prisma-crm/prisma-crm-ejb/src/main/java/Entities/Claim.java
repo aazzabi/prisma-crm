@@ -73,7 +73,7 @@ public class Claim implements Serializable {
 	private Date resolvedAt;
 
 	@ManyToOne
-	private Client createdBy;
+	private User createdBy;
 	
 	private int createdById;
 
@@ -179,11 +179,11 @@ public class Claim implements Serializable {
 		this.resolvedBy = resolvedBy;
 	}
 
-	public Client getCreatedBy() {
+	public User getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(Client createdBy) {
+	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
 	}
 /*
