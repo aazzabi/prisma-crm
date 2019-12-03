@@ -38,7 +38,6 @@ public class ProductRessource {
 
 	@POST
 	@Path("/add")
-	@RolesAllowed(Permissions = {Role.relational})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addProduct(Product p) {
