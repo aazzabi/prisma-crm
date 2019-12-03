@@ -130,6 +130,10 @@ public class ClaimResource {
 	public Response updateClaim(@PathParam(value = "id") int id, Claim c) {
 		Claim cl = cs.getById(id);
 		Claim injecter = c;
+		/*if (injecter.getCreatedBy() instanceof Client) {
+			Client client = (Client)injecter.getCreatedBy();
+			client.setClientOrders(client.getClientOrders());
+		}*/
 		injecter.setId(cl.getId());
 		if (injecter.getStatus() == null) {
 			injecter.setStatus(cl.getStatus());

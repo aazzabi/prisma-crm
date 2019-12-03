@@ -65,7 +65,7 @@ public class FrontClaimsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addClaim(Claim c) throws Exception {
 		if (UserService.UserLogged != null) {
-			c.setCreatedBy(userBusiness.findUserById(c.getCreatedById()));
+			c.setCreatedBy(cs.findClientById(c.getCreatedById()));
 			//c.setCreatedBy(em.find(Client.class, c.getCreatedById()));
 			c.setId(cs.addClaim(c));
 		return Response.status(Status.CREATED).entity(c).build();

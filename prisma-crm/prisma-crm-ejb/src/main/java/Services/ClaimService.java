@@ -38,6 +38,7 @@ import Entities.Client;
 import Entities.FreqWordAllClaims;
 import Entities.FreqWordClaim;
 import Entities.NoteClaim;
+import Entities.User;
 import Enums.ClaimPriority;
 import Enums.ClaimStatus;
 import Enums.ClaimType;
@@ -530,6 +531,10 @@ public class ClaimService implements IClaimServiceRemote {
 	    list.sort(Comparator.comparing(FreqWordClaim::getFrequence).reversed());	    
 	    
 	    return list;
+	}
+	
+	public Client findClientById(int id ) {
+		return em.find(Client.class, id);
 	}
 	
 	
