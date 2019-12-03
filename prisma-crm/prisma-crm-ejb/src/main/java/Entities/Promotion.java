@@ -33,12 +33,44 @@ public class Promotion implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
+	@Column(name = "name")
+	private String name;
+	public Promotion(int id, String name, Date s_date, int percentage, Date e_date, PeriodType period,
+			List<Product> products) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.s_date = s_date;
+		this.percentage = percentage;
+		this.e_date = e_date;
+		this.period = period;
+		this.products = products;
+	}
+
+	public Promotion(int id, String name, Date s_date, int percentage, Date e_date, PeriodType period) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.s_date = s_date;
+		this.percentage = percentage;
+		this.e_date = e_date;
+		this.period = period;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	@Temporal(TemporalType.DATE)
 	private Date s_date;
 
 	@Column(name = "percentage")
 	private int percentage;
+	
 	@Temporal(TemporalType.DATE)
 	private Date e_date;
 
