@@ -41,6 +41,7 @@ import Enums.ClaimStatus;
 import Enums.Role;
 import Interfaces.IClaimServiceRemote;
 import Interfaces.INoteClaimRemote;
+import Interfaces.IUserLocal;
 import Services.ClaimService;
 import Services.NoteClaimService;
 import Services.UserService;
@@ -55,14 +56,17 @@ public class FrontClaimsResource {
 	public static NoteClaimService noteService = new NoteClaimService();
 	@EJB
 	public static ClaimService cs = new ClaimService();
+	@EJB
+	IUserLocal userBusiness;
 	
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addClaim(Claim c) throws Exception {
-		if (UserService.UserLogged != null) { 
-			c.setCreatedBy((Client)UserService.UserLogged);
+		if (UserService.UserLogged != null) {
+			c.setCreatedBy(cs.findClientById(c.getCreatedById()));
+			//c.setCreatedBy(em.find(Client.class, c.getCreatedById()));
 			c.setId(cs.addClaim(c));
 		return Response.status(Status.CREATED).entity(c).build();
 		} else {
@@ -95,6 +99,7 @@ public class FrontClaimsResource {
 	}
 	
 	@GET
+	//@RolesAllowed(Permissions = {Role.financial})
 	@Path("FAQ/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getFaqById(@PathParam(value = "id") int id) {

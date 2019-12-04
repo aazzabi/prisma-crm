@@ -38,6 +38,7 @@ import Entities.Client;
 import Entities.FreqWordAllClaims;
 import Entities.FreqWordClaim;
 import Entities.NoteClaim;
+import Entities.User;
 import Enums.ClaimPriority;
 import Enums.ClaimStatus;
 import Enums.ClaimType;
@@ -54,7 +55,7 @@ public class ClaimService implements IClaimServiceRemote {
 	@Override
 	public int addClaim(Claim c) throws Exception {
 		c.toString();
-		c.setCreatedBy(em.find(Client.class, 2));
+		c.setCreatedBy(em.find(Client.class, c.getCreatedById()));
 		System.out.print(c.getType());
 		c.setResponsable(this.findAnAgentFreeAndActif(c.getType()));
 		c.setFirstResponsable(c.getResponsable());
@@ -292,15 +293,11 @@ public class ClaimService implements IClaimServiceRemote {
 			c.setStatus(ClaimStatus.RESOLU);
 			// l'agent connecté , c le responsable de la claim.. (normalement)
 			ag.setNbrClaimsResolved(ag.getNbrClaimsResolved() + 1);
-	
+			ag.setMoyReponse(calculMoyTemp(ag.getNbrClaimsResolved(), ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt()));
+
 			// l responsable houw bidou nafs l repsonsable lowel
 			if (c.getResponsable().equals(c.getFirstResponsable())) {
-				ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getCreatedAt(), c.getResolvedAt()));
-				ag.setMoyReponse(calculMoyTemp(ag.getNbrClaimsResolved(), ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt()));
 				ag.setNbrClaimsOpenedAndResolved(ag.getNbrClaimsOpenedAndResolved() + 1);
-			} else { // sarét delegation
-				ag.setMoyAssiduite(calculMoyTemp(ag.getNbrClaimsOpened(), ag.getMoyAssiduite(), c.getDelegatedAt(),c.getResolvedAt()));
-				ag.setMoyReponse(calculMoyTemp(ag.getNbrClaimsResolved(), ag.getMoyReponse(), c.getOpenedAt(), c.getResolvedAt()));
 			}
 			em.merge(ag);
 			em.merge(c);
@@ -335,15 +332,7 @@ public class ClaimService implements IClaimServiceRemote {
 	public Claim deleguer(Claim c) throws Exception {
 		Agent oldAg = c.getResponsable();
 		Agent newAg = this.findAnOtherAgentFreeAndActif(oldAg, c.getType());
-
-		if (c.getResponsable().equals(c.getFirstResponsable())) {
-			// awel mara tsir delegation : donc bech n3a9eb l 1er responsable,
-			// w nzziiddlou l wa9t li 9a3dou entre OpenedAt w delegatedAt , lel moyAssiduité
-			System.out.println("1er RESP === RESP ");
-			oldAg.setMoyAssiduite(calculMoyTemp(oldAg.getNbrClaimsOpened(), oldAg.getMoyAssiduite(),c.getCreatedAt(), c.getOpenedAt()));
-		} else {
-			oldAg.setMoyAssiduite(calculMoyTemp(oldAg.getNbrClaimsOpened(), oldAg.getMoyAssiduite(),c.getDelegatedAt(), this.getDateNow()));
-		}
+		oldAg.setMoyAssiduite(calculMoyTemp(oldAg.getNbrClaimsOpened(), oldAg.getMoyAssiduite(),c.getOpenedAt(), this.getDateNow()));
 		this.upgradePriority(c, newAg);
 		this.changeStatus(c, ClaimStatus.EN_ATTENTE);
 		c.setDelegatedAt(new Date());
@@ -542,6 +531,10 @@ public class ClaimService implements IClaimServiceRemote {
 	    list.sort(Comparator.comparing(FreqWordClaim::getFrequence).reversed());	    
 	    
 	    return list;
+	}
+	
+	public Client findClientById(int id ) {
+		return em.find(Client.class, id);
 	}
 	
 	

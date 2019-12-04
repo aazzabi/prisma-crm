@@ -71,7 +71,11 @@ public class UserResource {
 					String role = null;
 					if (u.getRole() == Role.Client) {
 						role = "Client";
-					} else if (u.getRole() == Role.financial) {
+					} else if (u.getRole() == Role.Admin) {
+						Agent emp = (Agent) u;
+						role = emp.getRole().toString();
+						System.out.println(role);
+					}else if (u.getRole() == Role.financial) {
 						Agent emp = (Agent) u;
 						role = emp.getRole().toString();
 						System.out.println(role);

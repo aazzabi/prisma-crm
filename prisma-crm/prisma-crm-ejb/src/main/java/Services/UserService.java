@@ -105,17 +105,13 @@ public class UserService implements IUserLocal, IUserRemote {
 
 	@Override
 	public User loginUser(String email, String pwd) {
-
 		String hashedPwd = MD5Hash.getMD5Hash(pwd);
-		Query query = entityManager.createQuery(
-
-				"SELECT u FROM User u WHERE (u.email=:uname AND u.password=:upwd) ");
+		Query query = entityManager.createQuery("SELECT u FROM User u WHERE (u.email=:uname AND u.password=:upwd) ");
 		User user = (User) query.setParameter("uname", email).setParameter("upwd", hashedPwd).getSingleResult();
 		Role a = user.getRole();
+		
 		this.UserLogged = user;
-
 		return user;
-
 	}
 
 	@Override
