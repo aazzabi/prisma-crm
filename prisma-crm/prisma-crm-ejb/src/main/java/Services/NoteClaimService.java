@@ -10,9 +10,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-
 import Entities.Claim;
 import Entities.NoteClaim;
+import Entities.User;
 import Interfaces.IClaimServiceRemote;
 import Interfaces.INoteClaimRemote;
 import Utils.JavaMailUtil;
@@ -38,8 +38,6 @@ public class NoteClaimService implements INoteClaimRemote {
 	
 	@Override
 	public NoteClaim addNoteClaim(NoteClaim nc , Claim c) {
-		nc.setClaim(c);
-		nc.setCreatedBy(UserService.UserLogged);
 		em.persist(nc);
 		return nc;
 	}

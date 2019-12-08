@@ -92,11 +92,21 @@ public class DashClaimResource {
 
 	@PUT
 	@Path("/archiver/{id}")
-	@RolesAllowed(Permissions = { Role.financial, Role.relational, Role.technical })
+	@RolesAllowed(Permissions = { Role.financial, Role.relational, Role.technical, Role.Admin })
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response archiverCalim(@PathParam(value = "id") int id) {
 		Claim c = cs.getById(id);
 		cs.changeStatus(c, ClaimStatus.FERME_SANS_SOLUTION);
+		return Response.status(Status.OK).entity(c).build();
+	}
+	
+	@PUT
+	@Path("/desarchiver/{id}")
+	@RolesAllowed(Permissions = { Role.financial, Role.relational, Role.technical, Role.Admin })
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response desarchiverCalim(@PathParam(value = "id") int id) {
+		Claim c = cs.getById(id);
+		cs.changeStatus(c, ClaimStatus.EN_COURS);
 		return Response.status(Status.OK).entity(c).build();
 	}
 
@@ -106,11 +116,10 @@ public class DashClaimResource {
 	public Response deleteClaim(@PathParam(value = "id") int id) {
 		if ((id != 0) & (cs.getById(id) != null)) {
 			Claim c = cs.getById(id);
-			if ((UserService.UserLogged.getId() == c.getResponsable().getId())
-					|| (UserService.UserLogged.getId() == c.getFirstResponsable().getId())
-					|| (UserService.UserLogged.getId() == c.getCreatedBy().getId())
-					|| (UserService.UserLogged.getRole() == Role.Admin)) {
+			if ((UserService.UserLogged.getId() == c.getResponsable().getId())|| (UserService.UserLogged.getId() == c.getFirstResponsable().getId())
+					|| (UserService.UserLogged.getId() == c.getCreatedBy().getId()) || (UserService.UserLogged.getRole() == Role.Admin)) {
 				noteService.deleteNotesByClaimId(id);
+				System.out.println(c.getId());
 				return Response.status(Status.OK).entity(cs.deleteClaimById(id)).build();
 			} else {
 				return Response.status(Status.NOT_FOUND).entity("{\"error\": \"Oupss !! Vous ne pouvez pas supprimer à cette réclamation ! \"}" ).build();
@@ -183,18 +192,21 @@ public class DashClaimResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addNotesToClaim(@PathParam(value = "id") int id, NoteClaim nc) {
 		Claim c = cs.getById(id);
+		nc.setClaim(c);
+		nc.setCreatedBy(cs.findUserById(nc.getCreatedById()));
 		NoteClaim note = noteService.addNoteClaim(nc, c);
+		System.out.println(note);
 		return Response.status(Status.OK).entity(note).build();
 	}
 
 	@PUT
-	@Path("editNoteClaim/{id}")
+	@Path("/editNoteClaim/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateNoteClaim(@PathParam(value = "id") int id, NoteClaim nc) {
+		System.out.println("aaaam herreeeee !!!!!!");
 		NoteClaim ncl = noteService.getNoteClaimByCode(id);
 		NoteClaim injecter = nc;
-
 		injecter.setId(ncl.getId());
 		if (injecter.getDescription() == null) {
 			injecter.setDescription(ncl.getDescription());
@@ -205,8 +217,13 @@ public class DashClaimResource {
 		if (injecter.getCreatedBy() == null) {
 			injecter.setCreatedBy(ncl.getCreatedBy());
 		}
+		if (injecter.getCreatedById() == 0) {
+			injecter.setCreatedById(ncl.getCreatedById());
+		}
 		injecter.setCreatedAt(ncl.getCreatedAt());
 		NoteClaim newC = (NoteClaim) cs.merge(injecter);
+		System.out.println("******************************************************************************");
+		System.out.println("NOOO herreeeee !!!!!!");
 		return Response.status(Status.OK).entity(newC).build();
 	}
 

@@ -184,6 +184,34 @@ public class ClaimResource {
 	}
 
 	@PUT
+	@Path("/editNoteClaim/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateNoteClaim(@PathParam(value = "id") int id, NoteClaim nc) {
+		System.out.println("aaaam herreeeee !!!!!!");
+		NoteClaim ncl = noteService.getNoteClaimByCode(id);
+		NoteClaim injecter = nc;
+		injecter.setId(ncl.getId());
+		if (injecter.getDescription() == null) {
+			injecter.setDescription(ncl.getDescription());
+		}
+		if (injecter.getClaim() == null) {
+			injecter.setClaim(ncl.getClaim());
+		}
+		if (injecter.getCreatedBy() == null) {
+			injecter.setCreatedBy(ncl.getCreatedBy());
+		}
+		if (injecter.getCreatedById() == 0) {
+			injecter.setCreatedById(ncl.getCreatedById());
+		}
+		injecter.setCreatedAt(ncl.getCreatedAt());
+		NoteClaim newC = (NoteClaim) cs.merge(injecter);
+		System.out.println("******************************************************************************");
+		System.out.println("NOOO herreeeee !!!!!!");
+		return Response.status(Status.OK).entity(newC).build();
+	}
+	
+	@PUT
 	@Path("/archiverClaim/{id}")
 	public Response archiverCalim(@PathParam(value = "id") int id) {
 		Claim newC = cs.getById(id);

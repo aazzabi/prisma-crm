@@ -536,6 +536,8 @@ public class ClaimService implements IClaimServiceRemote {
 	public Client findClientById(int id ) {
 		return em.find(Client.class, id);
 	}
-	
+	public User findUserById(int id ) {
+		return em.find(User.class, id);
+	}
 	
 }
