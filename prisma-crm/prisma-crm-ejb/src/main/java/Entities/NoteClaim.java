@@ -35,6 +35,8 @@ public class NoteClaim implements Serializable {
 	@ManyToOne
 	private User createdBy;
 	
+	private int createdById;
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date createdAt;
@@ -86,5 +88,14 @@ public class NoteClaim implements Serializable {
 	public void setClaim(Claim claim) {
 		this.claim = claim;
 	}
+
+	public int getCreatedById() {
+		return createdById;
+	}
+
+	public void setCreatedById(int createdById) {
+		this.createdById = createdById;
+	}
+	
 	
 }
