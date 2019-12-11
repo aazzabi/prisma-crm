@@ -91,6 +91,11 @@ public class PromotionResource {
 
 	}
 
-	
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findPromotionById(@PathParam(value = "id") int id) {
+		return Response.status(Status.CREATED).entity(promo.findPromotion(id)).build();
+	}
 
 }

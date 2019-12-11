@@ -58,5 +58,11 @@ public class OfferResource {
 		return Response.status(Status.CREATED).entity(off.listeoffer()).build();
 
 	}
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findOffreById(@PathParam(value = "id") int id) {
+		return Response.status(Status.CREATED).entity(off.findOffer(id)).build();
+	}
 
 }

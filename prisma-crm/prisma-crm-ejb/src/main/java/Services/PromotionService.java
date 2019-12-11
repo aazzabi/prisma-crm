@@ -26,7 +26,9 @@ public class PromotionService implements IPromotion {
 
 	@Override
 	public void addPromotion(Promotion p) {
-		em.persist(p);
+		Date dateJour = new Date();
+		p.setS_date(dateJour);
+				em.persist(p);
 	}
 
 	@Override
@@ -44,6 +46,7 @@ public class PromotionService implements IPromotion {
 	public Promotion updatePromotion(Promotion promotion) {
 		Promotion p = em.find(Promotion.class, promotion.getId());
 		p.setE_date(promotion.getE_date());
+		p.setName(promotion.getName());
 		p.setPercentage(promotion.getPercentage());
 		p.setPeriod(promotion.getPeriod());
 		p.setS_date(promotion.getS_date());
@@ -63,15 +66,15 @@ public class PromotionService implements IPromotion {
 
 		pr.setNew_price(pr.getPrice() - (pr.getPrice() * p.getPercentage()) / 100);
 
-		Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+	//	Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
-		Message message = Message
+	//	Message message = Message
 
 				
-				.creator(new PhoneNumber("+21629684222"), new PhoneNumber("+18652719262"), "  Chère cliente, cher client on a une Nouvelle promotion pour vous  en  "
-						+ pr.getName() + "  de " + p.getPercentage() +" % "+ "  le nouveau prix est  " + pr.getNew_price()+" .Pour plus d'information visiter notre site Web opérateur.com ")
-				.create();
-		System.out.println(message.getSid());
+		//		.creator(new PhoneNumber("+21629684222"), new PhoneNumber("+18652719262"), "  Chère cliente, cher client on a une Nouvelle promotion pour vous  en  "
+			//			+ pr.getName() + "  de " + p.getPercentage() +" % "+ "  le nouveau prix est  " + pr.getNew_price()+" .Pour plus d'information visiter notre site Web opérateur.com ")
+		//		.create();
+		//System.out.println(message.getSid());
 
 	}
 

@@ -74,6 +74,14 @@ public class PackResource {
 		list.add(pac.getAllProductPerPack(id));
 		return Response.status(Status.CREATED).entity(list).build();
 	}
+	
+	@GET
+	@Path("/allPrt/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response allPrdt(@PathParam(value = "id") int id) {
+		
+		return Response.status(Status.CREATED).entity(pac.getAllProductPerPack(id)).build();
+	}
 
 	@DELETE
 	@Path("/deleteproductpack/{idp}/{idpa}")
@@ -81,5 +89,14 @@ public class PackResource {
     public Response deleteproductpack(@PathParam(value="idp")int idp,@PathParam(value="idpa")int idpa) {
 	 pac.deleteproductpack(idp, idpa);
 	return Response.status(Status.OK).build();
+	}
+	
+
+	@GET
+	@Path("/all")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response allPacks() {
+		return Response.status(Status.CREATED).entity(pac.listepackss()).build();
+
 	}
 }
