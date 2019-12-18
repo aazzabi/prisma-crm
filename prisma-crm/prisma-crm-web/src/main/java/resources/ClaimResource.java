@@ -62,6 +62,15 @@ public class ClaimResource {
 		return Response.status(Status.CREATED).entity(c).build();
 	}
 	
+	@POST 
+	@Path("/bipperAgent/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response bipperAgent(@PathParam(value = "id") int id) throws Exception {
+		System.out.println("ressource");
+		cs.bipperAgent(id);
+		return Response.status(Status.OK).build();
+	}
+	
 	//@RolesAllowed(Permissions = {Role.financial})
 	@GET
 	@Path("getAll")

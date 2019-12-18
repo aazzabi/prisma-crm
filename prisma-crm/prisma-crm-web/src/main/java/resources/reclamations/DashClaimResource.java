@@ -49,7 +49,7 @@ public class DashClaimResource {
 	public static NoteClaimService noteService = new NoteClaimService();
 	@EJB
 	public static ClaimService cs = new ClaimService();
-
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllClaim() {
@@ -62,6 +62,29 @@ public class DashClaimResource {
 						.build();
 			} else if ((r == Role.financial) || (r == Role.technical) || (r == Role.relational)) {
 				return Response.status(Status.CREATED).entity(cs.getClaimsByResponsable((Agent) UserService.UserLogged))
+						.build();
+			} else {
+				return Response.status(Status.NOT_FOUND).build();
+			}
+		} else {
+			return Response.status(Status.CREATED).entity("{\"error\": \" You are not connected ! \"}").build();
+		}
+	}
+
+	@GET
+	@Path("/userId/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllClaimByUser(@PathParam(value = "id") int id) {
+		User u = cs.findUserById(id);
+		if (u != null) {
+			Role r = u.getRole();
+			if (r == Role.Admin) {
+				return Response.status(Status.CREATED).entity(cs.getAll()).build();
+			} else if (r == Role.Client) {
+				return Response.status(Status.CREATED).entity(cs.getClaimsByClient((Client) u))
+						.build();
+			} else if ((r == Role.financial) || (r == Role.technical) || (r == Role.relational)) {
+				return Response.status(Status.CREATED).entity(cs.getClaimsByResponsable((Agent) u))
 						.build();
 			} else {
 				return Response.status(Status.NOT_FOUND).build();
@@ -142,7 +165,7 @@ public class DashClaimResource {
 	@PUT
 	@Path("/resolve/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Permissions = { Role.financial, Role.relational, Role.technical })
+	@RolesAllowed(Permissions = { Role.financial, Role.relational, Role.technical, Role.Admin })
 	public Response resolveClaim(@PathParam(value = "id") int id) throws Exception {
 		if ((id != 0) & (cs.getById(id) != null)) {
 			Claim c = cs.getById(id);
@@ -160,7 +183,7 @@ public class DashClaimResource {
 	@GET
 	@Path("/deleguer/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Permissions = { Role.financial, Role.relational, Role.technical })
+	@RolesAllowed(Permissions = { Role.financial, Role.relational, Role.technical, Role.Admin })
 	public Response deleguerClaim(@PathParam(value = "id") int id) throws Exception {
 		if ((id != 0) & (cs.getById(id) != null)) {
 			Claim c = cs.getById(id);
@@ -180,6 +203,20 @@ public class DashClaimResource {
 			return Response.status(Status.CREATED).entity(cs.getClaimsByResponsable(a)).build();
 		}
 		return Response.status(Status.CREATED).entity("{\"error\": \" You are not connected ! \"}"  ).build();
+	}
+
+
+	@PUT
+	@Path("/confirmer/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed(Permissions = { Role.Client })
+	public Response confirmerClaim(@PathParam(value = "id") int id) throws Exception {
+		if ((id != 0) & (cs.getById(id) != null)) {
+			Claim c = cs.getById(id);
+			return Response.status(Status.OK).entity(cs.confirmer(c)).build();
+		} else {
+			return Response.status(Status.NOT_FOUND).entity("Claim doesn't exist").build();
+		}
 	}
 
 	// ******************
@@ -204,7 +241,6 @@ public class DashClaimResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateNoteClaim(@PathParam(value = "id") int id, NoteClaim nc) {
-		System.out.println("aaaam herreeeee !!!!!!");
 		NoteClaim ncl = noteService.getNoteClaimByCode(id);
 		NoteClaim injecter = nc;
 		injecter.setId(ncl.getId());
@@ -222,8 +258,6 @@ public class DashClaimResource {
 		}
 		injecter.setCreatedAt(ncl.getCreatedAt());
 		NoteClaim newC = (NoteClaim) cs.merge(injecter);
-		System.out.println("******************************************************************************");
-		System.out.println("NOOO herreeeee !!!!!!");
 		return Response.status(Status.OK).entity(newC).build();
 	}
 
@@ -245,5 +279,22 @@ public class DashClaimResource {
 			return Response.status(Status.NOT_FOUND).entity("Commentaire non existant ").build();
 		}
 	}
+	
+	@POST 
+	@Path("/bipperAgent/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response bipperAgent(@PathParam(value = "id") int id) throws Exception {
+		System.out.println("ressource");
+		cs.bipperAgent(id);
+		return Response.status(Status.OK).build();
+	}
+	
+	@GET
+	@Path("/allAg")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllAgent() {
+		List<Agent> la = cs.getAllAgent();
+		return Response.status(Status.OK).entity(la).build();
 
+	}
 }

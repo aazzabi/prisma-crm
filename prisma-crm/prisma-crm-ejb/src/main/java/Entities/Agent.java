@@ -33,6 +33,7 @@ public class Agent extends User implements Serializable {
 	private int nbrClaimsOpenedAndResolved;
 	private int nbrClaimsOpened;
 	private int nbrClaimsResolved;
+	private int nbrClaimsConfirmed;
 	private long moyAssiduite;
 	private long moyReponse;
 	@Column 
@@ -45,6 +46,7 @@ public class Agent extends User implements Serializable {
 		this.nbrClaimsOpened = 0 ; 
 		this.nbrClaimsResolved = 0 ; 
 		this.nbrClaimsOpenedAndResolved = 0 ; 
+		this.nbrClaimsConfirmed = 0 ; 
 		this.moyAssiduite = 0 ; 
 		this.moyReponse = 0 ; 
 	}
@@ -130,6 +132,14 @@ public class Agent extends User implements Serializable {
 
 	public void setMoyReponse(long moyReponse) {
 		this.moyReponse = moyReponse;
+	}
+	
+	public int getNbrClaimsConfirmed() {
+		return nbrClaimsConfirmed;
+	}
+
+	public void setNbrClaimsConfirmed(int nbrClaimsConfirmed) {
+		this.nbrClaimsConfirmed = nbrClaimsConfirmed;
 	}
 
 	@Override

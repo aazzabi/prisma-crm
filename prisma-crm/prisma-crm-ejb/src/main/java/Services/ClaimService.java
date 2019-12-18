@@ -26,6 +26,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.security.SecureRandom;
 
 /*
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -52,6 +53,14 @@ public class ClaimService implements IClaimServiceRemote {
 	@PersistenceContext(unitName = "prisma-crm-ejb")
 	EntityManager em;
 
+
+    private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+    private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+    private static final String NUMBER = "0123456789";
+
+    private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER + NUMBER;
+    private static SecureRandom random = new SecureRandom();
+	
 	@Override
 	public int addClaim(Claim c) throws Exception {
 		c.toString();
@@ -61,7 +70,11 @@ public class ClaimService implements IClaimServiceRemote {
 		c.setFirstResponsable(c.getResponsable());
 		c.setResolvedBy(null);
 		em.persist(c);
-		c.setCode("CODE" + c.getId());
+		c.setCode(this.generateRandomString(5));
+		if (c.getCreatedBy().getEmail() != "") {
+			JavaMailUtil.sendMail(c.getCreatedBy().getEmail(), "Réclamation ajouté ", "Bonjour " + c.getCreatedBy().getLastName()
+					+ "<br> Votre réclamation a été bien enrégistré .  <br> Pour pouvoir suivre l'avancement de votre réclamation, voici le code : "+ c.getCode());
+		}
 		return c.getId();
 	}
 
@@ -299,6 +312,14 @@ public class ClaimService implements IClaimServiceRemote {
 			if (c.getResponsable().equals(c.getFirstResponsable())) {
 				ag.setNbrClaimsOpenedAndResolved(ag.getNbrClaimsOpenedAndResolved() + 1);
 			}
+			if (c.getCreatedBy().getEmail() != "") {
+				try {
+					JavaMailUtil.sendMail(c.getCreatedBy().getEmail(), "Réclamation résolut", "Bonjour " + c.getCreatedBy().getLastName()
+							+ ", <br> Votre réclamation à ete mis en état résolu, veulliez la confirmer en accédant à votre espace client . <br> Cordialement .");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			em.merge(ag);
 			em.merge(c);
 		}
@@ -340,6 +361,15 @@ public class ClaimService implements IClaimServiceRemote {
 		c.setOpenedAt(null);
 		em.merge(oldAg);
 		em.merge(c);
+		return c;
+	}
+	
+	public Claim confirmer(Claim c) {
+		Agent ag = c.getResponsable();
+		ag.setNbrClaimsConfirmed(ag.getNbrClaimsConfirmed() + 1);
+		this.changeStatus(c, ClaimStatus.CONFIRMEE);
+		em.merge(c);
+		em.merge(ag);
 		return c;
 	}
 
@@ -538,6 +568,43 @@ public class ClaimService implements IClaimServiceRemote {
 	}
 	public User findUserById(int id ) {
 		return em.find(User.class, id);
+	}
+	
+	public void bipperAgent(int id ) throws Exception {
+		System.out.println("clm servc");
+		Agent a = em.find(Agent.class, id);
+		if (a.getEmail() != "") {
+			JavaMailUtil.sendMail(a.getEmail(), "Réclamation en attente non traitée ", "Bonjour " + a.getLastName()
+					+ "<br> Vous avez une réclamation non traitée <br> Veuillez réagir en repondant à la demande de notre client ");
+		}
+	}
+	
+	public static String generateRandomString(int length) {
+        if (length < 1) throw new IllegalArgumentException();
+
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+
+			// 0-62 (exclusive), random returns 0-61
+            int rndCharAt = random.nextInt(DATA_FOR_RANDOM_STRING.length());
+            char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
+
+            // debug
+            System.out.format("%d\t:\t%c%n", rndCharAt, rndChar);
+
+            sb.append(rndChar);
+
+        }
+
+        return sb.toString();
+
+    }
+	
+	public List<Agent> getAllAgent() {
+		TypedQuery<Agent> query = em.createQuery("SELECT a from Agent a where a.role<>:a", Agent.class)
+				.setParameter("a", Role.Admin);
+		List<Agent> cf = query.getResultList();
+		return cf;
 	}
 	
 }
