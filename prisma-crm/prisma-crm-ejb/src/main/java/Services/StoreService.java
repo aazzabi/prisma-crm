@@ -151,6 +151,12 @@ public class StoreService implements IStoreServiceLocal {
 		return em.find(Address.class, idAdr);
 	}
 
+	@Override
+	public List<Address> getAllAddress() {
+		List<Address> adr = em.createQuery("from Address", Address.class).getResultList();
+		return adr;
+	}
+
 
 
 

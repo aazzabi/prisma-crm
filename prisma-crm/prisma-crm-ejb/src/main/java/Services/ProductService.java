@@ -1,14 +1,22 @@
 package Services;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import Entities.Agent;
+import Entities.MyImage;
 import Entities.Product;
 import Entities.Stock;
 import Entities.Store;
@@ -25,8 +33,8 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 
 	@Override
 	public Product addProduct(Product p) {
-		System.out.println(UserService.UserLogged.getFirstName());
-		User u=em.find(User.class, UserService.UserLogged.getId());
+		// System.out.println(UserService.UserLogged.getFirstName());
+		User u=em.find(User.class, 6);
 		p.setAgent(u);
 		em.persist(p);
 		return p;
@@ -55,6 +63,9 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		p.setMemory(newProduct.getMemory());
 		p.setResolution(newProduct.getResolution());
 		
+		
+		System.out.print("newProduct "+newProduct);
+	
 		
 		
 		return p;
@@ -139,10 +150,47 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 		Product p = findProductById(idProduct);
 		Tariff t = findTarifById(idTarif);
 		p.getTarifs().add(t);
+		System.out.println("hello "+ p.getTarifs());
 		/*TarifProduct tp = new TarifProduct();
 		tp.setProduct(p);
 		tp.setTariff(t);
 		em.persist(tp);*/
+	}
+
+	@Override
+	public MyImage uploadImage(String urlFile) {
+		File file = new File("C:/uploads/"+urlFile);
+		System.out.println("service= "+ file);
+
+		String imageData = "";
+		DateFormat dateformatImage;
+		String location, format;
+
+        try {
+
+            BufferedImage imag = ImageIO.read(file);
+
+            dateformatImage = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+
+            imageData = dateformatImage.format(new Date()) + file.getName();
+            System.out.println("file name= "+ file.getName());
+
+            /*location = "C:/AngularWorkspace/angular/src/assets/img/prods/" + imageData;*/
+            
+            location = "C:/AngularWorkspace/angular/src/assets/img/prods/" + imageData;
+
+            format = file.getName().substring(file.getName().lastIndexOf(".") + 1, file.getName().length());
+            ImageIO.write(imag, format, new File(location));
+
+        } catch (IOException ex) {
+            //Logger.getLogger(AjouterEventController.class.getName()).log(Level.SEVERE, null, ex);
+        	System.out.println("img error");
+        }
+
+        System.out.println("imageData= "+ imageData);
+        MyImage imggg = new MyImage(imageData);
+        return imggg;
+		
 	}
 	
 

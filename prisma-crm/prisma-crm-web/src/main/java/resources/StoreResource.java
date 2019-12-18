@@ -122,12 +122,29 @@ public class StoreResource {
 	
 	@Path("/getNearesAddress/{lon}/{lat}")
 	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getNearestAddress(@PathParam(value="lon") double lon,@PathParam(value="lat") double lat)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getNearestAddress(@PathParam(value="lon") double lon,@PathParam(value="lat") double lat)
 	{
-		
-		return serv.getNearestStoreAddress(lon,lat).getName();
+		return Response.status(Status.OK).entity(serv.getNearestStoreAddress(lon,lat)).build();
+
 		//return cartService.reverseGeoCode(lon, lat);
+	}
+	@Path("/Address/all")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllAddress()
+	{
+		return Response.status(Status.OK).entity(serv.getAllAddress()).build();
+
+		//return cartService.reverseGeoCode(lon, lat);
+	}
+	
+	@GET
+	@Path("/address/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findAddressById(@PathParam(value = "id") int id) {
+		return Response.status(Status.CREATED).entity(serv.findAdrById(id)).build();
+
 	}
 
 	

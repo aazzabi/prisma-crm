@@ -1,6 +1,8 @@
 package resources;
 
 
+import java.io.File;
+
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -38,7 +40,6 @@ public class ProductRessource {
 
 	@POST
 	@Path("/add")
-	@RolesAllowed(Permissions = {Role.relational})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addProduct(Product p) {
@@ -53,6 +54,14 @@ public class ProductRessource {
 		//System.out.println(UserService.UserLogged.getFirstName());
 		return Response.status(Status.CREATED).entity(ps.findAllProducts()).build();
 
+	}
+	
+
+	@GET
+	@Path("/uploads/{urlFile}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response uploadsImage(@PathParam(value = "urlFile")String urlFile) {
+		return Response.status(Status.OK).entity(ps.uploadImage(urlFile)).build();
 	}
 
 	@GET
@@ -97,6 +106,13 @@ public class ProductRessource {
 		return Response.status(Status.OK).entity(ps.updateProduct(newProduct)).build();
 
 	}
+	@GET
+	@Path("/assignTarif/{idProduct}/{idTariff}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response assignTarifToProduct(@PathParam(value = "idProduct") int idProduct, @PathParam(value = "idTariff") int idTariff) {
+		ps.assignTarifToProduct(idProduct, idTariff);
+		return Response.status(Status.OK).entity(ps.findProductById(idProduct)).build();
+	}
 
 	@DELETE
 	@Path("{id}")
@@ -107,7 +123,14 @@ public class ProductRessource {
 		return Response.status(Status.OK).entity("deleted").build();
 	}
 	
-	
+	@GET
+	@Path("/types")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getProductTypes() {
+
+		return Response.status(Status.CREATED).entity(ProductType.values()).build();
+	}
+
 	
 	@POST
 	@Path("/tarif/add")
@@ -129,8 +152,8 @@ public class ProductRessource {
 	@GET
 	@Path("/tarif/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findTarifById(@PathParam(value = "id") int id) {
-		return Response.status(Status.CREATED).entity(ps.findTarifById(id)).build();
+	public Tariff findTarifById(@PathParam(value = "id") int id) {
+		return ps.findTarifById(id);
 
 	}
 

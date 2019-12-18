@@ -36,4 +36,6 @@ public interface IStoreServiceLocal {
 	
 	public Address findAdrById(int idAdr);
 	
+	public List<Address> getAllAddress();
+	
 }
