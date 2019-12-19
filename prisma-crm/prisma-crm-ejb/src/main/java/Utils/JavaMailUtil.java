@@ -44,6 +44,7 @@ public class JavaMailUtil {
     }
 	
 	
+	@SuppressWarnings("deprecation")
 	private static Message prepareMessage(Session session , String r , String email, String subject,String content) {
 		try {
 			Message message = new MimeMessage(session);

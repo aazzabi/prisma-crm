@@ -34,7 +34,6 @@ public class Store implements Serializable {
 	
 	@Column(name = "capacity")
 	private int capacity;
-	@JsonIgnore
 	@ManyToOne
 	private Address address;
 	@JsonIgnore

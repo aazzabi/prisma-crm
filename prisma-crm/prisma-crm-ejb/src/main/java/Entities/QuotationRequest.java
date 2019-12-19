@@ -32,6 +32,8 @@ public class QuotationRequest implements Serializable {
 	private Quotation quotation;
 	@OneToMany
 	private Set<QuotationRequestProductRow> rows;
+	@ManyToOne
+	private Agent processedBy;
 	public Set<QuotationRequestProductRow> getRows() {
 		return rows;
 	}
@@ -89,5 +91,12 @@ public class QuotationRequest implements Serializable {
 	public void setProcessed(boolean isProcessed) {
 		this.isProcessed = isProcessed;
 	}
+	public Agent getProcessedBy() {
+		return processedBy;
+	}
+	public void setProcessedBy(Agent processedBy) {
+		this.processedBy = processedBy;
+	}
+	
 		
 }

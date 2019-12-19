@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -31,13 +33,16 @@ import Entities.CartProductRow;
 import Entities.Client;
 import Entities.ClientCart;
 import Entities.ClientOrder;
+import Entities.Invoice;
 import Entities.Product;
 import Entities.ReductionFidelityRation;
 import Entities.Store;
+import Entities.TemporaryInvoice;
 import Enums.OrderType;
 import Interfaces.ICartLocal;
 import Utils.Mailer;
 import Utils.TimeDistance;
+import Utils.TravelInformation;
 
 @Stateless
 @LocalBean
@@ -46,6 +51,8 @@ public class CartService implements ICartLocal {
 	EntityManager manager;
 	@EJB
 	OrderService orderBusiness;
+	@EJB
+	InvoiceService invoiceBusiness;
 	private final String distanceMatrixAPI = "http://www.mapquestapi.com/directions/v2/routematrix";
 	private final String distanceMatrixAPITokenKey = "qgluQem4iTGKYyMxdp1MdsyGHnwwFdva";
 	private final String REVERSE_GEOCODING_API = "https://nominatim.openstreetmap.org/reverse.php";
@@ -141,30 +148,51 @@ public class CartService implements ICartLocal {
 			order.setCart(crt);
 			crt.setUpdatedAt(new Timestamp(date.getTime()));
 			order.setOrderNature(orderType);
+			manager.persist(order);
 			Double total = crt.getCartRows().stream().filter(o -> o.getFinalPrice() > 0)
 					.mapToDouble(o -> o.getFinalPrice()).sum();
 			order.setTotale(total.floatValue());
-			manager.persist(order);
+			if (order.getOrderNature() == OrderType.LocalPaymentMethod) {
+				java.util.Date dt = new java.util.Date();
+				Calendar c = Calendar.getInstance();
+				c.setTime(dt);
+				c.add(Calendar.DATE, 1);
+				dt = c.getTime();
+				TemporaryInvoice tmpInvoice = new TemporaryInvoice();
+				tmpInvoice.setCreatedAt(new Date(date.getTime()));
+				tmpInvoice.setDeadline(new Date(dt.getTime()));
+				tmpInvoice.setOrder(order);
+				manager.persist(tmpInvoice);
+			} else {
+				// Invocation of paypal
+				orderBusiness.checkOutOrder(order);
+				order.setValid(true);
+				// Creation of the invoice and send it to mail
+				manager.persist(order);
+				manager.flush();
+				invoiceBusiness.createInvoice(order.getId());
+			}
 			crt.setOrder(order);
 			manager.merge(crt);
 			manager.flush();
-			return getTimeNeededToGetOrderProducts(LONG, LAT, crt.getId());
+			TimeDistance distannce = getTimeNeededToGetOrderProducts(LONG, LAT, crt.getId());
+			return distannce != null ? distannce : null;
 		}
 
 		else
 			return null;
 	}
 
-	// Cron job (not tested)
-	@Override
 	public boolean sendCartReminder(ClientCart cart) {
+
 		try {
-			Mailer.sendAsHtml(cart.getClient().getEmail(), "Forgotten cart", "<p>Test mail</p>", cart.getClient());
+			Mailer.sendAsHtml(cart.getClient().getEmail(), "Forgotten cart", "<p>Test mail</p>", null);
 			return true;
 		} catch (MessagingException m) {
 			m.printStackTrace();
 			return false;
 		}
+
 	}
 
 	// Tested
@@ -181,7 +209,7 @@ public class CartService implements ICartLocal {
 	public List<ClientCart> getClientCarts(int clientid) {
 		Client client = manager.find(Client.class, clientid);
 		return client != null
-				? manager.createQuery("SELECT C FROM ClientCart C WHERE C.client=:client")
+				? manager.createQuery("SELECT C FROM ClientCart C WHERE C.client=:client and C.isCheckedOut=false")
 						.setParameter("client", client).getResultList()
 				: null;
 
@@ -205,7 +233,7 @@ public class CartService implements ICartLocal {
 					/ cart.getReductionRatio().getFidelityScoreForEach())
 					* (cart.getReductionRatio().getReductionRatio());
 			// Updating final sum
-			cart.setFinalPrice(cart.getFinalPrice() - (cart.getQuantity() * REDUCTION_AMMOUNT_PER_UNIT));
+			cart.setFinalPrice(cart.getFinalPrice() - (REDUCTION_AMMOUNT_PER_UNIT));
 			cart.getCart().getClient()
 					.setFidelityScore(cart.getCart().getClient().getFidelityScore() - desiredFidelityPoints);
 			manager.persist(cart);
@@ -253,7 +281,6 @@ public class CartService implements ICartLocal {
 
 	}
 
-//Still in a whole mess ...
 	public TimeDistance getTimeNeededToGetOrderProducts(double LONG, double LAT, int cartId) {
 		// Getting the nearest store to client
 		ClientCart cart = manager.find(ClientCart.class, cartId);
@@ -281,8 +308,12 @@ public class CartService implements ICartLocal {
 					}
 				}
 				writeLog("End of the process\n\n\n------------------------------------------------");
-				return MAX_DISTANCE_STORE_STORE.getTime() > CLIENT_STORE_DISTANCE.getTime() ? MAX_DISTANCE_STORE_STORE
-						: CLIENT_STORE_DISTANCE;
+				if (MAX_DISTANCE_STORE_STORE != null) {
+					return MAX_DISTANCE_STORE_STORE.getTime() > CLIENT_STORE_DISTANCE.getTime()
+							? MAX_DISTANCE_STORE_STORE
+							: CLIENT_STORE_DISTANCE;
+				} else
+					return null;
 			} else
 				return null;
 
@@ -309,7 +340,7 @@ public class CartService implements ICartLocal {
 		address.setDisplayName(DISPLAY_NAME.get("display_name").getAsString());
 		JsonObject country = DISPLAY_NAME.get("address").getAsJsonObject();
 		address.setCountry(country.get("country").getAsString());
-		address.setZipCode(country.get("postcode").getAsInt());
+		address.setZipCode(11);
 		writeLog("\n////Address Longtitude : " + address.getLongtitude());
 		writeLog("\n////Address Latitude : " + address.getLatitude());
 		writeLog("\n////Address displayName : " + address.getDisplayName());
@@ -331,15 +362,15 @@ public class CartService implements ICartLocal {
 		TimeDistance PACKAGE_RESULT = new TimeDistance();
 		JsonParser parser = new JsonParser();
 		JsonObject JSON_RESPONSE_RESULT = (JsonObject) parser.parse(responseStr);
-		JsonArray DISTANCE_ARRAY = JSON_RESPONSE_RESULT.get("distance").getAsJsonArray();
-		JsonArray TIME_ARRAY = JSON_RESPONSE_RESULT.get("time").getAsJsonArray();
-		PACKAGE_RESULT.setDistance(DISTANCE_ARRAY.get(1).getAsFloat());
-		PACKAGE_RESULT.setTime(TIME_ARRAY.get(1).getAsFloat());
-		java.util.Date date = new java.util.Date();
-		writeLog(new Timestamp(date.getTime()).toString() + "\n"
-				+ "----------------------------------------------------\n" + "distance between " + a + " || and ||" + b
-				+ " is " + PACKAGE_RESULT.getDistance() + "\nTime : " + PACKAGE_RESULT.getTime());
-		return PACKAGE_RESULT;
+		if (JSON_RESPONSE_RESULT.get("distance") != null) {
+			JsonArray DISTANCE_ARRAY = JSON_RESPONSE_RESULT.get("distance").getAsJsonArray();
+			JsonArray TIME_ARRAY = JSON_RESPONSE_RESULT.get("time").getAsJsonArray();
+			PACKAGE_RESULT.setDistance(DISTANCE_ARRAY.get(1).getAsFloat());
+			PACKAGE_RESULT.setTime(TIME_ARRAY.get(1).getAsFloat());
+			java.util.Date date = new java.util.Date();
+			return PACKAGE_RESULT;
+		} else
+			return null;
 	}
 
 	// Tested
@@ -361,7 +392,7 @@ public class CartService implements ICartLocal {
 	// Tested
 	public static void writeLog(String info) {
 		String filename = "activity.log";
-		String FILENAME = "C:\\Users\\samali\\git\\" + filename;
+		String FILENAME = "C:\\Users\\samal\\git\\prisma-crm\\" + filename;
 		BufferedWriter bw = null;
 		FileWriter fw = null;
 		try {
@@ -401,8 +432,287 @@ public class CartService implements ICartLocal {
 			return 0;
 	}
 	// Needs the update of the cart update and cancel services .
-	// For admin : need to implement statistics for carts  {group carts of them by clients , group carts by type and status ,
-	//  most added products to cart.}
+	// For admin : need to implement statistics for carts {group carts of them by
+	// clients , group carts by type and status ,
+	// most added products to cart.}
+
+	@Override
+	public Product updateProductCartRow(int product, int cart, int quantity, int points, boolean withReduction) {
+		Product PRODUCT = manager.find(Product.class, product);
+		ClientCart CART = manager.find(ClientCart.class, cart);
+		if ((PRODUCT != null) && (CART != null) && (checkIfProductIsContainedInCart(CART, PRODUCT))
+				&& (PRODUCT.getStock() >= quantity)) {
+			CartProductRow row = (CartProductRow) manager
+					.createQuery("SELECT c FROM CartProductRow c " + "where c.cart =:cart AND c.product=:product")
+					.setParameter("cart", CART).setParameter("product", PRODUCT).getSingleResult();
+			row.setQuantity(quantity);
+			row.setTotalPriceWNReduction(quantity * PRODUCT.getPrice());
+			row.setFinalPrice(quantity * PRODUCT.getPrice());
+			if ((CART.getClient().getFidelityScore() >= points) && (withReduction)) {
+				row.setUsedFidelityPoints(points);
+				// Calculating the sum of reduction
+				float REDUCTION_AMMOUNT_PER_UNIT = (points / row.getReductionRatio().getFidelityScoreForEach())
+						* (row.getReductionRatio().getReductionRatio());
+				// Updating final sum
+				row.setFinalPrice(row.getFinalPrice() - (REDUCTION_AMMOUNT_PER_UNIT));
+				row.getCart().getClient().setFidelityScore(row.getCart().getClient().getFidelityScore() - points);
+			} else {
+				row.setFinalPrice(row.getFinalPrice());
+				row.setUsedFidelityPoints(0);
+			}
+			PRODUCT.setStock(PRODUCT.getStock() - row.getQuantity());
+			manager.merge(row.getCart().getClient());
+			manager.merge(PRODUCT);
+			manager.merge(row);
+			manager.flush();
+			return PRODUCT;
+		}
+		return null;
+	}
+
+	public boolean checkIfProductIsContainedInCart(ClientCart cart, Product product) {
+		for (CartProductRow p : cart.getCartRows()) {
+			if (p.getProduct().getId() == product.getId())
+				return true;
+		}
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Product> fetchProductsFromCart() {
+		return manager.createQuery("SELECT p from Product P where P.stock>0 ").getResultList();
+	}
+
+	@Override
+	public Product getProductById(int id) {
+		Product p = manager.find(Product.class, id);
+		return p;
+	}
+
+	@Override
+	public ReductionFidelityRation getProductReductionRatio(int productId) {
+		Product p = manager.find(Product.class, productId);
+		if (p != null) {
+			ReductionFidelityRation r = (ReductionFidelityRation) manager
+					.createQuery("SELECT R FROM ReductionFidelityRation R" + " where  R.productType=:a")
+					.setParameter("a", p.getType()).getSingleResult();
+			return r != null ? r : null;
+		} else
+			return null;
+	}
+
+	@Override
+	public CartProductRow getProductCartRow(int productId, int cartId) {
+		Product p = manager.find(Product.class, productId);
+		ClientCart c = manager.find(ClientCart.class, cartId);
+		if ((p != null) && (c != null)) {
+			try {
+				CartProductRow row = (CartProductRow) manager
+						.createQuery("SELECT R FROM CartProductRow R WHERE R.product=:product and R.cart=:cart")
+						.setParameter("product", p).setParameter("cart", c).getSingleResult();
+
+				System.out.println(row);
+				if (row != null) {
+					return row;
+				} else
+					return null;
+			}
+
+			catch (NoResultException e) {
+				return null;
+			}
+		} else
+			return null;
+	}
+
+	@Override
+	public CartProductRow resetUserPoints(int clientId, int points, int productQuantity, int productId, int cartId) {
+		Client client = manager.find(Client.class, clientId);
+		Product product = manager.find(Product.class, productId);
+		if ((client != null) && (product != null)) {
+			client.setFidelityScore(client.getFidelityScore() + points);
+			product.setStock(product.getStock() + productQuantity);
+			return getProductCartRow(productId, cartId);
+
+		} else
+			return null;
+
+	}
+
+	@Override
+	public Set<CartProductRow> getCartRows(int cartId) {
+
+		return manager.find(ClientCart.class, cartId).getCartRows();
+	}
+
+	@Override
+	public float passToCheckOutUsingCash(int cartId, int clientId, double distanceCS, int storeId) {
+		Store store = manager.find(Store.class, storeId);
+		ClientCart cart = manager.find(ClientCart.class, cartId);
+		Client client = manager.find(Client.class, clientId);
+		if (client != null && cart != null && store != null) {
+			ClientOrder order = new ClientOrder();
+			order.setCart(cart);
+			order.setClient(client);
+			java.util.Date date = new java.util.Date();
+			order.setCreatedAt(new Date(date.getTime()));
+			order.setOrderNature(OrderType.LocalPaymentMethod);
+			order.setStore(store);
+			order.setValid(false);
+			order.setTotale((float) (cart.getCartRows().stream().filter(o -> o.getFinalPrice() > 0)
+					.mapToDouble(o -> o.getFinalPrice())).sum());
+			Double totalWNR = cart.getCartRows().stream().filter(o -> o.getTotalPriceWNReduction() > 0)
+					.mapToDouble(o -> o.getTotalPriceWNReduction()).sum();
+			order.setReductionRatio((float) (order.getTotale() / totalWNR));
+			cart.setCheckedOut(true);
+			manager.persist(order);
+			List<Store> includedStores = fetchingCartIncludedStores(cart);
+			// getting max distance between stores
+			if (includedStores != null && includedStores.size() > 0) {
+				float maxDistance = 0;
+				for (Store s : includedStores) {
+					float tmp = calculateDistanceBetweenTwoStores(s.getAddress().getLongtitude(),
+							s.getAddress().getLatitude(), store.getAddress().getLongtitude(),
+							store.getAddress().getLatitude());
+					if (tmp > maxDistance) {
+						maxDistance = tmp;
+					}
+				}
+				// creating temporary invoice and linking it to the order
+				TemporaryInvoice invoice = new TemporaryInvoice();
+				invoice.setCreatedAt(new Date(date.getTime()));
+				invoice.setDeadline(new Date(date.getTime() + (24 * 3600)));
+				invoice.setOrder(order);
+				manager.persist(invoice);
+				manager.merge(cart);
+				manager.flush();
+				if (maxDistance > distanceCS) {
+					return maxDistance;
+				} else
+					return (float) distanceCS;
+			} else
+				return (float) distanceCS;
+		} else
+			return 0;
+	}
+
+
+	@Override
+	public float passToCheckOutUsingPayPal(int cartId, int clientId, double distanceCS, int storeId) {
+		ClientCart cart = manager.find(ClientCart.class, cartId);
+		Client client = manager.find(Client.class, clientId);
+		Store store=manager.find(Store.class, storeId);
+		if (client != null && cart != null && store != null) {
+			ClientOrder order = new ClientOrder();
+			order.setCart(cart);
+			order.setClient(client);
+			java.util.Date date = new java.util.Date();
+			order.setCreatedAt(new Date(date.getTime()));
+			order.setOrderNature(OrderType.OnlinePaymentMethod);
+			order.setStore(store);
+			order.setValid(true);
+			order.setTotale((float) (cart.getCartRows().stream().filter(o -> o.getFinalPrice() > 0)
+					.mapToDouble(o -> o.getFinalPrice())).sum());
+			Double totalWNR = cart.getCartRows().stream().filter(o -> o.getTotalPriceWNReduction() > 0)
+					.mapToDouble(o -> o.getTotalPriceWNReduction()).sum();
+			order.setReductionRatio((float) (order.getTotale() / totalWNR));
+			manager.persist(order);
+			List<Store> includedStores = fetchingCartIncludedStores(cart);
+			// getting max distance between stores
+			if (includedStores != null && includedStores.size() > 0) {
+				float maxDistance = 0;
+				for (Store s : includedStores) {
+					float tmp = calculateDistanceBetweenTwoStores(s.getAddress().getLongtitude(),
+							s.getAddress().getLatitude(), store.getAddress().getLongtitude(),
+							store.getAddress().getLatitude());
+					if (tmp > maxDistance) {
+						maxDistance = tmp;
+					}
+				}
+				// creating permanent invoice and linking it to the order
+				Invoice invoice = new Invoice();
+				invoice.setOrder(order);
+				invoice.setCreatedAt(new Timestamp(date.getTime()));
+				invoice.setOrderInvoice(order);
+				cart.setOrder(order);
+				cart.setCheckedOut(true);
+				order.setCart(cart);
+				order.setInvoice(invoice);
+				manager.persist(order);
+				manager.merge(cart);
+				manager.persist(invoice);
+				manager.flush();
+				if (maxDistance > distanceCS) {
+					return maxDistance;
+				} else
+					return (float) distanceCS;
+			} else
+				return (float) distanceCS;
+		} else
+			return 0;
+	}
+
+	@Override
+	public void deleteCart(int cart) {
+		ClientCart c = manager.find(ClientCart.class, cart);
+		if (c.getCartRows() != null && c.getCartRows().size() > 0) {
+			for (CartProductRow p : c.getCartRows()) {
+				manager.remove(p);
+				manager.flush();
+			}
+			manager.remove(c);
+			manager.flush();
+		} else {
+			manager.remove(c);
+			manager.flush();
+		}
+	}
 	
+	/*
+	 Implementing methods to fetch client orders & quotations
+	 */
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ClientOrder> getClientOrders(int id)
+	{
+		Client c=manager.find(Client.class, id);
+		if (c!=null)
+		{
+			List<ClientOrder> orders=manager.createQuery("SELECT O FROM ClientOrder O WHERE O.client=:client")
+									 .setParameter("client", c)
+									 .getResultList();
+			return orders;
+									
+		}
+		return null;
+	}
+
+	@Override
+	public ClientCart getCartById(int id) {
+		
+		return manager.find(ClientCart.class, id);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Set<CartProductRow> getOrderRows(int id) {
+			ClientOrder cart=manager.find(ClientOrder.class, id);
+			if (cart!=null)
+			{
+				if (cart.getCart().getCartRows()!=null)
+				{
+					return cart.getCart().getCartRows();
+				}
+				else return null;
+			}
+			else return null;
+	}
+
+	@Override
+	public ClientOrder getSpecificClientOrder(int id) {
+		return manager.find(ClientOrder.class,id);
+	}
 
 }

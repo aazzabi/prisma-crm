@@ -28,7 +28,6 @@ public class Invoice implements Serializable {
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
 	@OneToOne
-	@JsonIgnore
 	private ClientOrder orderInvoice;
 	@OneToMany	
 	@JsonIgnore

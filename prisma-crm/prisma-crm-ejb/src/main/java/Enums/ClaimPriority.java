@@ -1,5 +1,5 @@
 package Enums;
 
 public enum ClaimPriority {
-	FAIBLE, MOYEN, ELEVEE, URGENT
+	Faible, Moyen, Elevé, Urgent
 }

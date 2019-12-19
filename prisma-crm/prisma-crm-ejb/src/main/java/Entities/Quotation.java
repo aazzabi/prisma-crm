@@ -1,18 +1,13 @@
 package Entities;
 
-<<<<<<< prisma-crm/prisma-crm-ejb/src/main/java/Entities/Quotation.java
 import java.io.Serializable;
 
 import java.sql.Date;
-=======
-import java.util.Date;
->>>>>>> prisma-crm/prisma-crm-ejb/src/main/java/Entities/Quotation.java
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-<<<<<<< prisma-crm/prisma-crm-ejb/src/main/java/Entities/Quotation.java
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -44,21 +39,4 @@ public int getId() {
 	return id;
 }
 
-=======
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-@Entity
-public class Quotation {
-
-	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
-	private int id;	
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdAt;
-	
->>>>>>> prisma-crm/prisma-crm-ejb/src/main/java/Entities/Quotation.java
 }

@@ -2,7 +2,6 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -10,7 +9,6 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,10 +22,9 @@ import javax.persistence.TemporalType;
 
 import Enums.AccountState;
 import Enums.Role;
-
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "userType")
-@Table(name = "user")
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="userType")
+@Table(name="user")
 @Entity
 public class User implements Serializable {
 	@Id
@@ -95,16 +92,7 @@ public class User implements Serializable {
 	}
 
 	private String profileImage;
-	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<RepairRequest> repairRequests;
 
-	public List<RepairRequest> getRepairRequests() {
-		return repairRequests;
-	}
-
-	public void setRepairRequests(List<RepairRequest> repairRequests) {
-		this.repairRequests = repairRequests;
-	}
 
 	public String getFirstName() {
 		return firstName;
@@ -269,5 +257,7 @@ public class User implements Serializable {
 			return false;
 		return true;
 	}
+
+
 
 }

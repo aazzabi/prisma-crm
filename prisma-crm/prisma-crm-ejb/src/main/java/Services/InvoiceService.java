@@ -26,7 +26,6 @@ public class InvoiceService implements IInvoiceLocal {
 	EntityManager manager;
 	private final String CURRENCY_API_KEY = "Bearer U3eKuEacN1u2YVRloiw_IvADYNSsEEn_ZnrFG7B-OcgCU80FhIRTG";
 	private final String CURRENCY_API_URL = "https://currency.labstack.com/api/v1/convert";
-
 	@Override
 	public Invoice createInvoice(int orderId) {
 		ClientOrder order = manager.find(ClientOrder.class, orderId);
@@ -36,12 +35,6 @@ public class InvoiceService implements IInvoiceLocal {
 			invoice.setCreatedAt(new Timestamp(date.getTime()));
 			invoice.setOrder(order);
 			order.setInvoice(invoice);
-			Set<CartProductRow> rows = order.getCart().getCartRows();
-			if (rows != null) {
-				for (CartProductRow p : rows) {
-					invoice.addProduct(p.getProduct());
-				}
-			}
 			manager.persist(invoice);
 			manager.merge(order);
 			manager.flush();

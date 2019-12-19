@@ -10,9 +10,10 @@ import javax.persistence.Id;
 
 import javax.persistence.Table;
 
+
 @Entity
 @Table(name = "Tariff")
-public class Tariff  implements Serializable {
+public class Tariff implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -25,6 +26,8 @@ public class Tariff  implements Serializable {
 	
 	@Column(name = "priceT")
 	private double priceT;
+	
+
 	
 	public int getId() {
 		return id;
@@ -49,5 +52,9 @@ public class Tariff  implements Serializable {
 	public void setPriceT(double priceT) {
 		this.priceT = priceT;
 	}
+
+
+
+
 
 }

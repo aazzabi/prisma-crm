@@ -1,30 +1,27 @@
 package Entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import Enums.ClientGroups;
 import Enums.ClientType;
 
 @Entity
 @DiscriminatorValue("client")
-@Table(name="client")
+@Table(name = "client")
 public class Client extends User implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
+	@JsonIgnore
+	@OneToMany(mappedBy = "client")
 	private Set<ClientOrder> clientOrders;
 	@Enumerated(EnumType.STRING)
 	private ClientGroups clientgroup;
@@ -35,10 +32,11 @@ public class Client extends User implements Serializable {
 	private String entrepriseName;
 	@Column(name = "entreprisePosition", nullable = true, length = 255)
 	private String entreprisePosition;
+	@Column(columnDefinition = "boolean default false")
+	private boolean isBannedFromLocalOrders;
 
 	public Client() {
 		super();
-		this.clientOrders = new TreeSet<ClientOrder>();
 	}
 
 	public Set<ClientOrder> getClientOrders() {
@@ -121,6 +119,14 @@ public class Client extends User implements Serializable {
 		if (fidelityScore != other.fidelityScore)
 			return false;
 		return true;
+	}
+
+	public boolean isBannedFromLocalOrders() {
+		return isBannedFromLocalOrders;
+	}
+
+	public void setBannedFromLocalOrders(boolean isBannedFromLocalOrders) {
+		this.isBannedFromLocalOrders = isBannedFromLocalOrders;
 	}
 
 }
