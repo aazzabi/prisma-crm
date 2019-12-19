@@ -1,9 +1,11 @@
 package Interfaces;
 
+import java.io.File;
 import java.util.List;
 
 import javax.ejb.Local;
 
+import Entities.MyImage;
 import Entities.Product;
 import Entities.Store;
 import Entities.Tariff;
@@ -36,5 +38,7 @@ public interface IProductServiceLocal {
 	public List<Tariff> findAllTarifs();
 	
 	public void assignTarifToProduct(int idProduct, int idTarif);
+	
+	public MyImage uploadImage(String urlFile);
 
 }
