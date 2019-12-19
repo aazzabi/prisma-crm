@@ -19,8 +19,8 @@ import com.twilio.type.PhoneNumber;
 @Stateless
 public class PromotionService implements IPromotion {
 
-	public static final String ACCOUNT_SID = "AC2511691a914b9769651c05bfb2d3f129";
-	public static final String AUTH_TOKEN = "2db36d86149fe7ebb4f2c733dbee2287";
+	//public static final String ACCOUNT_SID = "AC2511691a914b9769651c05bfb2d3f129";
+	//public static final String AUTH_TOKEN = "2db36d86149fe7ebb4f2c733dbee2287";
 	@PersistenceContext
 	EntityManager em;
 
