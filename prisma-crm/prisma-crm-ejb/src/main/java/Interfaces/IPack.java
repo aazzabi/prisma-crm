@@ -6,6 +6,7 @@ import javax.ejb.Remote;
 
 import Entities.Pack;
 import Entities.Product;
+import Entities.Promotion;
 
 @Remote
 public interface IPack {
@@ -17,5 +18,6 @@ public interface IPack {
 	public void addproductpack(int idp,int idpa);
 	public List<Product> getAllProductPerPack(int id) ;
 	public void deleteproductpack(int idp,int idpa);
+	public List<Pack> listepackss();
 
 }

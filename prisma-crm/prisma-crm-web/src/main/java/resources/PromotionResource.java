@@ -34,14 +34,14 @@ public class PromotionResource {
 	@Path("/add")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String addPromotion(Promotion pr) {
+	public Response addPromotion(Promotion pr) {
 		//if (UserService.UserLogged !=null) {	
-			if(UserService.UserLogged.getRole() == Role.Admin) {
+		//	if(UserService.UserLogged.getRole() == Role.Admin) {
 				promo.addPromotion(pr);
-				return "added";
-			} else {
-				return "you are not allowed !";
-			}
+				return Response.ok(pr, MediaType.APPLICATION_JSON).build();
+		//	} else {
+			//	return "you are not allowed !";
+		//	}
 		//} return "Aucun user";
 	}
 
@@ -91,6 +91,11 @@ public class PromotionResource {
 
 	}
 
-	
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findPromotionById(@PathParam(value = "id") int id) {
+		return Response.status(Status.CREATED).entity(promo.findPromotion(id)).build();
+	}
 
 }

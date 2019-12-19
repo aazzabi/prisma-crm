@@ -92,4 +92,12 @@ public class PackService implements IPack {
 		pa.setProducts(lprod);
 	}
 
+	@Override
+	public List<Pack> listepackss() {
+		List<Pack> packs = em.createQuery("FROM Pack", Pack.class).getResultList();
+
+		return packs;
+	}
+	
+
 }
