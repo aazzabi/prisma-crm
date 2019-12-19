@@ -54,7 +54,7 @@ public class ClaimService implements IClaimServiceRemote {
 	@Override
 	public int addClaim(Claim c) throws Exception {
 		c.toString();
-		c.setCreatedBy(em.find(Client.class, 2));
+		c.setCreatedBy(em.find(Client.class, c.getCreatedById()));
 		System.out.print(c.getType());
 		c.setResponsable(this.findAnAgentFreeAndActif(c.getType()));
 		c.setFirstResponsable(c.getResponsable());

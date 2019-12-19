@@ -47,7 +47,9 @@ public class RepairRequestService implements IRepaiRequest {
 		RepairRequest s = entityManager.find(RepairRequest.class, id);
 		s.setNotes(reprequest.getNotes());
 		s.setStatusRep(reprequest.getStatusRep());
+		if (reprequest.getStatusRep() == RepairStatus.Completed || reprequest.getStatusRep() == RepairStatus.Rejected ) {
 		s.setEndDate(reprequest.getCreatedDate());
+		}
 		entityManager.merge(s);
 		return s.getId();
 

@@ -43,25 +43,23 @@ public class RepairResource {
 	IProductServiceLocal ps;
 
 		
-	@PUT
+	@POST
 	@Path("/add/{idinv}/{idprod}")
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addRepair(@PathParam(value = "idinv") int idinv, @PathParam(value = "idprod") int idprod,
-			RepairRequest x) {
+	public Response addRepair(@PathParam(value = "idinv") int idinv, @PathParam(value = "idprod") int idprod) {
 		Invoice check = repaiRequest.findInvoiceById(idinv);
 		Product p = repaiRequest.findProductByinvoice(idprod, idinv);
 		if (check != null & p != null) {
 			Date WarrentyExp = DateUtils.addYears(check.getCreatedAt(), p.getGuarantee());
 			if (WarrentyExp.after(new Date())) {
+				RepairRequest x = new RepairRequest();
 				x.setClient(UserService.UserLogged);
 				x.setCreatedDate(new Date());
 				x.setStatusRep(Enums.RepairStatus.OnHold);
 				x.setWarentyExp(WarrentyExp);
 				x.setInvoice(check);
-				repaiRequest.createRepairRequest(x);
-				System.out.println(repaiRequest.createRepairRequest(x).getId());
-				return Response.status(Status.CREATED).build();
+				
+				return Response.status(Status.CREATED).entity(repaiRequest.createRepairRequest(x).getId()).build();
 
 			} else {
 				return Response.status(Response.Status.NOT_FOUND).entity("Warrenty expired").build();
@@ -74,7 +72,6 @@ public class RepairResource {
 
 	@GET
 	@Path("/all")
-	@utilities.RolesAllowed(Permissions = {Role.technical})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response allRepairRequest() {
 		return Response.status(Status.CREATED).entity(repaiRequest.getAllRepairRequest()).build();
@@ -86,6 +83,7 @@ public class RepairResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response checkRepairRequest(@PathParam(value = "id") int id) {
 		return Response.status(Status.CREATED).entity(repaiRequest.findRepairRequest(id)).build();
+
 
 	}
 
@@ -101,7 +99,6 @@ public class RepairResource {
 
 	@PUT
 	@Path("/status/{id}")
-	@utilities.RolesAllowed(Permissions = {Role.technical})
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response RepRequestStatus(@PathParam(value = "id") int id, RepairRequest xx) {
 
@@ -127,7 +124,6 @@ public class RepairResource {
 	}
 	@GET
 	@Path("findSentiment")
-	@utilities.RolesAllowed(Permissions = {Role.technical})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findrep() throws Exception {
 
@@ -137,9 +133,9 @@ public class RepairResource {
 	@Path("/check/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response Comment(@PathParam(value = "id") int id, RepairRequest s) {
-
-		return Response.status(Status.OK).entity(repaiRequest.ReviewAdd(s.getReview(), id)).build();
+	public Response Comment(@PathParam(value = "id") int id,RepairRequest r) {
+				
+		return Response.status(Status.OK).entity(repaiRequest.ReviewAdd(r.getReview(), id)).build();
 
 	}
 

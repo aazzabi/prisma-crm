@@ -22,6 +22,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.auth0.jwt.internal.com.fasterxml.jackson.annotation.JsonIgnore;
+
 import Enums.AccountState;
 import Enums.Role;
 
@@ -44,6 +46,8 @@ public class User implements Serializable {
 	private Date lastAuthentificated;
 	private Date passwordLastChanged;
 	private AccountState accountState;
+	private String profileImage;
+
 	@ManyToOne
 	private Address address;
 	
@@ -72,6 +76,8 @@ public class User implements Serializable {
 		this.profileImage = profileImage;
 	}
 
+
+
 	public User(int id, String firstName, String lastName, String profileImage, String phoneNumber, String email,
 			String password, Date createdAt, AccountState accountState, String confirmationToken) {
 		super();
@@ -93,8 +99,7 @@ public class User implements Serializable {
 		this.id = id;
 		this.confirmationToken = confirmationToken;
 	}
-
-	private String profileImage;
+	@JsonIgnore
 	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<RepairRequest> repairRequests;
 

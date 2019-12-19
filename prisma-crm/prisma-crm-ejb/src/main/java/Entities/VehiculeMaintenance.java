@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import com.auth0.jwt.internal.com.fasterxml.jackson.annotation.JsonFormat;
+
 import Enums.RepairStatus;
 import Enums.ServiceType;
 
@@ -26,7 +28,7 @@ public class VehiculeMaintenance implements Serializable {
 	private ServiceType serviceType;
 	private RepairStatus repairStatus;
 	private float totalprice;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date maintainceDate;
 
 	private int odometer;

@@ -40,7 +40,7 @@ public class microsoftSentiments {
 			URI uri = builder.build();
 			HttpPost request = new HttpPost(uri);
 			request.setHeader("Content-Type", "application/json");
-			request.setHeader("Ocp-Apim-Subscription-Key", "2ddbe8d6fca5490f8164b3574526f6a6");
+			request.setHeader("Ocp-Apim-Subscription-Key", "e41c34b3bcf841d0859d6aba9e8e1494");
 
 			// Request body
 			StringEntity reqEntity = new StringEntity(

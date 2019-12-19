@@ -74,6 +74,8 @@ public class Claim implements Serializable {
 
 	@ManyToOne
 	private Client createdBy;
+	
+	private int createdById;
 
 	@OneToOne
 	private Agent resolvedBy;//---Ok---
@@ -245,6 +247,16 @@ public class Claim implements Serializable {
 
 	public void setIsFaq(Boolean isFaq) {
 		this.isFaq = isFaq;
+	}
+	
+	
+
+	public int getCreatedById() {
+		return createdById;
+	}
+
+	public void setCreatedById(int createdById) {
+		this.createdById = createdById;
 	}
 
 	@Override

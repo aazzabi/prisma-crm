@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -37,8 +38,8 @@ public class ClientOrder implements Serializable {
 	@Enumerated(EnumType.STRING)	
 	private OrderType orderNature;
 	private float totale;
-	@ManyToOne
 	@JsonIgnore
+	@ManyToOne
 	private Client client;
 	@JsonIgnore
 	@ManyToOne

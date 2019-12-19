@@ -12,6 +12,9 @@ import javax.servlet.http.HttpSession;
 
 import Entities.Agent;
 import Entities.Client;
+import Entities.Pack;
+import Entities.Product;
+import Entities.Promotion;
 import Entities.User;
 import Enums.AccountState;
 import Enums.Role;
@@ -38,6 +41,7 @@ public class UserService implements IUserLocal, IUserRemote {
 		user.setPassword(MD5Hash.getMD5Hash(user.getPassword()));
 		String activationHashedCode = MD5Hash.getMD5Hash(user.getPhoneNumber() + user.getEmail());
 		user.setConfirmationToken(activationHashedCode);
+		user.setAccountState(AccountState.ACTIVATED);
 		user.setCreatedAt(new Date());
 		try {
 			JavaMailUtil.sendMail(user.getEmail(), "Confirmation code",
@@ -62,6 +66,7 @@ public class UserService implements IUserLocal, IUserRemote {
 				User userTochange = findUserById(u.getId());
 				userTochange.setAccountState(AccountState.ACTIVATED);
 				updateUser(userTochange);
+				AssignClient(u.getId());
 				return true;
 			} else {
 				return false;
@@ -84,17 +89,29 @@ public class UserService implements IUserLocal, IUserRemote {
 
 	@Override
 	public List<User> findAllUsers() {
-		Query query = entityManager.createQuery(
-				"SELECT new User(u.id,u.firstName,u.lastName,u.profileImage,u.phoneNumber,u.email,u.password,u.createdAt,u.accountState,u.confirmationToken) "
-						+ "FROM User u");
-		return (List<User>) query.getResultList();
+	return	entityManager.createQuery("from User", User.class).getResultList();
+
 	}
 
 	@Override
 	public void updateUser(User user) {
-
-		entityManager.merge(user);
-
+		User p = entityManager.find(User.class, UserLogged.getId());
+			if (user.getEmail() != null) {
+				p.setEmail(user.getEmail());
+			}
+			if (user.getFirstName() != null) {
+				p.setFirstName(user.getFirstName());
+			}
+			if (user.getLastName() != null) {
+				p.setLastName(user.getLastName());
+			}
+			if (user.getPhoneNumber() != null) {
+				p.setPhoneNumber(user.getPhoneNumber());
+			}
+			if (user.getProfileImage() != null) {
+				p.setProfileImage(user.getProfileImage());
+			}
+			
 	}
 
 	@Override

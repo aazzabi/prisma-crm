@@ -1,8 +1,10 @@
 package Enums;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.io.Serializable;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum RepairStatus {
-	Completed, OnHold, Replaced, InProgress, Rejected
+
+public enum RepairStatus implements Serializable {
+	Completed, OnHold, Replaced, InProgress, Rejected;
+	
+
 }
