@@ -45,9 +45,11 @@ public class VehiculeMaintenanceResource {
 			maintenance.setRepairStatus(RepairStatus.OnHold);
 			maintenance.setVehicule(xx);
 			vehiculeMtRemote.addMaintanceRequest(maintenance);
-		}
+			return Response.status(Status.CREATED).entity("Add").build();
 
-		return Response.status(Status.CREATED).entity("Add").build();
+		}
+		else
+		return Response.status(Status.BAD_GATEWAY).entity("Not").build();
 	}
 
 	@GET
@@ -58,13 +60,21 @@ public class VehiculeMaintenanceResource {
 		return vehiculeMtRemote.findMaintancebyVehicule(id);
 
 	}
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("getAll")
+	public List<VehiculeMaintenance> AllMaintenance() {
+
+		return vehiculeMtRemote.findAll();
+
+	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("approve/{id}")
 	public Response approveMaintance(@PathParam("id") int id) {
 		vehiculeMtRemote.ApproveMaintance(id);
-		return Response.status(Status.CREATED).entity("ok").build();
+		return Response.status(Status.OK).build();
 
 	}
 

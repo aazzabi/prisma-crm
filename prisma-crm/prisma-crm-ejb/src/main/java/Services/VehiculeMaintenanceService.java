@@ -9,10 +9,12 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
+import Entities.User;
 import Entities.Vehicule;
 import Entities.VehiculeMaintenance;
 import Enums.RepairStatus;
@@ -40,15 +42,24 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 
 	@Override
 	public void updateVehicule(Vehicule veh) {
-		em.merge(veh);
+		Vehicule p = em.find(Vehicule.class, veh.getId());
+		if (veh.getFuelType() != null) {
+			p.setFuelType(veh.getFuelType());
+		}
+		if (veh.getOdometer() != 0) {
+			p.setOdometer(veh.getOdometer());
+		}
+		if (veh.getPlate() != null) {
+			p.setPlate(veh.getPlate());
+		}
 	}
 
 	@Override
 	public List<Vehicule> findAllVehicule() {
-		Query query = em.createQuery(
-				"SELECT new Vehicule(u.id,u.fuelType,u.location,u.location,u.odometer,u.plate,u.driver_id) "
-						+ "FROM Vehicule u");
-		return (List<Vehicule>) query.getResultList();
+		TypedQuery<Vehicule> query = em.createQuery("SELECT c from Vehicule c", Vehicule.class);
+		List<Vehicule> cf = query.getResultList();
+		return cf;
+
 	}
 
 	@Override
@@ -115,8 +126,7 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 	}
 
 	@Override
-	// @Schedule(hour = "8", minute = "0", second = "0", persistent = false)
-	//@Schedule(second = "*", minute = "*/5", hour = "*", persistent = false)
+	 @Schedule(hour = "8", minute = "0", second = "0", persistent = false)
 	public List<VehiculeMaintenance> alertEntreiens() throws Exception {
 		List<VehiculeMaintenance> realEv = new ArrayList<>();
 		List<VehiculeMaintenance> ev = em.createQuery(
@@ -129,13 +139,10 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 				if (main.getVehicule().getId() == mainex.getVehicule().getId()) {
 					exist = true;
 				}
-
 			}
 			if (!exist)
 				evparVeh.add(main);
-
 		}
-
 		for (VehiculeMaintenance entretienVoiture : evparVeh) {
 			if (entretienVoiture.getMaintainceDate() != null) {
 				int intervalle = 180;
@@ -144,8 +151,6 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 						.getDays();
 				if (days >= intervalle) {
 					realEv.add(entretienVoiture);
-					System.out.println(
-							"daysssssssssssssssssssssssssssssss !" + days + " id : " + entretienVoiture.getId());
 
 					JavaMailUtil.sendMail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
 							"Hey, you have depassed the car maintenance deadline with : " + days + "days");
@@ -157,8 +162,7 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 				float KmLastEntretien = entretienVoiture.getVehicule().getOdometer() - entretienVoiture.getOdometer();
 
 				if (KmLastEntretien >= kilos) {
-					System.out.println("intervaleKilometres+++++++++++++++ !" + KmLastEntretien + " id : "
-							+ entretienVoiture.getId());
+
 					realEv.add(entretienVoiture);
 					JavaMailUtil.sendMail(entretienVoiture.getVehicule().getDriver().getEmail(), "vehicle maintenance",
 							"Hey, you have depassed the car maintenance Km: " + KmLastEntretien);
@@ -168,6 +172,12 @@ public class VehiculeMaintenanceService implements IVehiculeMtRemote {
 
 		}
 		return realEv;
+
+	}
+
+	@Override
+	public List<VehiculeMaintenance> findAll() {
+		return em.createQuery("from VehiculeMaintenance", VehiculeMaintenance.class).getResultList();
 
 	}
 

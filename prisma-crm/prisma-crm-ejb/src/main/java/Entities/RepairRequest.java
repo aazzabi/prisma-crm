@@ -31,9 +31,7 @@ public class RepairRequest implements Serializable {
 	@JsonIgnore
 	private User client;
 	@OneToOne
-	@JsonIgnore
 	private Invoice invoice;
-	@Enumerated(EnumType.STRING)
 	private RepairStatus statusRep;
 	private Date createdDate;
 	private String notes;
@@ -141,7 +139,7 @@ public class RepairRequest implements Serializable {
 
 	@Override
 	public String toString() {
-		return "RepairRequest [id=" + id + ", warentyExp=" + warentyExp + ", client=" + client + ", product=" + invoice
+		return "RepairRequest [id=" + id + ", warentyExp=" + warentyExp + ", client=" + client + ", invoice=" + invoice
 				+ ", statusRep=" + statusRep + ", createdDate=" + createdDate + ", notes=" + notes + ", endDate="
 				+ endDate + "]";
 	}

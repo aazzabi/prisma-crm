@@ -6,8 +6,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
-import Entities.User;
+import Entities.Agent;
+import Entities.Claim;
 import Entities.Vehicule;
 import Interfaces.IResourcesRemote;
 
@@ -30,14 +32,26 @@ public class ResourcesService implements IResourcesRemote {
 	}
 	@Override
 	public void updateVehicule(Vehicule veh) {
-		em.merge(veh);}
+		Vehicule p = em.find(Vehicule.class, veh.getId());
+		if (veh.getFuelType() != null) {
+			p.setFuelType(veh.getFuelType());
+		}
+		if (veh.getOdometer()!=0) {
+			p.setOdometer(veh.getOdometer());
+		}
+		if (veh.getPlate() != null) {
+			p.setPlate(veh.getPlate());
+		}
+	}
+	
 	@Override
 	public List<Vehicule> findAllVehicule() {
-		Query query = em.createQuery(
-				"SELECT new Vehicule(u.id,u.fuelType,u.location,u.location,u.odometer,u.plate,u.driver_id) "
-						+ "FROM Vehicule u");
-		return (List<Vehicule>) query.getResultList();
+		TypedQuery<Vehicule> query = em.createQuery("SELECT c from Vehicule c", Vehicule.class);
+		List<Vehicule> cf = query.getResultList();
+		return cf;
+
 	}
+
 	@Override
 	public void deleteVehicule(int id)
 	{
@@ -48,7 +62,7 @@ public class ResourcesService implements IResourcesRemote {
 	public Vehicule assignDriverToVehicule(int Driver_id, int Vehicule_id) {
 		
 		Vehicule v= em.find(Vehicule.class, Vehicule_id);
-		User driver= em.find(User.class, Driver_id);
+		Agent driver= em.find(Agent.class, Driver_id);
 
 		v.setDriver(driver);
 		em.merge(v);

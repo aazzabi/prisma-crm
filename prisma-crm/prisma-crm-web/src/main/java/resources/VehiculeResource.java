@@ -29,7 +29,7 @@ import utilities.Secured;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-@Path("Resources")
+@Path("Vehicules")
 @RequestScoped
 public class VehiculeResource {
 	private Agent user;
@@ -64,10 +64,9 @@ public class VehiculeResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("{id}")
 	public Response updateVehicule(Vehicule vehicule, @PathParam(value = "id") int id) {
-		Vehicule x = resourcesRemote.getVehiculeById(id);
 
 		try {
-			resourcesRemote.updateVehicule(x);
+			resourcesRemote.updateVehicule(vehicule);
 			return Response.status(Status.OK).build();
 		} catch (Exception e) {
 			return Response.status(Status.NOT_MODIFIED).build();
@@ -80,7 +79,7 @@ public class VehiculeResource {
 	public Response update(@PathParam("id") int id, Vehicule vehicule) {
 		Vehicule x = resourcesRemote.getVehiculeById(id);
 		x.setFuelType(vehicule.getFuelType());
-		x.setDriver(UserService.UserLogged);
+		x.setDriver((Agent) vehicule.getDriver());
 		x.setLocation(vehicule.getLocation());
 		x.setOdometer(vehicule.getOdometer());
 		x.setPlate(vehicule.getPlate());
@@ -107,10 +106,9 @@ public class VehiculeResource {
 
 	}
 
-	@PUT
+	@GET
 	@Path("assign/{dId}/{vId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
 	public Response assignDriverToVehicule(@PathParam("dId") int id, @PathParam("vId") int Vehicule_id) {
 
 		vh.assignDriverToVehicule(id, Vehicule_id);

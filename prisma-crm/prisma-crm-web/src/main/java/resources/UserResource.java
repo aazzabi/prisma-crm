@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response.Status;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Entities.Agent;
+import Entities.Client;
 import Entities.User;
 import Enums.AccountState;
 import Enums.Role;
@@ -142,7 +143,7 @@ public class UserResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("register")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createUser(User user) {
+	public Response createUser(Client user) {
 
 		return Response.status(Status.OK).entity(userBusiness.createUser(user)).build();
 	 
@@ -163,7 +164,7 @@ public class UserResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("{id}")
+	@Path("findUser/{id}")
 	public User findUserById(@PathParam("id") int id) {
 
 		return userBusiness.findUserById(id);
@@ -183,7 +184,9 @@ public class UserResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response updateUser(User user, @PathParam(value = "id") int id) {
+		user.setId(id);
 		String imgToUpload = user.getProfileImage();
+
 		if (imgToUpload != null) {
 			if (userBusiness.uploadProfileImage(imgToUpload)) {
 				if (user.getId() == 0) {
@@ -196,7 +199,7 @@ public class UserResource {
 					user.setId(id);
 				}
 				userBusiness.updateUser(user);
-				return Response.status(Status.FORBIDDEN).entity(false).build();
+				return Response.status(Status.OK).entity(true).build();
 			}
 		}
 
@@ -233,7 +236,7 @@ public class UserResource {
 	}
 
 	@DELETE
-	@Path("{id}")
+	@Path("delete/{id}")
 	public void deleteUser(@PathParam("id") int id) {
 
 		userBusiness.deleteUser(id);

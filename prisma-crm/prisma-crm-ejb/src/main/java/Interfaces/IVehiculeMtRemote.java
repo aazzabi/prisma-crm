@@ -26,5 +26,5 @@ public interface IVehiculeMtRemote {
 	void RejectMaintance(int id);
 	void ApproveMaintance(int id);
 	void deleteVehiculeMt(int id);
-
+	public List<VehiculeMaintenance>findAll();
 }

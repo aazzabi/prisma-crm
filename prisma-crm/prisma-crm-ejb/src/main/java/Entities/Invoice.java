@@ -38,9 +38,7 @@ public class Invoice implements Serializable {
 	@JsonIgnore
 
 	private Set<Product> products;
-	@OneToOne(cascade = CascadeType.REMOVE)
-	@JsonIgnore
-	private RepairRequest repairRequest;
+
 	public ClientOrder getOrderInvoice() {
 		return orderInvoice;
 	}

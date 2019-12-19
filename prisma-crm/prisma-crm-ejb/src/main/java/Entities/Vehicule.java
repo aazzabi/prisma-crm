@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.jws.soap.SOAPBinding.Use;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,7 +27,7 @@ public class Vehicule implements Serializable {
 	private int odometer;
 	private FuelType fuelType;
 	@OneToOne
-	private User driver;
+	private Agent driver;
 	private float location;
 	@JsonIgnore
 	@OneToMany(mappedBy="vehicule" ,cascade = CascadeType.REMOVE)
@@ -52,7 +53,7 @@ public class Vehicule implements Serializable {
 	public User getDriver() {
 		return driver;
 	}
-	public void setDriver(User driver) {
+	public void setDriver(Agent driver) {
 		this.driver = driver;
 	}
 	public float getLocation() {
@@ -62,7 +63,7 @@ public class Vehicule implements Serializable {
 		this.location = location;
 	}
 
-	public Vehicule(int id, int odometer, FuelType fuelType, User driver, float location) {
+	public Vehicule(int id, int odometer, FuelType fuelType, Agent driver, float location) {
 		super();
 		this.id = id;
 		this.odometer = odometer;
