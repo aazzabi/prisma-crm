@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import Entities.foreignid.CartProductRowId;
 
 @Entity
@@ -33,19 +35,22 @@ public class CartProductRow implements Serializable {
 	private int quantity;
 
 	@Column(name = "OriginalPrice")
-	private double originalPrice;
+	private double originaUnitlPrice;
 	@ManyToOne
 	private ReductionFidelityRation reductionRatio;
 	@Column(name = "finalPrice")
 	private double finalPrice;
 	private int usedFidelityPoints;
+	private double totalPriceWNReduction;
+	
+
 
 	public double getOriginalPrice() {
-		return originalPrice;
+		return originaUnitlPrice;
 	}
 
 	public void setOriginalPrice(double originalPrice) {
-		this.originalPrice = originalPrice;
+		this.originaUnitlPrice = originalPrice;
 	}
 
 	public ReductionFidelityRation getReductionRatio() {
@@ -96,6 +101,14 @@ public class CartProductRow implements Serializable {
 
 	public void setUsedFidelityPoints(int usedFidelityPoints) {
 		this.usedFidelityPoints = usedFidelityPoints;
+	}
+
+	public double getTotalPriceWNReduction() {
+		return totalPriceWNReduction;
+	}
+
+	public void setTotalPriceWNReduction(double totalPriceWNReduction) {
+		this.totalPriceWNReduction = totalPriceWNReduction;
 	}
 
 }

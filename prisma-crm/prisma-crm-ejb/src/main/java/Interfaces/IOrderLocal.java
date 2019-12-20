@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import Entities.Client;
 import Entities.ClientCart;
 import Entities.ClientOrder;
+import Entities.Product;
 
 @Local
 public interface IOrderLocal {
@@ -18,7 +19,6 @@ public interface IOrderLocal {
 
 	public ClientOrder getOrder(int id);
 
-	public ClientOrder updateClientOrder(ClientOrder order);
 
 	public boolean deleteClientOrder(int id);
 
@@ -29,10 +29,19 @@ public interface IOrderLocal {
 	public List<ClientOrder> fetchAllClientOrders(Client client);
 	
 	public String calculateDistanceBetweenClientAndStore(ClientOrder order,String origin);
+	public Client getClientWithTheHighestOrdersOccurency();	
+	public Client getClientWithTheHighestOrdersSpendings();	
+	public  Product getBestProductOfAllTime();
 	
-	public Client getClientWithTheHighestOrdersOccurency();
+	public Client getBestClientOfAllTime();
 	
-	public Client getClientWithTheHighestOrdersSpendings();
+	public long getWinLossPercentageBetweenTwoDays();
+	public List<ClientOrder> getOrdersByDate(String date);	
+	
+	
+	
+	
+	
 	
 	
 

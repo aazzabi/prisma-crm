@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.servlet.http.HttpSession;
-
 import Entities.Agent;
 import Entities.Client;
 import Entities.Pack;
@@ -90,28 +89,26 @@ public class UserService implements IUserLocal, IUserRemote {
 	@Override
 	public List<User> findAllUsers() {
 	return	entityManager.createQuery("from User", User.class).getResultList();
-
 	}
 
 	@Override
 	public void updateUser(User user) {
 		User p = entityManager.find(User.class, UserLogged.getId());
-			if (user.getEmail() != null) {
-				p.setEmail(user.getEmail());
-			}
-			if (user.getFirstName() != null) {
-				p.setFirstName(user.getFirstName());
-			}
-			if (user.getLastName() != null) {
-				p.setLastName(user.getLastName());
-			}
-			if (user.getPhoneNumber() != null) {
-				p.setPhoneNumber(user.getPhoneNumber());
-			}
-			if (user.getProfileImage() != null) {
-				p.setProfileImage(user.getProfileImage());
-			}
-			
+		if (user.getEmail() != null) {
+			p.setEmail(user.getEmail());
+		}
+		if (user.getFirstName() != null) {
+			p.setFirstName(user.getFirstName());
+		}
+		if (user.getLastName() != null) {
+			p.setLastName(user.getLastName());
+		}
+		if (user.getPhoneNumber() != null) {
+			p.setPhoneNumber(user.getPhoneNumber());
+		}
+		if (user.getProfileImage() != null) {
+			p.setProfileImage(user.getProfileImage());
+		}
 	}
 
 	@Override
@@ -170,7 +167,6 @@ public class UserService implements IUserLocal, IUserRemote {
 		User user = findUserById(id);
 
 		Client c = new Client();
-		System.out.println("Khra ///////////////////:"+c.getId());
 		c.setPassword(user.getPassword());
 		c.setEmail(user.getEmail());
 		c.setFirstName(user.getFirstName());

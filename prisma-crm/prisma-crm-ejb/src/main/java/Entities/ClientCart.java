@@ -26,11 +26,10 @@ public class ClientCart implements Serializable {
 	private boolean isCheckedOut;
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
-	@JsonIgnore
 	@ManyToOne
 	private Client client;
 	@JsonIgnore
-	@OneToOne(mappedBy="cart")	
+	@OneToOne
 	private ClientOrder clientOrder;
 	public ClientOrder getOrder() {
 		return clientOrder;
@@ -39,8 +38,9 @@ public class ClientCart implements Serializable {
 		this.clientOrder = order;
 	}
 	@JsonIgnore
-	@OneToMany(mappedBy="cart",fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="cart",fetch=FetchType.EAGER)
 	private Set<CartProductRow> cartRows;
+	private boolean isNotifiedAboutCartForgottenItems;
 	
 	public Set<CartProductRow> getCartRows() {
 		return cartRows;
@@ -79,6 +79,12 @@ public class ClientCart implements Serializable {
 	public void addProductToCart(CartProductRow row)
 	{
 		this.cartRows.add(row);
+	}
+	public boolean isNotifiedAboutCartForgottenItems() {
+		return isNotifiedAboutCartForgottenItems;
+	}
+	public void setNotifiedAboutCartForgottenItems(boolean isNotifiedAboutCartForgottenItems) {
+		this.isNotifiedAboutCartForgottenItems = isNotifiedAboutCartForgottenItems;
 	}
 	
 	

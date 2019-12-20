@@ -1,22 +1,17 @@
 package Entities;
 
 import java.io.Serializable;
-
 import java.util.Set;
-
 import javax.persistence.CascadeType;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "Store")
@@ -36,6 +31,10 @@ public class Store implements Serializable{
 	
 	@ManyToOne
 	private Address address;
+	
+	@JsonIgnore
+	@OneToMany(cascade = CascadeType.ALL,mappedBy="store")
+	private Set<Product> products; 
 
 	
 	@OneToMany(mappedBy="store",fetch=FetchType.EAGER)
@@ -100,6 +99,14 @@ public class Store implements Serializable{
 
 	public void setOrders(Set<ClientOrder> orders) {
 		this.orders = orders;
+	}
+
+	public Set<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(Set<Product> products) {
+		this.products = products;
 	}
 
 	

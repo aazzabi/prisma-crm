@@ -35,6 +35,7 @@ public class Client extends User implements Serializable {
 	private String entrepriseName;
 	@Column(name = "entreprisePosition", nullable = true, length = 255)
 	private String entreprisePosition;
+	private boolean isBannedFromLocalOrders;
 
 	public Client() {
 		super();
@@ -89,6 +90,25 @@ public class Client extends User implements Serializable {
 		this.clientType = clientType;
 	}
 
+	public boolean isBannedFromLocalOrders() {
+		return isBannedFromLocalOrders;
+	}
+
+	public void setBannedFromLocalOrders(boolean isBannedFromLocalOrders) {
+		this.isBannedFromLocalOrders = isBannedFromLocalOrders;
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((clientOrders == null) ? 0 : clientOrders.hashCode());
+		result = prime * result + ((clientType == null) ? 0 : clientType.hashCode());
+		result = prime * result + ((clientgroup == null) ? 0 : clientgroup.hashCode());
+		result = prime * result + fidelityScore;
+		return result;
+	}
 
 	@Override
 	public boolean equals(Object obj) {

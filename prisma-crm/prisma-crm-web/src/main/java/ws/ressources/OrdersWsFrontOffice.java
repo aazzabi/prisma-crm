@@ -23,29 +23,11 @@ public class OrdersWsFrontOffice {
 	@Inject
 	InvoiceService businessInvoice;
 	
-	
-	//Test service de calcule distance entre deux adresses
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response testKheffa()
-	{
-		return Response.ok().entity(businessOrder.calculateDistanceBetweenClientAndStore(null,"Bardo, Tunisia")).build();
-	}
 
 	
 	
 
-	@Path("/create-order-invoice")
-	@POST
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response generateOrderInvoice(@FormParam("order")int id)
-	{
-		Invoice result=businessInvoice.createInvoice(id);
-		return result!=null?Response.ok().status(Response.Status.CREATED).entity(result).build()
-				: Response.status(Response.Status.NOT_FOUND).entity(new String(Response.Status.NOT_FOUND.toString())).build();
-		
-	}
+
 	
 	@Path("/get-invoice-product-rows/{id}")
 	@GET
@@ -66,6 +48,8 @@ public class OrdersWsFrontOffice {
 		return result!=null?Response.ok().status(Response.Status.CREATED).entity(result).build()
 				: Response.status(Response.Status.NOT_FOUND).entity(new String(Response.Status.NOT_FOUND.toString())).build();
 	}
+	
+	
 	
 	
 	

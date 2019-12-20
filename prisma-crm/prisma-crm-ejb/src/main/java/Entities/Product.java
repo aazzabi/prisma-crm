@@ -1,7 +1,7 @@
 package Entities;
-
 import java.io.Serializable;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +14,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -25,11 +26,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import Enums.ProductType;
-
 @Entity
 @Table(name = "Product")
-public class Product implements Serializable {
-
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Product implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -46,8 +46,9 @@ public class Product implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private ProductType type;
 
+	@Column(name = "guarantee")
 	private int guarantee=0;
-
+	
 	private double price;
 	@Column(name = "new_price")
 	private double new_price;
@@ -66,14 +67,22 @@ public class Product implements Serializable {
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	private Date createdAt = new Date(System.currentTimeMillis());
 
-
+	
+	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.ALL)
 	User agent;
+	//Agent agent;
 
 	
 	@OneToMany(mappedBy="product", fetch= FetchType.EAGER)
 	private Set<CartProductRow> cartRows;
-		
+
+
+	@JsonIgnore
+	@ManyToOne
+	Store store; 
+	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinTable(
 			name = "tarifProduct",
@@ -150,7 +159,6 @@ public class Product implements Serializable {
 		this.new_price = new_price;
 	}
 
-
 	public int getId() {
 		return id;
 	}
@@ -205,8 +213,7 @@ public class Product implements Serializable {
 
 	public void setPrice(double price) {
 		this.price = price;
-	}	
-
+	}
 
 	public Date getCreatedAt() {
 		return createdAt;
@@ -231,7 +238,6 @@ public class Product implements Serializable {
 	public void setTarifs(Set<Tariff> tarifs) {
 		this.tarifs = tarifs;
 	}
-
 
 
 	public String getBrand() {
@@ -273,7 +279,6 @@ public class Product implements Serializable {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-
 	public Set<CartProductRow> getCartRows() {
 		return cartRows;
 	}
@@ -286,11 +291,22 @@ public class Product implements Serializable {
 		return stock;
 	}
 
+	public void addProductCart(CartProductRow row)
+	{
+		this.cartRows.add(row);
+	}
+
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
 
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
 
 
 }
-

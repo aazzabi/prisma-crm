@@ -1,10 +1,8 @@
 package Entities;
 
 import java.io.Serializable;
-
 import java.sql.Date;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -38,14 +36,15 @@ public class ClientOrder implements Serializable {
 	@Enumerated(EnumType.STRING)	
 	private OrderType orderNature;
 	private float totale;
-	@JsonIgnore
+	
 	@ManyToOne
+	@JsonIgnore
 	private Client client;
 	@JsonIgnore
 	@ManyToOne
 	private Store store;
 	@JsonIgnore
-	@OneToOne
+	@OneToOne(mappedBy="orderInvoice")
 	private Invoice invoice;
 	@JsonIgnore
 	@OneToOne
@@ -136,6 +135,20 @@ public class ClientOrder implements Serializable {
 	}
 
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((client == null) ? 0 : client.hashCode());
+		result = prime * result + ((createdAt == null) ? 0 : createdAt.hashCode());
+		result = prime * result + id;
+		result = prime * result + (isValid ? 1231 : 1237);
+		result = prime * result + ((orderNature == null) ? 0 : orderNature.hashCode());
+		result = prime * result + Float.floatToIntBits(reductionRatio);
+		result = prime * result + Float.floatToIntBits(totale);
+		result = prime * result + ((updatedAt == null) ? 0 : updatedAt.hashCode());
+		return result;
+	}
 
 	@Override
 	public boolean equals(Object obj) {

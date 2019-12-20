@@ -8,12 +8,6 @@
         <dependent-module archiveName="prisma-crm-ejb.jar" deploy-path="/" handle="module:/resource/prisma-crm-ejb/prisma-crm-ejb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="mail.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/javax/mail/mail/1.4/mail-1.4.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="activation.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/javax/activation/activation/1.1.1/activation-1.1.1.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="jackson-jaxrs-json-provider.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.9.1/jackson-jaxrs-json-provider-2.9.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -24,6 +18,12 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jackson-annotations.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="javax.mail.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/sun/mail/javax.mail/1.5.1/javax.mail-1.5.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="activation.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/javax/activation/activation/1.1.1/activation-1.1.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="weka-stable.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/nz/ac/waikato/cms/weka/weka-stable/3.8.0/weka-stable-3.8.0.jar">
@@ -98,6 +98,15 @@
         <dependent-module archiveName="gson.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="rest-api-sdk.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/paypal/sdk/rest-api-sdk/1.14.0/rest-api-sdk-1.14.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-api.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="joda-time.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/joda-time/joda-time/2.3/joda-time-2.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="twilio.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/twilio/sdk/twilio/7.42.0/twilio-7.42.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -140,24 +149,6 @@
         <dependent-module archiveName="stax-api.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="java-jwt.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/auth0/java-jwt/2.2.1/java-jwt-2.2.1.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="javaee-api.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/javax/javaee-api/7.0/javaee-api-7.0.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="javax.mail.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/sun/mail/javax.mail/1.5.1/javax.mail-1.5.1.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="rest-api-sdk.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/paypal/sdk/rest-api-sdk/1.14.0/rest-api-sdk-1.14.0.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="slf4j-api.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="joda-time.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/joda-time/joda-time/2.3/joda-time-2.3.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="twilio-java-sdk.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/twilio/sdk/twilio-java-sdk/6.3.0/twilio-java-sdk-6.3.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -174,6 +165,12 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="json.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/json/json/20160810/json-20160810.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="java-jwt.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/com/auth0/java-jwt/2.2.1/java-jwt-2.2.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="javaee-api.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/javax/javaee-api/7.0/javaee-api-7.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="httpclient.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/httpcomponents/httpclient/4.5.2/httpclient-4.5.2.jar">

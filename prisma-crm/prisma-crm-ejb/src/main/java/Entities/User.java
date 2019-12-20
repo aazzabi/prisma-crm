@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -21,11 +20,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import com.auth0.jwt.internal.com.fasterxml.jackson.annotation.JsonIgnore;
-
+//import com.auth0.jwt.internal.com.fasterxml.jackson.annotation.JsonIgnore;
 import Enums.AccountState;
 import Enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "userType")
@@ -46,14 +44,17 @@ public class User implements Serializable {
 	private Date lastAuthentificated;
 	private Date passwordLastChanged;
 	private AccountState accountState;
-	private String profileImage;
-
 	@ManyToOne
 	private Address address;
 	
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	private String profileImage;
 
+	@JsonIgnore
+	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<RepairRequest> repairRequests;
+	
 	public User() {
 	}
 
@@ -75,9 +76,7 @@ public class User implements Serializable {
 		this.address = address;
 		this.profileImage = profileImage;
 	}
-
-
-
+	
 	public User(int id, String firstName, String lastName, String profileImage, String phoneNumber, String email,
 			String password, Date createdAt, AccountState accountState, String confirmationToken) {
 		super();
@@ -99,9 +98,7 @@ public class User implements Serializable {
 		this.id = id;
 		this.confirmationToken = confirmationToken;
 	}
-	@JsonIgnore
-	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<RepairRequest> repairRequests;
+
 
 	public List<RepairRequest> getRepairRequests() {
 		return repairRequests;
@@ -274,5 +271,4 @@ public class User implements Serializable {
 			return false;
 		return true;
 	}
-
 }
