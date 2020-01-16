@@ -24,8 +24,8 @@ public class Client extends User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
-	private Set<ClientOrder> clientOrders;
+//	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
+//	private Set<ClientOrder> clientOrders;
 	@Enumerated(EnumType.STRING)
 	private ClientGroups clientgroup;
 	private int fidelityScore;
@@ -39,16 +39,9 @@ public class Client extends User implements Serializable {
 
 	public Client() {
 		super();
-		this.clientOrders = new TreeSet<ClientOrder>();
+//	this.clientOrders = new TreeSet<ClientOrder>();
 	}
 
-	public Set<ClientOrder> getClientOrders() {
-		return clientOrders;
-	}
-
-	public void setClientOrders(Set<ClientOrder> clientOrders) {
-		this.clientOrders = clientOrders;
-	}
 
 	public String getEntrepriseName() {
 		return entrepriseName;
@@ -103,7 +96,6 @@ public class Client extends User implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((clientOrders == null) ? 0 : clientOrders.hashCode());
 		result = prime * result + ((clientType == null) ? 0 : clientType.hashCode());
 		result = prime * result + ((clientgroup == null) ? 0 : clientgroup.hashCode());
 		result = prime * result + fidelityScore;
@@ -119,11 +111,6 @@ public class Client extends User implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Client other = (Client) obj;
-		if (clientOrders == null) {
-			if (other.clientOrders != null)
-				return false;
-		} else if (!clientOrders.equals(other.clientOrders))
-			return false;
 		if (clientType != other.clientType)
 			return false;
 		if (clientgroup != other.clientgroup)

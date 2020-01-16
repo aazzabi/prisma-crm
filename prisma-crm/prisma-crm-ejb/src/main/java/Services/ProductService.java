@@ -105,9 +105,6 @@ public class ProductService implements IProductServiceLocal, IProductServiceRemo
 	@Override
 	public List<Product> findAllProducts() {
 		List<Product> products = em.createQuery("from Product", Product.class).getResultList();
-
-		
-
 		return products;
 	}
 

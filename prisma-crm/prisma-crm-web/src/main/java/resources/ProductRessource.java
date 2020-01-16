@@ -52,7 +52,7 @@ public class ProductRessource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response allProducts() {
 		//System.out.println(UserService.UserLogged.getFirstName());
-		return Response.status(Status.CREATED).entity(ps.findAllProducts()).build();
+		return Response.status(Status.OK).entity(ps.findAllProducts()).build();
 
 	}
 	

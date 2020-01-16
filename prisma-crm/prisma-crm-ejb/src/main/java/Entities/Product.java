@@ -73,11 +73,11 @@ public class Product implements Serializable{
 	User agent;
 	//Agent agent;
 
-	
+/*
 	@OneToMany(mappedBy="product", fetch= FetchType.EAGER)
 	private Set<CartProductRow> cartRows;
 
-
+*/
 	@JsonIgnore
 	@ManyToOne
 	Store store; 
@@ -279,23 +279,24 @@ public class Product implements Serializable{
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-	public Set<CartProductRow> getCartRows() {
+/*	
+  	public Set<CartProductRow> getCartRows() {
 		return cartRows;
 	}
 
 	public void setCartRows(Set<CartProductRow> cartRows) {
 		this.cartRows = cartRows;
 	}
-	
+*/	
 	public int getStock() {
 		return stock;
 	}
-
+/*
 	public void addProductCart(CartProductRow row)
 	{
 		this.cartRows.add(row);
 	}
-
+*/
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
